@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 10:37:05 by ixu               #+#    #+#             */
-/*   Updated: 2024/02/09 11:09:14 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/09 13:06:47 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@
 
 // readline
 # include <stdio.h>
-// # include <readline/readline.h>
-// # include <readline/history.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 // STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO
 # include <unistd.h>
 
-// EXIT_FAILURE, EXIT_SUCCESS
+// EXIT_FAILURE, EXIT_SUCCESS, NULL
 # include <stdlib.h>
 
 // macros for (error) messages
