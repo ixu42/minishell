@@ -1,0 +1,44 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile_linux                                     :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
+#    Updated: 2024/02/09 14:17:17 by ixu              ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+NAME = minishell
+
+LIBFT_DIR = libft
+
+LIBFT = $(LIBFT_DIR)/libft.a
+
+CFLAGS = -Wall -Wextra -Werror
+
+SRCS = main.c
+
+OBJS = $(SRCS:.c=.o)
+
+all: $(NAME)
+
+$(NAME): $(OBJS) $(LIBFT)
+	cc -o $(NAME) $(OBJS) $(LIBFT) -lreadline -L$(LIBFT_DIR) -lft
+
+%.o: %.c
+	cc $(CFLAGS) -c $< -o $@
+
+$(LIBFT):
+	$(MAKE) -C $(LIBFT_DIR)
+
+clean:
+	rm -f $(OBJS)
+	$(MAKE) -C $(LIBFT_DIR) clean
+ 
+fclean: clean
+	rm -f $(NAME)
+	rm -f $(LIBFT)
+
+re: fclean all
