@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 09:51:35 by ixu               #+#    #+#             */
-/*   Updated: 2024/02/09 11:11:14 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/09 19:26:08 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,25 @@ void	validate_args(int argc)
 
 int	main(int argc, char **argv, char **envp)
 {
+	char	*buf; // could be in a struct
+
 	(void)argv;
 	(void)envp;
 	validate_args(argc);
-	printf("valid argument!\n");
+	buf = readline(">> ");
+	while (buf != NULL) 
+	{
+		if (ft_strlen(buf) > 0)
+			add_history(buf);
+		printf("[%s]\n", buf); // replace this line with parsing func
+		if (ft_strcmp(buf, "exit") == 0) // exit could be a boolean in a struct (parsing part to detect exit)
+		{
+			free(buf);
+			break ;
+		}
+		free(buf); // where to free buf in different cases?
+		buf = readline(">> ");
+	}
+	clear_history();
 	exit(EXIT_SUCCESS);
 }
