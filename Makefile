@@ -6,54 +6,41 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
-#    Updated: 2024/02/09 11:09:15 by ixu              ###   ########.fr        #
+#    Updated: 2024/02/09 14:10:44 by ixu              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-SRCS = main.c \
-
-# SRCS_BONUS = 
-
-OBJS = $(SRCS:.c=.o)
-
-# OBJS_BONUS = $(SRCS_BONUS:.c=.o)
 
 NAME = minishell
 
 LIBFT_DIR = libft
 
+RL_DIR = ~/.brew/opt/readline/lib
+
+LIBFT = $(LIBFT_DIR)/libft.a
+
 CFLAGS = -Wall -Wextra -Werror
+
+SRCS = main.c
+
+OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(MAKE) -C libft
-	cc -o $(NAME) $(OBJS) -L$(LIBFT_DIR) -lft
-
-# .base:
-# 	rm -f .bonus
-# 	touch .base
-# 
-# bonus: .bonus
-# 
-# .bonus: $(OBJS_BONUS)
-# 	$(MAKE) -C libft
-# 	cc -o $(NAME) $(OBJS_BONUS) -L$(LIBFT_DIR) -lft
-# 	rm -f .base
-# 	touch .bonus
+$(NAME): $(OBJS) $(LIBFT)
+	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -L$(LIBFT_DIR) -lft
 
 %.o: %.c
 	cc $(CFLAGS) -c $< -o $@
 
+$(LIBFT):
+	$(MAKE) -C $(LIBFT_DIR)
+
 clean:
 	rm -f $(OBJS)
-	# rm -f $(OBJS) $(OBJS_BONUS)
-	$(MAKE) -C libft clean
-	# rm -f .bonus
-	# rm -f .base
+	$(MAKE) -C $(LIBFT_DIR) clean
  
 fclean: clean
 	rm -f $(NAME)
-	rm -f libft/libft.a
+	rm -f $(LIBFT)
 
 re: fclean all
