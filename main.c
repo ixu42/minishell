@@ -56,6 +56,6 @@ int	main(int argc, char **argv, char **envp)
 		free(buf); // where to free buf in different cases?
 		buf = readline(">> ");
 	}
-	clear_history();
+	rl_clear_history();
 	exit(EXIT_SUCCESS);
 }
