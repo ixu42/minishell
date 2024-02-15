@@ -80,19 +80,24 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	data.envs = copy_env(envp); // free data.envs before exit
 	validate_args(argc);
-	data.buf = readline("\033[0;32m>> \033[0m"); // free data.buf before exit
+	data.buf = readline("\033[0;32mLiteShell$ \033[0m"); // free data.buf before exit
 	while (data.buf != NULL) 
 	{
 		if (ft_strlen(data.buf) > 0)
 			add_history(data.buf);
-		printf("[%s]\n", data.buf); // replace this line with parsing func
 		if (ft_strcmp(data.buf, "exit") == 0) // for testing purpose, to be removed later
 		{
 			free(data.buf);
+			ft_putstr_fd("\033[0;34mBye!\n\033[0m", STDOUT_FILENO);
 			break ;
 		}
+		if (ft_strcmp(data.buf, "error") == 0) // for testing purpose, to be removed later
+			ft_putstr_fd("\033[0;31mLiteShell: [error message here]\n\033[0m", STDERR_FILENO);
+		else
+			printf("[%s]\n", data.buf);
+		// handling buf (parsing + execution)
 		free(data.buf);
-		data.buf = readline("\033[0;32m>> \033[0m");
+		data.buf = readline("\033[0;32mLiteShell$ \033[0m");
 	}
 	rl_clear_history();
 	exit(EXIT_SUCCESS);
