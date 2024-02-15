@@ -31,6 +31,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 
 #define MAXARGS 10
 
+# define ERR_MALLOC "malloc error"
 # define ERR_PIPE "pipe error"
 # define ERR_FORK "fork error"
 # define ERR_WAITPID "waitpid error"
