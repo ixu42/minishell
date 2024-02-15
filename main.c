@@ -35,26 +35,76 @@ void	validate_args(int argc)
 	}
 }
 
+int	arr_len(char **arr)
+{
+	int	len;
+
+	len = 0;
+	while (arr[len] != NULL)
+		len++;
+	return (len);
+}
+
+void	free_arr(char **arr, int curr_index)
+{
+	int	i;
+
+	i = -1;
+	while (++i <= curr_index)
+		free(arr[i]);
+	free(arr);
+	arr = NULL;
+}
+
+char	**copy_env(char **envp)
+{
+	int		len;
+	char	**envs;
+	int		i;
+	int		j;
+
+	len = arr_len(envp);
+	envs = (char **)malloc(sizeof(char *) * (len + 1));
+	if (envs == NULL)
+		return (NULL);
+	i = -1;
+	while (++i < len)
+	{
+		envs[i] = (char *)malloc(sizeof(char) * ((int)ft_strlen(envp[i]) + 1));
+		if (envs[i] == NULL)
+		{
+			free_arr(envs, i);
+			return (NULL);
+		}
+		j = -1;
+		while (++j < (int)ft_strlen(envp[i]))
+			envs[i][j] = envp[i][j];
+		envs[i][j] = '\0';
+	}
+	envs[i] = NULL;
+	return (envs);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	char	*buf; // could be in a struct
+	t_data	data;
 
 	(void)argv;
-	(void)envp;
+	data.envs = copy_env(envp); // free data.envs before exit
 	validate_args(argc);
-	buf = readline(">> ");
-	while (buf != NULL) 
+	data.buf = readline("\033[0;32m>> \033[0m"); // free data.buf before exit
+	while (data.buf != NULL) 
 	{
-		if (ft_strlen(buf) > 0)
-			add_history(buf);
-		printf("[%s]\n", buf); // replace this line with parsing func
-		if (ft_strcmp(buf, "exit") == 0) // exit could be a boolean in a struct (parsing part to detect exit)
+		if (ft_strlen(data.buf) > 0)
+			add_history(data.buf);
+		printf("[%s]\n", data.buf); // replace this line with parsing func
+		if (ft_strcmp(data.buf, "exit") == 0) // for testing purpose, to be removed later
 		{
-			free(buf);
+			free(data.buf);
 			break ;
 		}
-		free(buf); // where to free buf in different cases?
-		buf = readline(">> ");
+		free(data.buf);
+		data.buf = readline("\033[0;32m>> \033[0m");
 	}
 	rl_clear_history();
 	exit(EXIT_SUCCESS);
