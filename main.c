@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/09 09:51:35 by ixu               #+#    #+#             */
-/*   Updated: 2024/02/09 19:26:08 by ixu              ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 void	print_error(char *err_msg)
@@ -66,7 +54,7 @@ char	**copy_env(char **envp)
 	len = arr_len(envp);
 	envs = (char **)malloc(sizeof(char *) * (len + 1));
 	if (envs == NULL)
-		return (NULL);
+		print_error(ERR_MALLOC);
 	i = -1;
 	while (++i < len)
 	{
@@ -74,7 +62,7 @@ char	**copy_env(char **envp)
 		if (envs[i] == NULL)
 		{
 			free_arr(envs, i);
-			return (NULL);
+			print_error(ERR_MALLOC);
 		}
 		j = -1;
 		while (++j < (int)ft_strlen(envp[i]))
