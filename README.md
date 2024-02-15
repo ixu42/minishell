@@ -67,3 +67,25 @@ cat | cat | ls
 - error handling to be agreed and improved
 - norminette compliance, incl. 42 header
 - if scope of function is limited to the file, define it as static function
+
+## ANSI escape codes
+In ANSI escape codes, color numbers are used to represent different colors for text and background. Here's a basic breakdown:
+
+### Foreground (text) colors
+30: Black
+31: Red
+32: Green
+33: Yellow
+34: Blue
+35: Magenta
+36: Cyan
+37: White
+### Background colors
+40: Black
+41: Red
+42: Green
+43: Yellow
+44: Blue
+45: Magenta
+46: Cyan
+47: White
