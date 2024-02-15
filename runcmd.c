@@ -40,12 +40,12 @@ void	runcmd(t_cmd *cmd, t_data *data)
 	int				status;
 
 	if (cmd == NULL)
-		exit(EXIT_FAILURE); // free heap allocated memory? why would this occur?
+		exit(); // exit code? free heap allocated memory? why would this occur?
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
 		if (ecmd->argv[0] == NULL)
-			exit(EXIT_FAILURE); // free heap allocated memory? why would this occur?
+			exit(); // exit code? free heap allocated memory? why would this occur?
 		// expansion
 		execve(ecmd->argv[0], ecmd->argv, data->envp);
 		panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
@@ -54,14 +54,14 @@ void	runcmd(t_cmd *cmd, t_data *data)
 	{
 		rcmd = (t_redircmd *)cmd;
 		close(rcmd->fd);
-		if(open(rcmd->file, rcmd->mode) < 0)
+		if (open(rcmd->file, rcmd->mode) < 0)
 			panic(rcmd->file, data, EXIT_FAILURE);
 		runcmd(rcmd->cmd);
 	}
 	else if (cmd->type == LIST) // &&, ||, exit code to be considered
 	{
 		lcmd = (t_listcmd *)cmd;
-		if(fork1(data) == 0)
+		if (fork1(data) == 0)
 			runcmd(lcmd->left);
 		wait(NULL);
 		runcmd(lcmd->right);
@@ -69,10 +69,10 @@ void	runcmd(t_cmd *cmd, t_data *data)
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd *)cmd;
-		if(pipe(pipe_fd) < 0)
+		if (pipe(pipe_fd) < 0)
 			panic(ERR_PIPE, data, EXIT_FAILURE);
 		pid1 = fork1(data);
-		if(pid1 == 0)
+		if (pid1 == 0)
 		{
 			close(1);
 			dup(pipe_fd[1]);
@@ -81,7 +81,7 @@ void	runcmd(t_cmd *cmd, t_data *data)
 			runcmd(pcmd->left);
 		}
 		pid2 = fork1(data);
-		if(pid2 == 0)
+		if (pid2 == 0)
 		{
 			close(0);
 			dup(pipe_fd[0]);
