@@ -65,6 +65,7 @@ static void	free_arr(char **arr, int k)
 		i++;
 	}
 	free(arr);
+	arr = NULL;
 }
 
 static char	**fill_arr(char const **ptr_to_s, char c, char **arr, int *ptr_to_k)
