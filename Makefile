@@ -6,7 +6,7 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
-#    Updated: 2024/02/09 14:10:44 by ixu              ###   ########.fr        #
+#    Updated: 2024/02/16 11:26:51 by ixu              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,9 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 CFLAGS = -Wall -Wextra -Werror
 
-SRCS = main.c
+SRCS = main.c \
+		parcer-main.c \
+		runcmd.c
 
 OBJS = $(SRCS:.c=.o)
 
