@@ -33,7 +33,7 @@ int	arr_len(char **arr)
 	return (len);
 }
 
-void	free_arr(char **arr, int curr_index)
+void	free_allocated_memory(char **arr, int curr_index)
 {
 	int	i;
 
@@ -61,7 +61,7 @@ char	**copy_env(char **envp)
 		envs[i] = (char *)malloc(sizeof(char) * ((int)ft_strlen(envp[i]) + 1));
 		if (envs[i] == NULL)
 		{
-			free_arr(envs, i);
+			free_allocated_memory(envs, i);
 			print_error(ERR_MALLOC);
 		}
 		j = -1;
@@ -71,6 +71,17 @@ char	**copy_env(char **envp)
 	}
 	envs[i] = NULL;
 	return (envs);
+}
+
+void	free_arr(char **arr)
+{
+	int	i;
+
+	i = -1;
+	while (arr[++i] != NULL)
+		free(arr[i]);
+	free(arr);
+	arr = NULL;
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -87,7 +98,6 @@ int	main(int argc, char **argv, char **envp)
 			add_history(data.buf);
 		if (ft_strcmp(data.buf, "exit") == 0) // for testing purpose, to be removed later
 		{
-			free(data.buf);
 			ft_putstr_fd("\033[0;34mBye!\n\033[0m", STDOUT_FILENO);
 			break ;
 		}
@@ -99,6 +109,8 @@ int	main(int argc, char **argv, char **envp)
 		free(data.buf);
 		data.buf = readline("\033[0;32mLiteShell$ \033[0m");
 	}
+	free(data.buf);
+	free_arr(data.envs);
 	rl_clear_history();
 	exit(EXIT_SUCCESS);
 }
