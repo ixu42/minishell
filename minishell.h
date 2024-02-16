@@ -12,10 +12,13 @@
 STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # include <unistd.h>
 
+// open
+# include <fcntl.h>
+
 // EXIT_FAILURE, EXIT_SUCCESS, NULL
 # include <stdlib.h>
 
-// wait
+// waitpid, wait
 # include <sys/wait.h>
 
 // macros for (error) messages
@@ -41,7 +44,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 typedef struct s_data
 {
 	char	*buf;
-	char	**envs;
+	char	**envp;
 }	t_data;
 
 typedef struct s_cmd
@@ -79,5 +82,17 @@ typedef struct s_listcmd
 	t_cmd	*left;
 	t_cmd	*right;
 }	t_listcmd;
+
+typedef struct s_backcmd
+{
+        int type;
+        t_cmd *cmd;
+}       t_backcmd;
+
+char	**copy_env(char **envp);
+int		fork1(t_data *data);
+void	panic(char *err_msg, t_data *data, int exit_code);
+t_cmd	*parsecmd(char *s);
+void	runcmd(t_cmd *cmd, t_data *data);
 
 #endif

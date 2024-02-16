@@ -15,16 +15,19 @@ void	free_data(t_data *data)
 	int	i;
 
 	i = -1;
-	while (data->envs[++i] != NULL)
-		free(data->envs[i]);
+	while (data->envp[++i] != NULL)
+		free(data->envp[i]);
 	free(data->buf);
 }
 
 void	panic(char *err_msg, t_data *data, int exit_code)
 {
-	ft_putendl_fd(err_msg, STDERR_FILENO);
+	if (exit_code == EXIT_CMD_NOT_FOUND)
+		dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s: command not found\n\033[0m", err_msg);
+	else
+		dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s\n\033[0m", err_msg);
 	free_data(data);
-	// free tree nodes!
+	// free tree nodes?
 	exit(exit_code);
 }
 
@@ -40,15 +43,21 @@ void	runcmd(t_cmd *cmd, t_data *data)
 	int				status;
 
 	if (cmd == NULL)
-		exit(); // exit code? free heap allocated memory? why would this occur?
+		exit(1); // exit code? free heap allocated memory? why would this occur?
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
 		if (ecmd->argv[0] == NULL)
-			exit(); // exit code? free heap allocated memory? why would this occur?
+			exit(1); // exit code? free heap allocated memory? why would this occur?
 		// expansion
-		execve(ecmd->argv[0], ecmd->argv, data->envp);
-		panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
+		pid1 = fork1(data);
+		if (pid1 == 0)
+		{
+			execve(ecmd->argv[0], ecmd->argv, data->envp);
+			panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
+		}
+		if (waitpid(pid1, &status, 0) == -1)
+			panic(ERR_WAITPID, data, EXIT_FAILURE);
 	}
 	else if (cmd->type == REDIR)
 	{
@@ -56,15 +65,15 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		close(rcmd->fd);
 		if (open(rcmd->file, rcmd->mode) < 0)
 			panic(rcmd->file, data, EXIT_FAILURE);
-		runcmd(rcmd->cmd);
+		runcmd(rcmd->cmd, data);
 	}
 	else if (cmd->type == LIST) // &&, ||, exit code to be considered
 	{
 		lcmd = (t_listcmd *)cmd;
 		if (fork1(data) == 0)
-			runcmd(lcmd->left);
+			runcmd(lcmd->left, data);
 		wait(NULL);
-		runcmd(lcmd->right);
+		runcmd(lcmd->right, data);
 	}
 	else if (cmd->type == PIPE)
 	{
@@ -78,7 +87,7 @@ void	runcmd(t_cmd *cmd, t_data *data)
 			dup(pipe_fd[1]);
 			close(pipe_fd[0]);
 			close(pipe_fd[1]);
-			runcmd(pcmd->left);
+			runcmd(pcmd->left, data);
 		}
 		pid2 = fork1(data);
 		if (pid2 == 0)
@@ -87,7 +96,7 @@ void	runcmd(t_cmd *cmd, t_data *data)
 			dup(pipe_fd[0]);
 			close(pipe_fd[0]);
 			close(pipe_fd[1]);
-			runcmd(pcmd->right);
+			runcmd(pcmd->right, data);
 		}
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);

@@ -87,9 +87,11 @@ void	free_arr(char **arr)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
+	int 	pid;
+	int 	status;
 
 	(void)argv;
-	data.envs = copy_env(envp); // free data.envs before exit
+	data.envp = copy_env(envp); // free data.envp before exit
 	validate_args(argc);
 	data.buf = readline("\033[0;32mLiteShell$ \033[0m"); // free data.buf before exit
 	while (data.buf != NULL) 
@@ -101,16 +103,20 @@ int	main(int argc, char **argv, char **envp)
 			ft_putstr_fd("\033[0;34mBye!\n\033[0m", STDOUT_FILENO);
 			break ;
 		}
-		if (ft_strcmp(data.buf, "error") == 0) // for testing purpose, to be removed later
-			ft_putstr_fd("\033[0;31mLiteShell: [error message here]\n\033[0m", STDERR_FILENO);
-		else
-			printf("[%s]\n", data.buf);
 		// handling buf (parsing + execution)
+		// test parsing/execution funcs here!
+		// ------
+		pid = fork1(&data);
+		if (pid == 0)
+			runcmd(parsecmd(data.buf), &data);
+		if (waitpid(pid, &status, 0) == -1) // status to be used
+			panic(ERR_WAITPID, &data, EXIT_FAILURE);
+		// ------
 		free(data.buf);
 		data.buf = readline("\033[0;32mLiteShell$ \033[0m");
 	}
 	free(data.buf);
-	free_arr(data.envs);
+	free_arr(data.envp);
 	rl_clear_history();
 	exit(EXIT_SUCCESS);
 }
