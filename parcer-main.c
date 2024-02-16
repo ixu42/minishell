@@ -1,9 +1,4 @@
-//#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/wait.h>
 //#include <linux/limits.h>
-#include "libft/libft.h"
 #include "minishell.h"
 
 #define WHITESPACE " \t\r\n\v"

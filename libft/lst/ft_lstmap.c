@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 21:04:58 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/11 21:04:58 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:55:52 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {

@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/17 00:23:46 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/17 00:23:46 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:57:20 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 // a sep is deemed as a valid sep if it's outside any pair of quotes
 

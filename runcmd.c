@@ -23,9 +23,9 @@ void	free_data(t_data *data)
 void	panic(char *err_msg, t_data *data, int exit_code)
 {
 	if (exit_code == EXIT_CMD_NOT_FOUND)
-		dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s: command not found\n\033[0m", err_msg);
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s: command not found\n\033[0m", err_msg);
 	else
-		dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s\n\033[0m", err_msg);
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s\n\033[0m", err_msg);
 	free_data(data);
 	// free tree nodes?
 	exit(exit_code);

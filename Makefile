@@ -33,8 +33,6 @@ all: $(NAME)
 $(NAME): $(OBJS) $(LIBFT)
 	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -I ~/.brew/opt/readline/include -L ~/.brew/opt/readline/lib -L$(LIBFT_DIR) -lft
 
-
-
 %.o: %.c
 	cc -c $< -o $@ -I ~/.brew/opt/readline/include
 	#cc $(CFLAGS) -c $< -o $@ -I ~/.brew/opt/readline/include
@@ -44,10 +42,9 @@ $(LIBFT):
 
 clean:
 	rm -f $(OBJS)
-	$(MAKE) -C $(LIBFT_DIR) clean
+	$(MAKE) -C $(LIBFT_DIR) fclean
  
 fclean: clean
 	rm -f $(NAME)
-	rm -f $(LIBFT)
 
 re: fclean all

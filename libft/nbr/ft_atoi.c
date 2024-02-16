@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 17:59:06 by ixu               #+#    #+#             */
-/*   Updated: 2023/11/07 14:15:01 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:57:00 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 static int	convert(int is_neg, long *ptr_to_result, const char *str, int i)
 {

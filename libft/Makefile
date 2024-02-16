@@ -3,68 +3,92 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ixu <ixu@student.42.fr>                    +#+  +:+       +#+         #
+#    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/23 15:42:20 by ixu               #+#    #+#              #
-#    Updated: 2023/11/08 15:12:20 by ixu              ###   ########.fr        #
+#    Updated: 2024/02/17 17:14:42 by ixu              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SOURCES := 	nbr/ft_atoi.c \
-			nbr/ft_itoa.c \
-			\
-			mem/ft_bzero.c \
-			mem/ft_calloc.c \
-			mem/ft_memchr.c \
-			mem/ft_memcmp.c \
-			mem/ft_memcpy.c \
-			mem/ft_memmove.c \
-			mem/ft_memset.c \
-			\
-			char/ft_isalnum.c \
-			char/ft_isalpha.c \
-			char/ft_isascii.c \
-			char/ft_isdigit.c \
-			char/ft_isprint.c \
-			char/ft_tolower.c \
-			char/ft_toupper.c \
-			\
-			str/ft_split.c \
-			str/ft_split_charset.c \
-			str/ft_split_pipex.c \
-			str/ft_strchr.c \
-			str/ft_strdup.c \
-			str/ft_striteri.c \
-			str/ft_strjoin.c \
-			str/ft_strlcat.c \
-			str/ft_strlcpy.c \
-			str/ft_strlen.c \
-			str/ft_strmapi.c \
-			str/ft_strcmp.c \
-			str/ft_strncmp.c \
-			str/ft_strnstr.c \
-			str/ft_strrchr.c \
-			str/ft_strtrim.c \
-			str/ft_substr.c \
-			\
-			file/ft_putchar_fd.c \
-			file/ft_putendl_fd.c \
-			file/ft_putnbr_fd.c \
-			file/ft_putstr_fd.c \
-			file/get_next_line.c \
-			file/get_next_line_utils.c \
-			\
-			lst/ft_lstnew.c \
-			lst/ft_lstadd_front.c \
-			lst/ft_lstsize.c \
-			lst/ft_lstlast.c \
-			lst/ft_lstadd_back.c \
-			lst/ft_lstdelone.c \
-			lst/ft_lstclear.c \
-			lst/ft_lstiter.c \
-			lst/ft_lstmap.c
+# Directory locations
+NBR_DIR = nbr/
+MEM_DIR = mem/
+CHAR_DIR = char/
+STR_DIR = str/
+FILE_DIR = file/
+LIST_DIR = lst/
+FT_DPRINTF_DIR = ft_dprintf/
+LIBFT_DIR = libft/
 
-OBJECTS := $(SOURCES:.c=.o)
+# Source files names by folders
+NBR_FILES = ft_atoi.c \
+			ft_itoa.c
+MEM_FILES = ft_bzero.c \
+			ft_calloc.c \
+			ft_memchr.c \
+			ft_memcmp.c \
+			ft_memcpy.c \
+			ft_memmove.c \
+			ft_memset.c
+CHAR_FILES = ft_isalnum.c \
+			ft_isalpha.c \
+			ft_isascii.c \
+			ft_isdigit.c \
+			ft_isprint.c \
+			ft_tolower.c \
+			ft_toupper.c
+STR_FILES = ft_split.c \
+			ft_split_charset.c \
+			ft_split_pipex.c \
+			ft_strchr.c \
+			ft_strdup.c \
+			ft_striteri.c \
+			ft_strjoin.c \
+			ft_strlcat.c \
+			ft_strlcpy.c \
+			ft_strlen.c \
+			ft_strmapi.c \
+			ft_strcmp.c \
+			ft_strncmp.c \
+			ft_strnstr.c \
+			ft_strrchr.c \
+			ft_strtrim.c \
+			ft_substr.c
+FILE_FILES = ft_putchar_fd.c \
+			ft_putendl_fd.c \
+			ft_putnbr_fd.c \
+			ft_putstr_fd.c \
+			get_next_line.c \
+			get_next_line_utils.c
+LIST_FILES = ft_lstnew.c \
+			ft_lstadd_front.c \
+			ft_lstsize.c \
+			ft_lstlast.c \
+			ft_lstadd_back.c \
+			ft_lstdelone.c \
+			ft_lstclear.c \
+			ft_lstiter.c \
+			ft_lstmap.c
+FT_DPRINTF_FILES = ft_dprintf.c \
+					flags.c \
+					print_chars.c \
+					print_str.c \
+					print_dec.c \
+					print_udec.c \
+					print_hex.c \
+					print_ptr.c \
+					print_utils.c \
+					ft_printf_utils.c
+
+SRCS = $(addprefix $(NBR_DIR), $(NBR_FILES)) \
+		$(addprefix $(MEM_DIR), $(MEM_FILES)) \
+		$(addprefix $(CHAR_DIR), $(CHAR_FILES)) \
+		$(addprefix $(STR_DIR), $(STR_FILES)) \
+		$(addprefix $(FILE_DIR), $(FILE_FILES)) \
+		$(addprefix $(LIST_DIR), $(LIST_FILES)) \
+		$(addprefix $(FT_DPRINTF_DIR), $(FT_DPRINTF_FILES))
+
+OBJS := $(SRCS:.c=.o)
 
 NAME = libft.a
 
@@ -72,14 +96,14 @@ CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
-$(NAME): $(OBJECTS)
-	ar rcs $(NAME) $(OBJECTS)
+$(NAME): $(OBJS)
+	ar rcs $(NAME) $(OBJS)
 
 %.o: %.c
 	cc $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f $(OBJS)
  
 fclean: clean
 	rm -f $(NAME)

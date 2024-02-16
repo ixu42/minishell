@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 11:14:51 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/11 11:14:51 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:57:40 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 int	ft_strcmp(const char *s1, const char *s2)
 {

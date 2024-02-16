@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/07 00:58:57 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/07 00:58:57 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:57:27 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 static char	**split_empty_str(void)
 {

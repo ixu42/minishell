@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../get_next_line.h"
+#include "../include/get_next_line.h"
 
 static int	create_list(t_lst **list, int fd)
 {

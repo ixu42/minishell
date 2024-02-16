@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 21:14:22 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/11 21:14:22 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:54:18 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../get_next_line.h"
+#include "../include/get_next_line.h"
 
 int	has_newline_char(t_lst *list)
 {

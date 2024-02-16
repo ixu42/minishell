@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 21:04:26 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/11 21:04:26 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:55:41 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 void	ft_lstiter(t_list *lst, void (*f)(void *))
 {
