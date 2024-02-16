@@ -6,7 +6,7 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
-#    Updated: 2024/02/16 11:26:51 by ixu              ###   ########.fr        #
+#    Updated: 2024/02/16 15:41:58 by apimikov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,11 +28,16 @@ OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
+#$(NAME): $(OBJS) $(LIBFT)
+#	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -L$(LIBFT_DIR) -lft
 $(NAME): $(OBJS) $(LIBFT)
-	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -L$(LIBFT_DIR) -lft
+	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -I ~/.brew/opt/readline/include -L ~/.brew/opt/readline/lib -L$(LIBFT_DIR) -lft
+
+
 
 %.o: %.c
-	cc $(CFLAGS) -c $< -o $@
+	cc -c $< -o $@ -I ~/.brew/opt/readline/include
+	#cc $(CFLAGS) -c $< -o $@ -I ~/.brew/opt/readline/include
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFT_DIR)
