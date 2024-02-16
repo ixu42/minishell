@@ -35,31 +35,25 @@ void	runcmd(t_cmd *cmd, t_data *data)
 {
 	int				pipe_fd[2];
 	t_execcmd		*ecmd;
-	t_listcmd		*lcmd;
+	// t_listcmd		*lcmd;
 	t_pipecmd		*pcmd;
-	t_redircmd		*rcmd;
+	// t_redircmd		*rcmd;
 	int				pid1;
 	int				pid2;
 	int				status;
 
 	if (cmd == NULL)
-		exit(1); // exit code? free heap allocated memory? why would this occur?
+		exit(EXIT_FAILURE); // exit code? free heap allocated memory? why would this occur?
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
 		if (ecmd->argv[0] == NULL)
-			exit(1); // exit code? free heap allocated memory? why would this occur?
+			exit(EXIT_FAILURE); // exit code? free heap allocated memory? why would this occur?
 		// expansion
-		pid1 = fork1(data);
-		if (pid1 == 0)
-		{
-			execve(ecmd->argv[0], ecmd->argv, data->envp);
-			panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
-		}
-		if (waitpid(pid1, &status, 0) == -1)
-			panic(ERR_WAITPID, data, EXIT_FAILURE);
+		execve(ecmd->argv[0], ecmd->argv, data->envp);
+		panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
 	}
-	else if (cmd->type == REDIR)
+	/* else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd *)cmd;
 		close(rcmd->fd);
@@ -74,7 +68,7 @@ void	runcmd(t_cmd *cmd, t_data *data)
 			runcmd(lcmd->left, data);
 		wait(NULL);
 		runcmd(lcmd->right, data);
-	}
+	} */
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd *)cmd;
