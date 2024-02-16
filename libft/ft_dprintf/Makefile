@@ -6,12 +6,12 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/21 10:44:52 by ixu               #+#    #+#              #
-#    Updated: 2024/02/17 17:13:29 by ixu              ###   ########.fr        #
+#    Updated: 2024/02/18 18:19:30 by ixu              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # Name of the program
-NAME = libftprintf.a
+NAME = libftdprintf.a
 
 # Directory locations
 LIBFT_DIR = libft/
