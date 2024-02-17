@@ -34,6 +34,49 @@ void	panic(char *err_msg, t_data *data, int exit_code)
 	exit(exit_code);
 }
 
+int	echo(char **argv) // the expanded argv
+{
+	int	add_new_line;
+	int	start_index;
+	int	i;
+
+	add_new_line = 0;
+	start_index = 1;
+	if (argv[1] != NULL && ft_strcmp(argv[1], "-n") == 0)
+		start_index++;
+	else
+		add_new_line = 1;
+	i = start_index;
+	while (argv[i] != NULL)
+	{
+		if (printf("%s", argv[i]) < 0)
+			return (1);
+		i++;
+		if (argv[i] != NULL)
+		{
+			if (printf(" ") < 0)
+				return (1);
+		}
+	}
+	if (add_new_line)
+	{
+		if (printf("\n") < 0)
+			return (1);
+	}
+	return (0);
+}
+
+// if the cmd is a builtin, runs such builtin and return 1, otherwise 0 is returned
+
+int run_builtin(char **argv) // the expanded argv
+{
+	if (ft_strcmp(argv[0], "echo") == 0)
+		echo(argv);
+	else
+		return (0);
+	return (1);
+}
+
 void	runcmd(t_cmd *cmd, t_data *data)
 {
 	int				pipe_fd[2];
@@ -53,8 +96,16 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		if (ecmd->argv[0] == NULL)
 			exit(1); // exit code? free heap allocated memory? why would this occur?
 		// expansion
-		execve(ecmd->argv[0], ecmd->argv, data->envp);
-		panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
+		// for (int i = 0; ecmd->argv[i] != NULL; i++)
+		// 	printf("ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
+		if (run_builtin(ecmd->argv) == 0)
+		{
+			pid1 = fork1(data);
+			if (pid1 == 0)
+				execve(ecmd->argv[0], ecmd->argv, data->envp);
+			if (waitpid(pid1, &status, 0) == -1)
+				panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
+		}
 	}
 	else if (cmd->type == REDIR)
 	{

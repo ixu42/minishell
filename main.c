@@ -106,11 +106,7 @@ int	main(int argc, char **argv, char **envp)
 		// handling buf (parsing + execution)
 		// test parsing/execution funcs here!
 		// ------
-		pid = fork1(&data);
-		if (pid == 0)
-			runcmd(parsecmd(data.buf), &data);
-		if (waitpid(pid, &status, 0) == -1) // status to be used
-			panic(ERR_WAITPID, &data, EXIT_FAILURE);
+		runcmd(parsecmd(data.buf), &data);
 		// ------
 		free(data.buf);
 		data.buf = readline("\033[0;32mLiteShell$ \033[0m");
