@@ -26,15 +26,15 @@ void	free_data(t_data *data)
 void	panic(char *err_msg, t_data *data, int exit_code)
 {
 	if (exit_code == EXIT_CMD_NOT_FOUND)
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s: command not found\n\033[0m", err_msg);
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s: command not found\n\033[0m", err_msg); // protect
 	else
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s\n\033[0m", err_msg);
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s\n\033[0m", err_msg); // protect
 	free_data(data);
 	// free tree nodes?
 	exit(exit_code);
 }
 
-int	echo(char **argv) // the expanded argv
+int	exec_echo(char **argv) // the expanded argv
 {
 	int	add_new_line;
 	int	start_index;
@@ -50,7 +50,7 @@ int	echo(char **argv) // the expanded argv
 	while (argv[i] != NULL)
 	{
 		if (printf("%s", argv[i]) < 0)
-			return (1);
+			return (1); // can panic be called (exit curr process)
 		i++;
 		if (argv[i] != NULL)
 		{
@@ -66,15 +66,52 @@ int	echo(char **argv) // the expanded argv
 	return (0);
 }
 
-// if the cmd is a builtin, runs such builtin and return 1, otherwise 0 is returned
+/* Exit the shell, returning a status of n to the shell’s parent. 
+If n is omitted, the exit status is that of the last command executed */
 
-int run_builtin(char **argv) // the expanded argv
+int	exec_exit(char **argv) // the expanded argv
+{
+	if (argv[1] == NULL) // n is omitted
+	{
+		ft_dprintf(STDOUT_FILENO, "\033[0;34mBye!\n\033[0m"); // protect; any message from bash on MacOS?
+		exit(0);
+	}
+	else if (argv[2] != NULL) // too many args
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: exit: too many arguments\n\033[0m"); // protect
+	else
+	{
+		ft_dprintf(STDOUT_FILENO, "\033[0;34mBye!\n\033[0m"); // protect; any message from bash on MacOS?
+		exit(ft_atoi(argv[1]));
+	}
+}
+
+int	is_builtin(char **argv, t_data **data) // the expanded argv
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
-		echo(argv);
+		(*data)->builtin = ECHO;
+	else if (ft_strcmp(argv[0], "cd") == 0)
+		(*data)->builtin = CD;
+	else if (ft_strcmp(argv[0], "pwd") == 0)
+		(*data)->builtin = PWD;
+	else if (ft_strcmp(argv[0], "export") == 0)
+		(*data)->builtin = EXPORT;
+	else if (ft_strcmp(argv[0], "unset") == 0)
+		(*data)->builtin = UNSET;
+	else if (ft_strcmp(argv[0], "env") == 0)
+		(*data)->builtin = ENV;
+	else if (ft_strcmp(argv[0], "exit") == 0)
+		(*data)->builtin = EXIT;
 	else
 		return (0);
 	return (1);
+}
+
+int	run_builtin(char **argv, t_data *data) // the expanded argv
+{
+	if (data->builtin == ECHO)
+		exec_echo(argv);
+	else if (data->builtin == EXIT)
+		exec_exit(argv);
 }
 
 void	runcmd(t_cmd *cmd, t_data *data)
@@ -98,7 +135,9 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		// expansion
 		// for (int i = 0; ecmd->argv[i] != NULL; i++)
 		// 	printf("ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
-		if (run_builtin(ecmd->argv) == 0)
+		if (is_builtin(ecmd->argv, &data))
+			run_builtin(ecmd->argv, data);
+		else
 		{
 			pid1 = fork1(data);
 			if (pid1 == 0)

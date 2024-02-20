@@ -94,15 +94,11 @@ int	main(int argc, char **argv, char **envp)
 	data.envp = copy_env(envp); // free data.envp before exit
 	validate_args(argc);
 	data.buf = readline("\033[0;32mLiteShell$ \033[0m"); // free data.buf before exit
+	data.builtin = 0;
 	while (data.buf != NULL) 
 	{
 		if (ft_strlen(data.buf) > 0)
 			add_history(data.buf);
-		if (ft_strcmp(data.buf, "exit") == 0) // for testing purpose, to be removed later
-		{
-			ft_putstr_fd("\033[0;34mBye!\n\033[0m", STDOUT_FILENO);
-			break ;
-		}
 		// handling buf (parsing + execution)
 		// test parsing/execution funcs here!
 		// ------

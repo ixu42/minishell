@@ -49,22 +49,34 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 
 typedef enum e_token
 {
-    WORD,
-    RED_IN,
-    HEREDOC,
-    RED_OUT,
-    RED_OUT_APP,
-    PIPE_TOK,
-    OR_TOK,
-    AND_TOK,
-    LPAR,
-    RPAR
+	WORD,
+	RED_IN,
+	HEREDOC,
+	RED_OUT,
+	RED_OUT_APP,
+	PIPE_TOK,
+	OR_TOK,
+	AND_TOK,
+	LPAR,
+	RPAR
 }   t_token_type;
+
+typedef enum e_builtin
+{
+	ECHO = 1,
+	CD,
+	PWD,
+	EXPORT,
+	UNSET,
+	ENV,
+	EXIT,
+}   t_builtin;
 
 typedef struct s_data
 {
-	char	*buf;
-	char	**envp;
+	char		*buf;
+	char		**envp;
+	t_builtin	builtin;
 }	t_data;
 
 typedef struct s_cmd
