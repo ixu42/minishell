@@ -1,20 +1,9 @@
-//#include <unistd.h>
-// #include <stdio.h>
-// #include <fcntl.h>
-// #include <sys/wait.h>
-// #include <linux/limits.h>
-// #include "libft/libft.h"
 #include "minishell.h"
 
 #define WHITESPACE " \t\r\n\v"
 //#define SYMBOLS  "<>|&()\"\'"
 #define SYMBOLS  "<>|&;()"
-//#ifndef ARG_MAX
-//# define ARG_MAX 100
-//#endif
-// #define MAXARGS 10 redifined in ARG_MAX
-// for testing pupose let us use ARG_MAX = 3 at first
-#define ARG_MAX 3
+//#define MAXARGS 3
 
 int fork1_test(void);  // Fork but panics on failure.
 void panic_test(char*);
@@ -409,8 +398,9 @@ t_cmd	*parseline(char **ps, char *es)
 	    cmd_a = list_cmd(cmd_a, cmd_b, OR_CMD);
 		}
 		else
-			return (cmd_a);
+			break ; //return (cmd_a);
   }
+//  printf("str=%s\n", *ps);
   return (cmd_a);
 }
 
@@ -503,19 +493,21 @@ t_cmd*	parseexec(char **ps, char *es)
       panic_test("syntax tok !=a ");
     cmd->argv[argc] = q;
     cmd->eargv[argc] = eq;
+	// make node t_arg *node
+	// pass q and eq to arg_node maker
     argc++;
-    if (argc >= ARG_MAX)
+    if (argc >= MAXARGS)
       panic_test("too many args");
     temp = parseredirs((t_cmd *)cmd, ps, es);
-		if (temp != (t_cmd *)cmd)
-		{
-			// attach temp to last_node
-			if (last_node != (t_cmd *)cmd)
-				attach_to_node(last_node, temp);
-			else
-				ret = temp;
-			last_node = temp;
-		}
+	if (temp != (t_cmd *)cmd)
+	{
+		// attach temp to last_node
+		if (last_node != (t_cmd *)cmd)
+			attach_to_node(last_node, temp);
+		else
+			ret = temp;
+		last_node = temp;
+	}
   }
   cmd->argv[argc] = 0;
   cmd->eargv[argc] = 0;
