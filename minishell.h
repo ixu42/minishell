@@ -24,6 +24,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 
 // macros for (error) messages
 # define ERR_WRITE "write error"
+# define ERR_PRINTF "printf error"
 # define ERR_ARGS "invalid number of arguments"
 # define USAGE "ex. usage: ./minishell"
 

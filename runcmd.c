@@ -47,18 +47,27 @@ int	exec_echo(char **argv) // the expanded argv
 	while (argv[i] != NULL)
 	{
 		if (printf("%s", argv[i]) < 0)
+		{
+			ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0, %s", ERR_PRINTF);
 			return (1);
+		}
 		i++;
 		if (argv[i] != NULL)
 		{
 			if (printf(" ") < 0)
+			{
+				ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0, %s", ERR_PRINTF);
 				return (1);
+			}
 		}
 	}
 	if (add_new_line)
 	{
 		if (printf("\n") < 0)
+		{
+			ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0, %s", ERR_PRINTF);
 			return (1);
+		}
 	}
 	return (0);
 }
@@ -71,9 +80,48 @@ int	exec_exit(char **argv) // the expanded argv
 	if (argv[1] == NULL) // n is omitted
 		exit(0);
 	else if (argv[2] != NULL) // too many args
+	{
 		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mexit: too many arguments\n"); // protect
+		return (1);
+	}
 	else
 		exit(ft_atoi(argv[1]));
+	return (0);
+}
+
+int	exec_cd(char **argv)
+{
+	if (argv[1] == NULL) // If directory is not supplied, the value of the HOME shell variable is used.
+	{
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mcd: too few arguments\n"); // protect
+		return (1);
+	}
+	else if (argv[2] != NULL) // too many args
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mcd: too many arguments\n"); // protect
+	else
+	{
+		if (chdir(argv[1]) == -1)
+		{
+			ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mcd: ");
+			perror(argv[1]);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+int	exec_pwd(char **argv)
+{
+	char	cwd[1024]; // malloc?
+
+	if (getcwd(cwd, sizeof(cwd)) == NULL) // error msg?
+		return (1);
+	if (printf("%s\n", cwd) < 0)
+	{
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0, %s", ERR_PRINTF);
+		return (1);
+	}
+	return (0);
 }
 
 int	is_builtin(char **argv, t_data **data) // the expanded argv
@@ -101,6 +149,10 @@ int	run_builtin(char **argv, t_data *data) // the expanded argv
 {
 	if (data->builtin == ECHO)
 		return (exec_echo(argv));
+	else if (data->builtin == CD)
+		return (exec_cd(argv));
+	else if (data->builtin == PWD)
+		return (exec_pwd(argv));
 	else if (data->builtin == EXIT)
 		return (exec_exit(argv));
 }
@@ -176,7 +228,7 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 			perror("close"); // protect
 		if (open(rcmd->file, rcmd->mode) == -1)
 			perror("open");
-		runcmd(rcmd->cmd, data, PARENT_PROC);
+		runcmd(rcmd->cmd, data, process);
 	}
 	else if (cmd->type == AND_CMD)
 	{
