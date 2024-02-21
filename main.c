@@ -87,7 +87,7 @@ void	free_arr(char **arr)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
-	int 	pid;
+	t_cmd	*cmd;
 	int 	status;
 
 	(void)argv;
@@ -102,7 +102,9 @@ int	main(int argc, char **argv, char **envp)
 		// handling buf (parsing + execution)
 		// test parsing/execution funcs here!
 		// ------
-		runcmd(parsecmd(data.buf), &data);
+		cmd = parsecmd(data.buf);
+		status = runcmd(cmd, &data, PARENT_PROC);
+		printf("\033[0;35m[status: %d]\033[0m\n", status);
 		// ------
 		free(data.buf);
 		data.buf = readline("\033[0;32mLiteShell$ \033[0m");

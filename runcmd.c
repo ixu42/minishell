@@ -1,7 +1,4 @@
 #include "minishell.h"
-#include <stdio.h>
-
-void	panic(char *err_msg, t_data *data, int exit_code);
 
 int	fork1(t_data *data)
 {
@@ -26,9 +23,9 @@ void	free_data(t_data *data)
 void	panic(char *err_msg, t_data *data, int exit_code)
 {
 	if (exit_code == EXIT_CMD_NOT_FOUND)
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s: command not found\n\033[0m", err_msg); // protect
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0m%s: command not found\n", err_msg); // protect
 	else
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: %s\n\033[0m", err_msg); // protect
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0m%s\n", err_msg); // protect
 	free_data(data);
 	// free tree nodes?
 	exit(exit_code);
@@ -72,17 +69,11 @@ If n is omitted, the exit status is that of the last command executed */
 int	exec_exit(char **argv) // the expanded argv
 {
 	if (argv[1] == NULL) // n is omitted
-	{
-		ft_dprintf(STDOUT_FILENO, "\033[0;34mBye!\n\033[0m"); // protect; any message from bash on MacOS?
 		exit(0);
-	}
 	else if (argv[2] != NULL) // too many args
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: exit: too many arguments\n\033[0m"); // protect
+		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mexit: too many arguments\n"); // protect
 	else
-	{
-		ft_dprintf(STDOUT_FILENO, "\033[0;34mBye!\n\033[0m"); // protect; any message from bash on MacOS?
 		exit(ft_atoi(argv[1]));
-	}
 }
 
 int	is_builtin(char **argv, t_data **data) // the expanded argv
@@ -109,12 +100,114 @@ int	is_builtin(char **argv, t_data **data) // the expanded argv
 int	run_builtin(char **argv, t_data *data) // the expanded argv
 {
 	if (data->builtin == ECHO)
-		exec_echo(argv);
+		return (exec_echo(argv));
 	else if (data->builtin == EXIT)
-		exec_exit(argv);
+		return (exec_exit(argv));
 }
 
-void	runcmd(t_cmd *cmd, t_data *data)
+/* the parameter process to indicate if runcmd 
+is executed in child process or in parent process
+in child process -> exit with statua code; 
+in parent process -> return status code */
+
+int	runcmd(t_cmd *cmd, t_data *data, int process)
+{
+	int				pipe_fd[2];
+	t_execcmd		*ecmd;
+	t_listcmd		*lcmd;
+	t_pipecmd		*pcmd;
+	t_redircmd		*rcmd;
+	int				pid;
+	int				pid1;
+	int				pid2;
+	int				status;
+	int				pipe_cmd;
+
+	if (cmd->type == EXEC && is_builtin(((t_execcmd *)cmd)->argv, &data))
+	{
+		ecmd = (t_execcmd *)cmd;
+		// ------ printout args ------
+		// for (int i = 0; ecmd->argv[i] != NULL; i++)
+		// 	printf("ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
+		// ---------------------------
+		status = run_builtin(ecmd->argv, data);
+		if (process == CHILD_PROC)
+			exit(status);
+		else
+			return (status);
+	}
+	else if (cmd->type == EXEC)
+	{
+		ecmd = (t_execcmd *)cmd;
+		// ------ printout args ------
+		// for (int i = 0; ecmd->argv[i] != NULL; i++)
+		// 	printf("ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
+		// ---------------------------
+		pid = fork1(data);
+		if (pid == 0)
+		{
+			execve(ecmd->argv[0], ecmd->argv, data->envp);
+			panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
+		}
+		if (waitpid(pid, &status, 0) == -1)
+			panic(ERR_WAITPID, data, EXIT_FAILURE);
+		if (process == CHILD_PROC && WIFEXITED(status))
+			exit(WEXITSTATUS(status));
+		else
+			return (WEXITSTATUS(status));
+	}
+	else if (cmd->type == AND_CMD)
+	{
+		lcmd = (t_listcmd *)cmd;
+		status = runcmd(lcmd->left, data, PARENT_PROC);
+		if (status == 0)
+			status = runcmd(lcmd->right, data, PARENT_PROC);
+	}
+	else if (cmd->type == OR_CMD)
+	{
+		lcmd = (t_listcmd *)cmd;
+		status = runcmd(lcmd->left, data, PARENT_PROC);
+		if (status != 0)
+			status = runcmd(lcmd->right, data, PARENT_PROC);
+	}
+	else if (cmd->type == PIPE)
+	{
+		pcmd = (t_pipecmd *)cmd;
+		if (pipe(pipe_fd) < 0)
+			panic(ERR_PIPE, data, EXIT_FAILURE);
+		pid1 = fork1(data);
+		if (pid1 == 0)
+		{
+			close(STDOUT_FILENO);
+			dup(pipe_fd[1]);
+			close(pipe_fd[0]);
+			close(pipe_fd[1]);
+			runcmd(pcmd->left, data, CHILD_PROC);
+		}
+		pid2 = fork1(data);
+		if (pid2 == 0)
+		{
+			close(STDIN_FILENO);
+			dup(pipe_fd[0]);
+			close(pipe_fd[0]);
+			close(pipe_fd[1]);
+			runcmd(pcmd->right, data, CHILD_PROC);
+		}
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		if (waitpid(pid1, NULL, 0) == -1)
+			panic(ERR_WAITPID, data, EXIT_FAILURE);
+		if (waitpid(pid2, &status, 0) == -1)
+			panic(ERR_WAITPID, data, EXIT_FAILURE);
+		if (WIFEXITED(status))
+			status = WEXITSTATUS(status);
+	}
+	return (status);
+}
+
+// previous version of runcmd() is commented out below
+
+/* void	runcmd(t_cmd *cmd, t_data *data)
 {
 	int				pipe_fd[2];
 	t_execcmd		*ecmd;
@@ -133,17 +226,29 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		if (ecmd->argv[0] == NULL)
 			exit(1); // exit code? free heap allocated memory? why would this occur?
 		// expansion
+		// ------ printout args ------
 		// for (int i = 0; ecmd->argv[i] != NULL; i++)
 		// 	printf("ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
+		// ---------------------------
 		if (is_builtin(ecmd->argv, &data))
+		{
 			run_builtin(ecmd->argv, data);
+			exit(0); // replace 0 with correct exit code
+		}	
 		else
 		{
+			// execve(ecmd->argv[0], ecmd->argv, data->envp);
+			// panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
 			pid1 = fork1(data);
 			if (pid1 == 0)
+			{
 				execve(ecmd->argv[0], ecmd->argv, data->envp);
-			if (waitpid(pid1, &status, 0) == -1)
 				panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
+			}
+			if (waitpid(pid1, &status, 0) == -1)
+				ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033\n", ERR_WAITPID);
+			if (WIFEXITED(status))
+				exit(WEXITSTATUS(status));
 		}
 	}
 	else if (cmd->type == REDIR)
@@ -162,6 +267,11 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		lcmd = (t_listcmd *)cmd;
 		//remove fork use data instead  to pass error status
 		//make int type of runcmd to return status;
+		if (lcmd->right->type == EXEC)
+		{
+			if (((t_execcmd *)(lcmd->right))->argv[0] == NULL)
+				panic("right command is not found after &&", data, 1);
+		}
 		pid1 = fork1(data);
 		if (pid1 == 0)
 			runcmd(lcmd->left, data);
@@ -171,9 +281,9 @@ void	runcmd(t_cmd *cmd, t_data *data)
 			runcmd(lcmd->right, data);
 		else
 		{
-			//remove dprintf
+			// remove dprintf
 			dprintf(2, "&&: status error of left cmd=%d\n", status);
-//			perror()
+			// perror()
 		}
 	}
 	else if (cmd->type == OR_CMD)
@@ -181,6 +291,11 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		lcmd = (t_listcmd *)cmd;
 		//remove fork use data instead  to pass error status
 		//make int type of runcmd to return status;
+		if (lcmd->right->type == EXEC)
+		{
+			if (((t_execcmd *)(lcmd->right))->argv[0] == NULL)
+				panic("right command is not found ||", data, 1);
+		}
 		pid1 = fork1(data);
 		if (pid1 == 0)
 			runcmd(lcmd->left, data);
@@ -236,8 +351,8 @@ void	runcmd(t_cmd *cmd, t_data *data)
 	}
 	else
 		panic("runcmd", data, EXIT_FAILURE);
-	if (WIFEXITED(status)) // returns true if the child process is terminated normally
-		exit(WEXITSTATUS(status)); // exit with exit status of the child
+	// if (WIFEXITED(status)) // returns true if the child process is terminated normally
+	// 	exit(WEXITSTATUS(status)); // exit with exit status of the child
 	// if (WIFSIGNALED(status)) // returns true if the child process is terminated by a signal
 	// 	exit(WTERMSIG(status)); // returns the number of signal that caused the child process to terminate
-}
+} */

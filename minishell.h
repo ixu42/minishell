@@ -34,18 +34,37 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 // # define EXIT_CMD_PERM_ERR 126
 # define EXIT_CMD_NOT_FOUND 127
 
-// Parsed command representation
-#define EXEC  1
-#define REDIR 2
-#define PIPE  3
-#define AND_CMD 4
-#define OR_CMD 5
+# define PARENT_PROC 0
+# define CHILD_PROC 1
 
-// to be removed
-#define LIST  6
-#define BACK  7
+// Parsed command representation
+// #define EXEC 1
+// #define REDIR 2
+// #define PIPE 3
+// #define AND_CMD 4
+// #define OR_CMD 5
+
+// // to be removed
+// #define LIST  6
+// #define BACK  7
 
 #define MAXARGS 10
+
+typedef enum e_node_type
+{
+	EXEC = 1,
+	REDIR,
+	PIPE,
+	AND_CMD,
+	OR_CMD,
+	ARG_NODE,
+	STR_NODE,
+	STR_NODE_VAR,
+	STR_NODE_VAR_FIX,
+	// to be remove?
+	LIST,
+	BACK
+}   t_node_type;
 
 typedef enum e_token
 {
@@ -89,7 +108,23 @@ typedef struct s_execcmd
 	int		type;
 	char	*argv[MAXARGS];
 	char	*eargv[MAXARGS];
+	t_cmd	*args;
 }	t_execcmd;
+
+typedef struct s_argcmd
+{
+	int		type;
+	t_cmd	*data;
+	t_cmd	*next;
+}	t_argcmd;
+
+typedef struct s_strcmd
+{
+	int		type;
+	char	*start;
+	char	*end;
+	t_cmd	*next;
+}	t_strcmd;
 
 typedef struct s_redircmd
 {
@@ -125,6 +160,8 @@ char	**copy_env(char **envp);
 int		fork1(t_data *data);
 void	panic(char *err_msg, t_data *data, int exit_code);
 t_cmd	*parsecmd(char *s);
-void	runcmd(t_cmd *cmd, t_data *data);
+int		is_builtin(char **argv, t_data **data);
+int		run_builtin(char **argv, t_data *data);
+int		runcmd(t_cmd *cmd, t_data *data, int child_proc);
 
 #endif
