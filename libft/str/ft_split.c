@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/07 00:58:57 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/07 00:58:57 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:57:27 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 static char	**split_empty_str(void)
 {
@@ -65,6 +65,7 @@ static void	free_arr(char **arr, int k)
 		i++;
 	}
 	free(arr);
+	arr = NULL;
 }
 
 static char	**fill_arr(char const **ptr_to_s, char c, char **arr, int *ptr_to_k)

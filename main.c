@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/09 09:51:35 by ixu               #+#    #+#             */
-/*   Updated: 2024/02/09 19:26:08 by ixu              ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 void	print_error(char *err_msg)
@@ -35,27 +23,94 @@ void	validate_args(int argc)
 	}
 }
 
+int	arr_len(char **arr)
+{
+	int	len;
+
+	len = 0;
+	while (arr[len] != NULL)
+		len++;
+	return (len);
+}
+
+void	free_allocated_memory(char **arr, int curr_index)
+{
+	int	i;
+
+	i = -1;
+	while (++i <= curr_index)
+		free(arr[i]);
+	free(arr);
+	arr = NULL;
+}
+
+char	**copy_env(char **envp)
+{
+	int		len;
+	char	**envs;
+	int		i;
+	int		j;
+
+	len = arr_len(envp);
+	envs = (char **)malloc(sizeof(char *) * (len + 1));
+	if (envs == NULL)
+		print_error(ERR_MALLOC);
+	i = -1;
+	while (++i < len)
+	{
+		envs[i] = (char *)malloc(sizeof(char) * ((int)ft_strlen(envp[i]) + 1));
+		if (envs[i] == NULL)
+		{
+			free_allocated_memory(envs, i);
+			print_error(ERR_MALLOC);
+		}
+		j = -1;
+		while (++j < (int)ft_strlen(envp[i]))
+			envs[i][j] = envp[i][j];
+		envs[i][j] = '\0';
+	}
+	envs[i] = NULL;
+	return (envs);
+}
+
+void	free_arr(char **arr)
+{
+	int	i;
+
+	i = -1;
+	while (arr[++i] != NULL)
+		free(arr[i]);
+	free(arr);
+	arr = NULL;
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	char	*buf; // could be in a struct
+	t_data	data;
+	t_cmd	*cmd;
+	int 	status;
 
 	(void)argv;
-	(void)envp;
+	data.envp = copy_env(envp); // free data.envp before exit
 	validate_args(argc);
-	buf = readline(">> ");
-	while (buf != NULL) 
+	data.buf = readline("\033[0;32mLiteShell$ \033[0m"); // free data.buf before exit
+	data.builtin = 0;
+	while (data.buf != NULL) 
 	{
-		if (ft_strlen(buf) > 0)
-			add_history(buf);
-		printf("[%s]\n", buf); // replace this line with parsing func
-		if (ft_strcmp(buf, "exit") == 0) // exit could be a boolean in a struct (parsing part to detect exit)
-		{
-			free(buf);
-			break ;
-		}
-		free(buf); // where to free buf in different cases?
-		buf = readline(">> ");
+		if (ft_strlen(data.buf) > 0)
+			add_history(data.buf);
+		// handling buf (parsing + execution)
+		// test parsing/execution funcs here!
+		// ------
+		cmd = parsecmd(data.buf);
+		status = runcmd(cmd, &data, PARENT_PROC);
+		printf("\033[0;35m[status: %d]\033[0m\n", status);
+		// ------
+		free(data.buf);
+		data.buf = readline("\033[0;32mLiteShell$ \033[0m");
 	}
+	free(data.buf);
+	free_arr(data.envp);
 	rl_clear_history();
 	exit(EXIT_SUCCESS);
 }

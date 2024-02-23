@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/07 00:44:41 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/07 00:44:41 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:57:14 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 static int	is_sep(char c, char *charset)
 {

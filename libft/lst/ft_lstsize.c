@@ -6,11 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 21:05:22 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/11 21:05:22 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/17 16:56:02 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "../include/libft.h"
 
 int	ft_lstsize(t_list *lst)
 {
