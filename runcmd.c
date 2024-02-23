@@ -6,7 +6,7 @@ int	fork1(t_data *data)
 
 	pid = fork();
 	if (pid == -1)
-		panic(ERR_FORK, data, EXIT_FAILURE);
+		panic(ERR_FORK, data, EXIT_FAILURE); // fix this, exit/return depends on process!
 	return (pid);
 }
 
@@ -97,7 +97,10 @@ int	exec_cd(char **argv)
 		return (1);
 	}
 	else if (argv[2] != NULL) // too many args
+	{
 		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mcd: too many arguments\n"); // protect
+		return (1);
+	}
 	else
 	{
 		if (chdir(argv[1]) == -1)
@@ -174,6 +177,7 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 	int				pid2;
 	int				status;
 	int				pipe_cmd;
+	int				fd;
 
 	if (cmd->type == EXEC)
 	{
@@ -212,28 +216,41 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 					panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
 				}
 				if (waitpid(pid, &status, 0) == -1)
-					panic(ERR_WAITPID, data, EXIT_FAILURE);
+					panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, to return, no exit
 				if (WIFEXITED(status))
 					return (WEXITSTATUS(status));
 			}
 		}
 	}
-	else if (cmd->type == REDIR) // redirection does not work atm
+	else if (cmd->type == REDIR)
 	{
 		// ------ debug ------
-		// printf("redir\n");
+		// dprintf(2, "redir\n");
 		// -------------------
 		rcmd = (t_redircmd *)cmd;
-		if (close(rcmd->fd) == -1)
-			perror("close"); // protect
-		if (open(rcmd->file, rcmd->mode) == -1)
-			perror("open");
-		runcmd(rcmd->cmd, data, process);
+		pid = fork1(data);
+		if (pid == 0)
+		{
+			fd = open(rcmd->file, rcmd->mode); // rcmd->mode is actually flag; in addition, we need to know mode from parsing
+			if (fd == -1)
+				panic(ERR_OPEN, data, EXIT_FAILURE);
+			if (dup2(fd, rcmd->fd) == -1)
+				panic(ERR_DUP2, data, EXIT_FAILURE);
+			if (close(fd) == -1)
+				panic(ERR_CLOSE, data, EXIT_FAILURE);
+			runcmd(rcmd->cmd, data, CHILD_PROC);
+		}
+		if (waitpid(pid, &status, 0) == -1)
+			panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, exit/return depends on process!
+		if (WIFEXITED(status) && process == PARENT_PROC)
+			return (WEXITSTATUS(status));
+		else if (WIFEXITED(status) && process == CHILD_PROC)
+			exit(WEXITSTATUS(status));
 	}
 	else if (cmd->type == AND_CMD)
 	{
 		// ------ debug ------
-		// printf("&& operator\n");
+		// dprintf(2, "&& operator\n");
 		// -------------------
 		lcmd = (t_listcmd *)cmd;
 		status = runcmd(lcmd->left, data, PARENT_PROC);
@@ -243,7 +260,7 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 	else if (cmd->type == OR_CMD)
 	{
 		// ------ debug ------
-		// printf("|| operator\n");
+		// dprintf(2, "|| operator\n");
 		// -------------------
 		lcmd = (t_listcmd *)cmd;
 		status = runcmd(lcmd->left, data, PARENT_PROC);
@@ -253,33 +270,39 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 	else if (cmd->type == PIPE)
 	{
 		// ------ debug ------
-		// printf("pipe\n");
+		// dprintf(2, "pipe\n");
 		// -------------------
 		pcmd = (t_pipecmd *)cmd;
-		if (pipe(pipe_fd) < 0)
-			panic(ERR_PIPE, data, EXIT_FAILURE);
+		if (pipe(pipe_fd) == -1)
+			panic(ERR_PIPE, data, EXIT_FAILURE); // fix this, exit/return depends on process!
 		pid1 = fork1(data);
 		if (pid1 == 0)
 		{
-			close(pipe_fd[0]);
-			dup2(pipe_fd[1], STDOUT_FILENO);
-			close(pipe_fd[1]);
+			if (close(pipe_fd[0]) == -1)
+				panic(ERR_CLOSE, data, EXIT_FAILURE);
+			if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
+				panic(ERR_DUP2, data, EXIT_FAILURE);
+			if (close(pipe_fd[1]) == -1)
+				panic(ERR_CLOSE, data, EXIT_FAILURE);
 			runcmd(pcmd->left, data, CHILD_PROC);
 		}
 		pid2 = fork1(data);
 		if (pid2 == 0)
 		{
-			close(pipe_fd[1]);
-			dup2(pipe_fd[0], STDIN_FILENO);
-			close(pipe_fd[0]);
+			if (close(pipe_fd[1]) == -1)
+				panic(ERR_CLOSE, data, EXIT_FAILURE);
+			if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
+				panic(ERR_DUP2, data, EXIT_FAILURE);
+			if (close(pipe_fd[0]) == -1)
+				panic(ERR_CLOSE, data, EXIT_FAILURE);
 			runcmd(pcmd->right, data, CHILD_PROC);
 		}
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
+		close(pipe_fd[0]); // fix this, exit/return depends on process!
+		close(pipe_fd[1]); // fix this, exit/return depends on process!
 		if (waitpid(pid1, NULL, 0) == -1)
-			panic(ERR_WAITPID, data, EXIT_FAILURE);
+			panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, exit/return depends on process!
 		if (waitpid(pid2, &status, 0) == -1)
-			panic(ERR_WAITPID, data, EXIT_FAILURE);
+			panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, exit/return depends on process!
 		if (WIFEXITED(status) && process == PARENT_PROC)
 			status = WEXITSTATUS(status);
 		if (WIFEXITED(status) && process == CHILD_PROC)

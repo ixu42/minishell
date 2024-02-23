@@ -23,18 +23,21 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # include <sys/wait.h>
 
 // macros for (error) messages
-# define ERR_WRITE "write error"
-# define ERR_PRINTF "printf error"
 # define ERR_ARGS "invalid number of arguments"
 # define USAGE "ex. usage: ./minishell"
-
+# define ERR_WRITE "write error"
+# define ERR_PRINTF "printf error"
 # define ERR_MALLOC "malloc error"
 # define ERR_PIPE "pipe error"
 # define ERR_FORK "fork error"
 # define ERR_WAITPID "waitpid error"
+# define ERR_OPEN "open error"
+# define ERR_CLOSE "close error"
+# define ERR_DUP2 "dup2 error"
 // # define EXIT_CMD_PERM_ERR 126
 # define EXIT_CMD_NOT_FOUND 127
 
+// macros for processes
 # define PARENT_PROC 0
 # define CHILD_PROC 1
 
