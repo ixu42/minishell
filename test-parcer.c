@@ -1,5 +1,4 @@
 #include "minishell.h"
-
 void	print_error(char *err_msg)
 {
 	if (ft_putstr_fd("minishell: ", STDERR_FILENO) == -1)
