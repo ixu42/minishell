@@ -97,15 +97,17 @@ int	main(int argc, char **argv, char **envp)
 	data.builtin = 0;
 	while (data.buf != NULL) 
 	{
-		if (ft_strlen(data.buf) > 0)
+		if (ft_strlen(data.buf) > 0) // should we check if data.buf only contains white spaces here?
+		{
 			add_history(data.buf);
-		// handling buf (parsing + execution)
-		// test parsing/execution funcs here!
-		// ------
-		cmd = parsecmd(data.buf);
-		status = runcmd(cmd, &data, PARENT_PROC);
-		printf("\033[0;35m[status: %d]\033[0m\n", status);
-		// ------
+			// handling buf (parsing + execution)
+			// test parsing/execution funcs here!
+			// ------
+			cmd = parsecmd(data.buf);
+			status = runcmd(cmd, &data, PARENT_PROC);
+			printf("\033[0;35m[status: %d]\033[0m\n", status);
+			// ------
+		}
 		free(data.buf);
 		data.buf = readline("\033[0;32mLiteShell$ \033[0m");
 	}
