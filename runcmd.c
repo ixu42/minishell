@@ -176,7 +176,8 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 			perror("close"); // protect
 		if (open(rcmd->file, rcmd->mode) == -1)
 			perror("open");
-		runcmd(rcmd->cmd, data, PARENT_PROC);
+		runcmd(rcmd->cmd, data, process);
+		//runcmd(rcmd->cmd, data, PARENT_PROC);
 	}
 	else if (cmd->type == AND_CMD)
 	{

@@ -21,8 +21,9 @@ LIBFT = $(LIBFT_DIR)/libft.a
 CFLAGS = -Wall -Wextra -Werror
 
 SRCS = main.c \
-		parcer-main.c \
-		runcmd.c
+		parcer/parcer.c \
+		runcmd.c \
+		runcmd_old.c
 
 OBJS = $(SRCS:.c=.o)
 

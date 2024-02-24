@@ -163,5 +163,8 @@ t_cmd	*parsecmd(char *s);
 int		is_builtin(char **argv, t_data **data);
 int		run_builtin(char **argv, t_data *data);
 int		runcmd(t_cmd *cmd, t_data *data, int child_proc);
+// to be removed at some point
+void	runcmd_old(t_cmd *cmd, t_data *data);
+void	runcmd_test(t_cmd *cmd);
 
 #endif
