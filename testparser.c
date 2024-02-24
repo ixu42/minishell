@@ -1,4 +1,4 @@
-#include "../minishell.h"
+#include "minishell.h"
 
 int	fork1_test(void);	// Fork but panics on failure.
 
