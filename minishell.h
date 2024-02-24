@@ -37,19 +37,12 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # define PARENT_PROC 0
 # define CHILD_PROC 1
 
-// Parsed command representation
-// #define EXEC 1
-// #define REDIR 2
-// #define PIPE 3
-// #define AND_CMD 4
-// #define OR_CMD 5
-
-// // to be removed
-// #define LIST  6
-// #define BACK  7
 
 #define MAXARGS 10
+#define WHITESPACE  " \t\r\n\v"
+#define SYMBOLS "<>|&;()\\"
 
+// AST's node types
 typedef enum e_node_type
 {
 	EXEC = 1,
@@ -60,12 +53,12 @@ typedef enum e_node_type
 	ARG_NODE,
 	STR_NODE,
 	STR_NODE_VAR,
-	STR_NODE_VAR_FIX,
+	STR_NODE_EXT,
 	// to be remove?
-	LIST,
-	BACK
+	LIST
 }   t_node_type;
 
+// types of tockens
 typedef enum e_token
 {
 	WORD,
@@ -111,12 +104,14 @@ typedef struct s_execcmd
 	t_cmd	*args;
 }	t_execcmd;
 
+/*
 typedef struct s_argcmd
 {
 	int		type;
 	t_cmd	*data;
 	t_cmd	*next;
 }	t_argcmd;
+*/
 
 typedef struct s_strcmd
 {
@@ -150,12 +145,6 @@ typedef struct s_listcmd
 	t_cmd	*right;
 }	t_listcmd;
 
-typedef struct s_backcmd
-{
-        int type;
-        t_cmd *cmd;
-}       t_backcmd;
-
 char	**copy_env(char **envp);
 int		fork1(t_data *data);
 void	panic(char *err_msg, t_data *data, int exit_code);
@@ -166,5 +155,28 @@ int		runcmd(t_cmd *cmd, t_data *data, int child_proc);
 // to be removed at some point
 void	runcmd_old(t_cmd *cmd, t_data *data);
 void	runcmd_test(t_cmd *cmd);
+
+// constructors.c
+t_cmd   *execcmd(void);
+t_cmd   *strcmd(int type);
+t_cmd   *redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
+t_cmd   *pipecmd(t_cmd *left, t_cmd *right);
+t_cmd   *list_cmd(t_cmd *left, t_cmd *right, int type);
+
+// parseexec.c
+t_cmd	*parseexec(char**, char*);
+t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es);
+
+// parsecmd.c
+t_cmd   *parsecmd(char*);
+t_cmd   *parseblock(char **ps, char *es);
+//t_cmd   *parseline(char**, char*);
+//t_cmd   *parsepipe(char**, char*);
+
+//parsing_utils.c
+int gettoken(char **ps, char *es, char **q, char **eq);
+int peek(char **ps, char *es, char *toks);
+t_cmd   *nulterminate(t_cmd *cmd);
+void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
 #endif
