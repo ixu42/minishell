@@ -50,7 +50,7 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	}
 	else
 	{
-		ret = 'a';
+		ret = WORD;
 			while (s < es && ((!ft_strchr(WHITESPACE, *s) && !ft_strchr(SYMBOLS, *s)) \
 				|| (quotes[0] || quotes[1])))
 				increase_s_quotes(&s, quotes);

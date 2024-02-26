@@ -6,19 +6,39 @@ t_cmd	*execcmd(void)
 	t_execcmd *cmd;
 
 	cmd = malloc(sizeof(*cmd));
+	if (!cmd)
+		return (NULL);
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = EXEC;
+	cmd->argc = 0;
 	return ((t_cmd*)cmd);
 }
 
-t_cmd	*strcmd(int type)
+t_strcmd	*strcmd(int type)
 {
 	t_strcmd *cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = type;
-	return ((t_cmd*)cmd);
+	cmd->flag = 0;
+	return (cmd);
+}
+
+t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end)
+{
+	t_argcmd *cmd;
+
+	cmd = malloc(sizeof(*cmd));
+	if (!cmd)
+		return (NULL);
+	ft_memset(cmd, 0, sizeof(*cmd));
+//	cmd->type = type;
+	cmd->left = str;
+	cmd->right = args;
+	cmd->start = start;
+	cmd->end = end;
+	return (cmd);
 }
 
 t_cmd* redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd)

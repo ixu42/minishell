@@ -42,7 +42,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # define CHILD_PROC 1
 
 
-#define MAXARGS 10
+#define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&;()\\"
 
@@ -65,6 +65,7 @@ typedef enum e_node_type
 // types of tockens
 typedef enum e_token
 {
+	NUL_STR,
 	WORD,
 	RED_IN,
 	HEREDOC,
@@ -100,30 +101,32 @@ typedef struct s_cmd
 	int	type;
 }	t_cmd;
 
+typedef struct s_strcmd
+{
+	int		type;
+	int		flag;
+	char	*start;
+	char	*end;
+	t_cmd	*next;
+}	t_strcmd;
+
+typedef struct s_argcmd
+{
+	int		type;
+	t_strcmd	*left;
+	struct s_argcmd	*right;
+	char			*start;
+	char			*end;
+}	t_argcmd;
+
 typedef struct s_execcmd
 {
 	int		type;
 	char	*argv[MAXARGS];
 	char	*eargv[MAXARGS];
-	t_cmd	*args;
+	int		argc;
+	t_argcmd	*args;
 }	t_execcmd;
-
-/*
-typedef struct s_argcmd
-{
-	int		type;
-	t_cmd	*data;
-	t_cmd	*next;
-}	t_argcmd;
-*/
-
-typedef struct s_strcmd
-{
-	int		type;
-	char	*start;
-	char	*end;
-	t_cmd	*next;
-}	t_strcmd;
 
 typedef struct s_redircmd
 {
@@ -162,10 +165,11 @@ void	runcmd_test(t_cmd *cmd);
 
 // constructors.c
 t_cmd   *execcmd(void);
-t_cmd   *strcmd(int type);
 t_cmd   *redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
 t_cmd   *pipecmd(t_cmd *left, t_cmd *right);
 t_cmd   *list_cmd(t_cmd *left, t_cmd *right, int type);
+t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
+t_strcmd   *strcmd(int type);
 
 // parseexec.c
 t_cmd	*parseexec(char**, char*);

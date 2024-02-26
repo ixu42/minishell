@@ -1,7 +1,34 @@
+#include "libft/include/libft.h"
 #include "minishell.h"
+#include <stdio.h>
 
 int	fork1_test(void);	// Fork but panics on failure.
 
+void	printargs(t_argcmd *args)
+{
+	char *start;
+	char *end;
+	int i;
+
+	i = 0;
+	while (args != NULL)
+	{
+		//printf("arg number %d for pnt=%p=>\n", i, args);
+		//printf("arg number %d for rrr=%p=>\n", i, args->right);
+		start = args->start;
+		end = args->end;
+		ft_dprintf(2,"argument i=%d : ", i);
+		if (start < end)
+			write(2, start, end - start);
+		ft_dprintf(2, "\n");
+		if (args->right == args)
+			break;
+		args = args->right;
+		i++;
+	}
+	if (args == NULL)
+		printf("NULL terminated arg node.");
+}
 // test version of runcmd for testing AST
 void	runcmd_test(t_cmd *cmd)
 {
@@ -22,6 +49,7 @@ void	runcmd_test(t_cmd *cmd)
 		if(ecmd->argv[0] == 0)
 			exit (1);
 		printf("argv=%s, %s, %s, %s\n", ecmd->argv[0], ecmd->argv[1], ecmd->argv[2], ecmd->argv[3]);
+		printargs(ecmd->args);
 	//		exec(ecmd->argv[0], ecmd->argv);
 	 // printf(2, "exec %s failed\n", ecmd->argv[0]);
 	}
@@ -198,13 +226,16 @@ char	**copy_env(char **envp)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
+	t_cmd		*tree;
 
 	(void)argv;
 	data.envp = copy_env(envp); // free data.envs before exit
 //	runcmd_old(parsecmd(argv[1]), &data);
 	//printf("(=%d, |=%d, &=%d, <=%d, >=%d, +=%d\n",'(','|','&','<','>','+');
 	//printf("&&=%d, ||=%d\n", AND_TOK, OR_TOK);
-	runcmd_test(parsecmd(argv[1]));
+	tree = parsecmd(argv[1]);
+	printf("parsing finnished\n");
+	runcmd_test(tree);
 
 	return (0);
 }
