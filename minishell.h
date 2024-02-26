@@ -124,6 +124,7 @@ typedef struct s_execcmd
 	int		type;
 	char	*argv[MAXARGS];
 	char	*eargv[MAXARGS];
+	char	**argv_full;
 	int		argc;
 	t_argcmd	*args;
 }	t_execcmd;
