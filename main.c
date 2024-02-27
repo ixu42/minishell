@@ -104,6 +104,12 @@ int	main(int argc, char **argv, char **envp)
 			// test parsing/execution funcs here!
 			// ------
 			cmd = parsecmd(data.buf);
+			if (TESTMODE)
+			{
+				ft_dprintf(2,"------------->TESTMODE<----------\n");
+				runcmd_test(cmd);
+				ft_dprintf(2,"------------->  END   <----------\n");
+			}
 			status = runcmd(cmd, &data, PARENT_PROC);
 			printf("\033[0;35m[status: %d]\033[0m\n", status);
 			// ------

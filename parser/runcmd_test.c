@@ -1,10 +1,15 @@
-#include "libft/include/libft.h"
-#include "minishell.h"
-#include <stdio.h>
+#include "../minishell.h"
 
-int	fork1_test(void);	// Fork but panics on failure.
+int	fork1_test(void)	// Fork but panics on failure.
+{
+	int pid;
 
-/*
+	pid = fork();
+	if(pid == -1)
+		panic_test("fork");
+	return pid;
+}
+
 void	printstr(t_strcmd *str)
 {
 	char *start;
@@ -139,12 +144,29 @@ void	runcmd_test(t_cmd *cmd)
 	//	close(p[1]);
 		wait(NULL);
 	}
+/*	else if (cmd->type == BACK)
+	{
+		bcmd = (t_backcmd*)cmd;
+		if(fork1_test() == 0)
+			runcmd_test(bcmd->cmd);
+		wait(NULL);
+	}*/
 	else
 		panic_test("runcmd");
 	exit (0);
 }
+
+/* //code in parsing_utils.c
+void	panic_test(char *s)
+{
+//	printf(2, "%s\n", s);
+	ft_putstr_fd(s, 2);
+	ft_putstr_fd("\n", 2);
+	exit(1);
+}
 */
 
+/*
 int fork1_test(void)
 {
 	int pid;
@@ -244,3 +266,4 @@ int	main(int argc, char **argv, char **envp)
 
 	return (0);
 }
+*/

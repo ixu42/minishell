@@ -42,6 +42,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # define CHILD_PROC 1
 
 
+#define TESTMODE 1 
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&;()\\"
