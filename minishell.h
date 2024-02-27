@@ -45,6 +45,8 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&;()\\"
+#define FLAG_MALLOC 1
+#define FLAG_SYNTAX 2
 
 // AST's node types
 typedef enum e_node_type
@@ -66,6 +68,7 @@ typedef enum e_node_type
 typedef enum e_token
 {
 	NUL_STR,
+	SYNTAX_ERROR,
 	WORD,
 	RED_IN,
 	HEREDOC,
@@ -107,7 +110,7 @@ typedef struct s_strcmd
 	int		flag;
 	char	*start;
 	char	*end;
-	t_cmd	*next;
+	struct s_strcmd	*next;
 }	t_strcmd;
 
 typedef struct s_argcmd
@@ -170,7 +173,7 @@ t_cmd   *redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
 t_cmd   *pipecmd(t_cmd *left, t_cmd *right);
 t_cmd   *list_cmd(t_cmd *left, t_cmd *right, int type);
 t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
-t_strcmd   *strcmd(int type);
+t_strcmd   *strcmd(int type, char *start, char *end);
 
 // parseexec.c
 t_cmd	*parseexec(char**, char*);

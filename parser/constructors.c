@@ -14,13 +14,18 @@ t_cmd	*execcmd(void)
 	return ((t_cmd*)cmd);
 }
 
-t_strcmd	*strcmd(int type)
+t_strcmd	*strcmd(int type, char *start, char *end)
 {
 	t_strcmd *cmd;
 
 	cmd = malloc(sizeof(*cmd));
+	if (!cmd)
+		return (NULL);
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = type;
+	cmd->start = start;
+	cmd->end = end;
+	cmd->next = NULL;
 	cmd->flag = 0;
 	return (cmd);
 }

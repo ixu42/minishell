@@ -61,48 +61,83 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 		rcmd->cmd = parseredirs(cmd, ps, es);
 	return (node);
 }
+
 /*
-int	gettoken_str(char **start, char *end, char **str, int *quotes)
+int	get_word(char **current, char *finish, char **start, char **end)
 {
 	char	*s;
 
-	s = *start;
-	str[0] = s;
-	while (!ft_strchr("*$\'\"", *s) && s < end)
+	s = *current;
+	if (start)
+		*start = *current;
+	while (!ft_strchr("*$\'\"", *s) && s < finish)
 		s++;
-	str[1] = s;
-	return (0);
+	if (end)
+		*end = s;
+	*current = s;
+	return (*s);
 }
 
-int	parseword(t_execcmd *cmd, t_cmd **last, char **start, char *end)
+int	get_single(char **current, char *finish, char **start, char **end)
 {
 	char	*s;
 
-	s = *start;
-	str[0] = s;
-	while (!ft_strchr("*$\'\"", *s) && s < end)
+	s = *current;
+	s++;
+	if (start)
+		*start = *current;
+	while (*s != '\'' && s < finish)
 		s++;
-	str[1] = s;
-	return (0);
+	if (end)
+		*end = s;
+	if (*s != '\'')
+	{
+		ft_dprintf(2, "Syntax error: unclosed \' ");
+		return (SYNTAX_ERROR);
+	}
+	else
+		s++;
+	*current = s;
+	return (*s);
 }
-*/
 
-
-int	parsestring(t_strcmd **str_node, char *start, char *end)
-{ 
-	t_strcmd *head;
+t_strcmd	*parsestr(char *current, char *finish)
+{
+	t_strcmd	*node;
+	t_strcmd	*new;
+	char		*start;
+	char		*end;
 	
-/*
-	if (!ft_strchr("*$\'\"", *start) && start < end)
-		parseword(&head, start, end);
+	if (!ft_strchr("*$\'\"", *current))
+	{
+		get_word(&current, finish, &start, &end);
+		node = strcmd(STR_NODE, start, end);
+	}
+	else if (*current == '\'')
+	{
+		get_single(&current, finish, &start, &end);
+		node = strcmd(STR_NODE, start, end);
+	}
+	if (!node)
+		return (NULL);
+	if (start == end)
+	{
+		node->flag = FLAG_SYNTAX;
+		return (node);
+	}
 	if (start < end)
-		parsestring(&, char *start, char *end)
-*/
-	head = NULL;
-	*str_node = head;
-	return (0);
+	{
+		new = parsestr(current, finish);
+		node->next = new;
+		if (new == NULL)
+			node->flag = FLAG_MALLOC;
+		else
+			node->flag = new->flag;
+	}
+	return (node);
 }
 
+*/
 int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 {
 	t_strcmd *str_node;
@@ -112,7 +147,7 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 	//last_arg = *arg;
 
 	str_node = NULL;
-	parsestring(&str_node, q, eq);
+//	parsestr(&str_node, q, eq);
 	last_arg = *arg;
 	new_node = argcmd(str_node, NULL, q, eq);
 	new_node->right = new_node;
