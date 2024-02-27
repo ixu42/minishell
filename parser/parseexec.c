@@ -62,7 +62,6 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 	return (node);
 }
 
-/*
 int	get_word(char **current, char *finish, char **start, char **end)
 {
 	char	*s;
@@ -90,9 +89,10 @@ int	get_single(char **current, char *finish, char **start, char **end)
 		s++;
 	if (end)
 		*end = s;
+//	ft_dprintf(2, "s=%s\n", s);
 	if (*s != '\'')
 	{
-		ft_dprintf(2, "Syntax error: unclosed \' ");
+		ft_dprintf(2, "Syntax error: unclosed single quote \'\n");
 		return (SYNTAX_ERROR);
 	}
 	else
@@ -105,24 +105,25 @@ t_strcmd	*parsestr(char *current, char *finish)
 {
 	t_strcmd	*node;
 	t_strcmd	*new;
+	int			tok;
 	char		*start;
 	char		*end;
 	
 	if (!ft_strchr("*$\'\"", *current))
 	{
-		get_word(&current, finish, &start, &end);
+		tok = get_word(&current, finish, &start, &end);
 		node = strcmd(STR_NODE, start, end);
 	}
 	else if (*current == '\'')
 	{
-		get_single(&current, finish, &start, &end);
+		tok = get_single(&current, finish, &start, &end);
 		node = strcmd(STR_NODE, start, end);
 	}
 	if (!node)
 		return (NULL);
-	if (start == end)
+	if (tok == SYNTAX_ERROR)
 	{
-		node->flag = FLAG_SYNTAX;
+		node->flag = SYNTAX_ERROR;
 		return (node);
 	}
 	if (start < end)
@@ -130,14 +131,14 @@ t_strcmd	*parsestr(char *current, char *finish)
 		new = parsestr(current, finish);
 		node->next = new;
 		if (new == NULL)
-			node->flag = FLAG_MALLOC;
+			node->flag = MALLOC_ERROR;
 		else
 			node->flag = new->flag;
 	}
 	return (node);
 }
 
-*/
+
 int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 {
 	t_strcmd *str_node;
@@ -146,8 +147,8 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 
 	//last_arg = *arg;
 
-	str_node = NULL;
-//	parsestr(&str_node, q, eq);
+//	str_node = NULL;
+	str_node = parsestr(q, eq);
 	last_arg = *arg;
 	new_node = argcmd(str_node, NULL, q, eq);
 	new_node->right = new_node;

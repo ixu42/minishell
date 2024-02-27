@@ -45,8 +45,6 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&;()\\"
-#define FLAG_MALLOC 1
-#define FLAG_SYNTAX 2
 
 // AST's node types
 typedef enum e_node_type
@@ -69,6 +67,7 @@ typedef enum e_token
 {
 	NUL_STR,
 	SYNTAX_ERROR,
+	MALLOC_ERROR,
 	WORD,
 	RED_IN,
 	HEREDOC,
