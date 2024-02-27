@@ -89,10 +89,17 @@ int	parseword(t_execcmd *cmd, t_cmd **last, char **start, char *end)
 
 
 int	parsestring(t_strcmd **str_node, char *start, char *end)
-{
-//	if (!ft_strchr("*$\'\"", **start))
-	//	parseword(cmd, last, start, end);
-	*str_node = NULL;
+{ 
+	t_strcmd *head;
+	
+/*
+	if (!ft_strchr("*$\'\"", *start) && start < end)
+		parseword(&head, start, end);
+	if (start < end)
+		parsestring(&, char *start, char *end)
+*/
+	head = NULL;
+	*str_node = head;
 	return (0);
 }
 
@@ -104,6 +111,7 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 
 	//last_arg = *arg;
 
+	str_node = NULL;
 	parsestring(&str_node, q, eq);
 	last_arg = *arg;
 	new_node = argcmd(str_node, NULL, q, eq);
