@@ -1,7 +1,58 @@
+#include "libft/include/libft.h"
 #include "minishell.h"
+#include <stdio.h>
 
 int	fork1_test(void);	// Fork but panics on failure.
 
+/*
+void	printstr(t_strcmd *str)
+{
+	char *start;
+	char *end;
+	int i;
+
+	i = 0;
+	while (str !=NULL)
+	{
+		start = str->start;
+		end = str->end;
+		ft_dprintf(2, "\t str i=%d, len=%d\n", i, (int)(end - start));
+//		printf("address=%p\n", str);
+//		if (start < end)
+		write(2, "\t ", 2);
+		write(2, start, end - start);
+		printf("\n");
+		str = str->next;
+		i++;
+	}
+}
+
+void	printargs(t_argcmd *args)
+{
+	char *start;
+	char *end;
+	int i;
+
+	i = 0;
+	while (args != NULL)
+	{
+		//printf("arg number %d for pnt=%p=>\n", i, args);
+		//printf("arg number %d for rrr=%p=>\n", i, args->right);
+		start = args->start;
+		end = args->end;
+		ft_dprintf(2,"argument i=%d : ", i);
+		if (start < end)
+			write(2, start, end - start);
+		ft_dprintf(2, "\n");
+		printstr(args->left);
+		if (args->right == args)
+			break;
+		args = args->right;
+		i++;
+	}
+	if (args == NULL)
+		printf("NULL terminated arg node.");
+}
 // test version of runcmd for testing AST
 void	runcmd_test(t_cmd *cmd)
 {
@@ -22,6 +73,7 @@ void	runcmd_test(t_cmd *cmd)
 		if(ecmd->argv[0] == 0)
 			exit (1);
 		printf("argv=%s, %s, %s, %s\n", ecmd->argv[0], ecmd->argv[1], ecmd->argv[2], ecmd->argv[3]);
+		printargs(ecmd->args);
 	//		exec(ecmd->argv[0], ecmd->argv);
 	 // printf(2, "exec %s failed\n", ecmd->argv[0]);
 	}
@@ -29,14 +81,11 @@ void	runcmd_test(t_cmd *cmd)
 	{
 		rcmd = (t_redircmd*)cmd;
 		printf("close(fd=%d);\n",rcmd->fd);
+//		printf("hi\n");
+//		printf("open(%%s, mode=%d);\n", rcmd->mode);
+//		printf("open(%p, mode=%%d);\n", rcmd->file);
+//		write(2, rcmd->file, 10);
 		printf("open(%s, mode=%d);\n", rcmd->file, rcmd->mode);
-		/*
-		if (open(rcmd->file, rcmd->mode) < 0)
-		{
-			printf(2, "open %s failed\n", rcmd->file);
-			exit (1);
-		}
-		*/
 		runcmd_test(rcmd->cmd);
 	}
 	else if (cmd->type == LIST)
@@ -90,25 +139,9 @@ void	runcmd_test(t_cmd *cmd)
 	//	close(p[1]);
 		wait(NULL);
 	}
-/*	else if (cmd->type == BACK)
-	{
-		bcmd = (t_backcmd*)cmd;
-		if(fork1_test() == 0)
-			runcmd_test(bcmd->cmd);
-		wait(NULL);
-	}*/
 	else
 		panic_test("runcmd");
 	exit (0);
-}
-
-/* //code in parsing_utils.c
-void	panic_test(char *s)
-{
-//	printf(2, "%s\n", s);
-	ft_putstr_fd(s, 2);
-	ft_putstr_fd("\n", 2);
-	exit(1);
 }
 */
 
@@ -198,13 +231,16 @@ char	**copy_env(char **envp)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
+	t_cmd		*tree;
 
 	(void)argv;
 	data.envp = copy_env(envp); // free data.envs before exit
 //	runcmd_old(parsecmd(argv[1]), &data);
 	//printf("(=%d, |=%d, &=%d, <=%d, >=%d, +=%d\n",'(','|','&','<','>','+');
 	//printf("&&=%d, ||=%d\n", AND_TOK, OR_TOK);
-	runcmd_test(parsecmd(argv[1]));
+	tree = parsecmd(argv[1]);
+	printf("parsing finnished\n");
+	runcmd_test(tree);
 
 	return (0);
 }

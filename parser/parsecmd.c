@@ -18,7 +18,6 @@ t_cmd*	parsepipe(char **ps, char *es)
 	return (cmd);
 }
 
-
 t_cmd	*parseline(char **ps, char *es)
 {
 	t_cmd *cmd_a;

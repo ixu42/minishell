@@ -50,7 +50,7 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	}
 	else
 	{
-		ret = 'a';
+		ret = WORD;
 			while (s < es && ((!ft_strchr(WHITESPACE, *s) && !ft_strchr(SYMBOLS, *s)) \
 				|| (quotes[0] || quotes[1])))
 				increase_s_quotes(&s, quotes);
@@ -130,10 +130,14 @@ t_cmd	*nulterminate(t_cmd *cmd)
 	{
 		ecmd = (t_execcmd*)cmd;
 		i = 0;
+	//	printf("nulterminating EXEC started\n");
 		while (ecmd->argv[i])
+		{
 			*ecmd->eargv[i++] = 0;
+		}
 		//for(i=0; ecmd->argv[i]; i++)
-			//*ecmd->eargv[i] = 0;
+			// *ecmd->eargv[i] = 0;
+	//	printf("nulterminating EXEC passed well\n");
 	}
 	else if (cmd->type == REDIR)
 	{
@@ -161,5 +165,5 @@ void    panic_test(char *s)
 //  printf(2, "%s\n", s);
     ft_putstr_fd(s, 2);
     ft_putstr_fd("\n", 2);
-    exit(1);
+ //   exit(1);
 }

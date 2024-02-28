@@ -6,7 +6,7 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
-#    Updated: 2024/02/24 12:06:36 by apimikov         ###   ########.fr        #
+#    Updated: 2024/02/27 17:08:07 by apimikov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,8 @@ SRCS = main.c \
 		parser/parseexec.c \
 		parser/parsecmd.c \
 		parser/parsing_utils.c \
-		runcmd.c 
+		parser/runcmd_test.c \
+		runcmd.c  
 #		runcmd_old.c 
 
 OBJS = $(SRCS:.c=.o)
