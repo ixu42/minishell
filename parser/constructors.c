@@ -1,4 +1,5 @@
 #include "../minishell.h"
+#include <stdlib.h>
 // Constructors
 
 t_cmd	*execcmd(void)
@@ -85,4 +86,23 @@ t_cmd	*list_cmd(t_cmd *left, t_cmd *right, int type)
 	cmd->left = left;
 	cmd->right = right;
 	return ((t_cmd*)cmd);
+}
+
+t_strstate	*make_strstate(char *start, char *finish)
+{
+	t_strstate	*state;
+
+	state = (t_strstate *)malloc(sizeof(*state));
+	if (!state)
+		return (NULL);
+	ft_memset(state, 0, sizeof(*state));
+	state->start = start;
+	state->pos = start;
+	state->finish = finish;
+	state->beg = NULL;
+	state->end = NULL;
+	state->d_quotes = 0;
+	state->s_quotes = 0;
+	state->flag = 0;
+	return (state);
 }

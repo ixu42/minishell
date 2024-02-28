@@ -58,7 +58,8 @@ typedef enum e_node_type
 	ARG_NODE,
 	STR_NODE,
 	STR_NODE_VAR,
-	STR_NODE_EXT,
+	STR_NODE_VAR_P,
+	STR_EXIT_CODE,
 	// to be remove?
 	LIST
 }   t_node_type;
@@ -66,9 +67,6 @@ typedef enum e_node_type
 // types of tockens
 typedef enum e_token
 {
-	NUL_STR,
-	SYNTAX_ERROR,
-	MALLOC_ERROR,
 	WORD,
 	RED_IN,
 	HEREDOC,
@@ -80,6 +78,12 @@ typedef enum e_token
 	LPAR,
 	RPAR
 }   t_token_type;
+
+typedef enum e_parse_error
+{
+	SYNTAX_ERROR = 0x2,
+	MALLOC_ERROR = 0x4,
+}	t_parse_error;
 
 typedef enum e_builtin
 {
@@ -98,6 +102,18 @@ typedef struct s_data
 	char		**envp;
 	t_builtin	builtin;
 }	t_data;
+
+typedef struct s_strstate
+{
+	char	*start;
+	char	*pos;
+	char	*finish;
+	char	*beg;
+	char	*end;
+	int		d_quotes;
+	int		s_quotes;
+	int		flag;
+} t_strstate;
 
 typedef struct s_cmd
 {
@@ -174,6 +190,8 @@ t_cmd   *pipecmd(t_cmd *left, t_cmd *right);
 t_cmd   *list_cmd(t_cmd *left, t_cmd *right, int type);
 t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
 t_strcmd   *strcmd(int type, char *start, char *end);
+t_strstate	*make_strstate(char *pos, char *finish);
+
 
 // parseexec.c
 t_cmd	*parseexec(char**, char*);

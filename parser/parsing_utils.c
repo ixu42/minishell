@@ -165,5 +165,5 @@ void    panic_test(char *s)
 //  printf(2, "%s\n", s);
     ft_putstr_fd(s, 2);
     ft_putstr_fd("\n", 2);
-    exit(1);
+ //   exit(1);
 }
