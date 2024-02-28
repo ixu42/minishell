@@ -60,6 +60,7 @@ typedef enum e_node_type
 	STR_NODE_VAR,
 	STR_NODE_VAR_P,
 	STR_EXIT_CODE,
+	STR_STAR,
 	// to be remove?
 	LIST
 }   t_node_type;

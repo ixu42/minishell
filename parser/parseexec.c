@@ -238,7 +238,7 @@ t_strcmd	*parsestr(t_strstate *state)
 		node = parse_variable(state);
 	else if (*(state->pos) == '*')
 	{
-		node = strcmd(STR_EXIT_CODE, state->pos, state->pos + 1);
+		node = strcmd(STR_STAR, state->pos, state->pos + 1);
 		state->pos++;
 	}
 	if (!node)

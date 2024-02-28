@@ -23,7 +23,8 @@ void	printstr(t_strcmd *str)
 		end = str->end;
 		write(2, "\t ", 2);
 		write(2, start, end - start);
-		ft_dprintf(2, "\t i=%d, len=%d, flag=%d, type=%d\n", i, (int)(end - start), str->flag, str->type);
+		//ft_dprintf(2, "\t i=%d, len=%d, flag=%d, type=%d\n", i, (int)(end - start), str->flag, str->type);
+		ft_dprintf(2, "\t\t type=%d, flag=%d\n", str->type, str->flag);
 		str = str->next;
 		i++;
 	}
