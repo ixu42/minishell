@@ -157,6 +157,7 @@ typedef struct s_redircmd
 	char	*efile;
 	int		mode;
 	int		fd;
+	t_strcmd	*str;
 }	t_redircmd;
 
 typedef struct s_pipecmd
