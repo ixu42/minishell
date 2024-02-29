@@ -45,7 +45,8 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 #define TESTMODE 1 
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
-#define SYMBOLS "<>|&;()\\"
+//#define SYMBOLS "<>|&;()\\"
+#define SYMBOLS "<>|&;()"
 
 // AST's node types
 typedef enum e_node_type
@@ -187,7 +188,8 @@ void	runcmd_test(t_cmd *cmd);
 
 // constructors.c
 t_cmd   *execcmd(void);
-t_cmd   *redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
+t_cmd   *redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
+t_cmd   *redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd);
 t_cmd   *pipecmd(t_cmd *left, t_cmd *right);
 t_cmd   *list_cmd(t_cmd *left, t_cmd *right, int type);
 t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);

@@ -1,6 +1,7 @@
 #include "../minishell.h"
 
 //parseexec.c
+t_strcmd	*parsestr(t_strstate *state);
 
 t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 {
@@ -24,12 +25,12 @@ t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 	return (head);
 }
 
-t_cmd*	parse_one_redir(t_cmd *cmd, char **ps, char *es)
+
+t_cmd*	parse_one_redir_old(t_cmd *cmd, char **ps, char *es)
 {
 	int		tok;
 	char	*q;
 	char	*eq;
-//	t_cmd	*ret;
 /*	t_strstate	*state;
 
 	state = make_strstate(q, eq); 
@@ -43,14 +44,52 @@ t_cmd*	parse_one_redir(t_cmd *cmd, char **ps, char *es)
 		if (gettoken(ps, es, &q, &eq) != STR_TOK)
 			ft_dprintf(2,"Syntax error: missing name for redirection\n");
 		if (tok == '<')
-			cmd = redircmd(cmd, q, eq, O_RDONLY, 0);
+			cmd = redircmd_old(cmd, q, eq, O_RDONLY, 0);
 		else if (tok == '>')
-			cmd = redircmd(cmd, q, eq, O_WRONLY | O_CREAT | O_TRUNC, 1);
+			cmd = redircmd_old(cmd, q, eq, O_WRONLY | O_CREAT | O_TRUNC, 1);
 		else if (tok == RED_OUT_APP)
-			cmd = redircmd(cmd, q, eq, O_WRONLY| O_CREAT | O_APPEND, 1);
+			cmd = redircmd_old(cmd, q, eq, O_WRONLY| O_CREAT | O_APPEND, 1);
 		else if (tok == HEREDOC)
-			cmd = redircmd(cmd, q, eq, -1, 0);
+			cmd = redircmd_old(cmd, q, eq, -1, 0);
 	}
+	return (cmd);
+}
+
+t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
+{
+	int		tok;
+	t_redircmd	*rcmd;
+	t_strstate	*sta;
+
+	if (!state)
+		return (NULL);
+	if (peek(&(state->pos), state->finish, "<>"))
+	{
+		tok = gettoken(&(state->pos), state->finish, 0, 0);
+		if (gettoken(&(state->pos), state->finish, &(state->beg), &(state->end)) != STR_TOK)
+			ft_dprintf(2,"Syntax error: missing name for redirection\n");
+//		printf("parse_one_redir: ps=%s\n", state->pos);
+		if (tok == '<')
+			cmd = redircmd(cmd, state, O_RDONLY, 0);
+		else if (tok == '>')
+			cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_TRUNC, 1);
+		else if (tok == RED_OUT_APP)
+			cmd = redircmd(cmd, state, O_WRONLY| O_CREAT | O_APPEND, 1);
+		else if (tok == HEREDOC)
+			cmd = redircmd(cmd, state, -1, 0);
+	}
+	if (!cmd)
+		return (NULL);
+	t_strstate	*state_str;
+	state_str = make_strstate(state->pos, state->finish);
+	if (!state_str)
+		return (NULL);
+	if (cmd->type == REDIR)
+	{
+		rcmd = (t_redircmd *)cmd;
+		rcmd->str = parsestr(state_str);
+	}
+//	printf("parse_one_redir: state->pos=%p\n", state->pos);
 	return (cmd);
 }
 
@@ -58,12 +97,23 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 {
 	t_cmd *node;
 	t_redircmd *rcmd;
-
-	node = parse_one_redir(cmd, ps, es);
+	t_strstate	*state;
+	
+//	ft_dprintf(2,"*ps=->%s<-\n",*ps);
+	state = make_strstate(*ps, es);
+	if (!state)
+		return (NULL);
+//	ft_dprintf(2,"*ps=->%s<-\n",*ps);
+	node = parse_one_redir(cmd, state);
+	*ps =state->pos;
+//	ft_dprintf(2,"*ps=->%p<-\n",*ps);
+//	ft_dprintf(2,"es=->%p<-\n",es);
 	if (node->type != REDIR)
 		return (cmd);
 	rcmd = (t_redircmd *)node;
-	ft_dprintf(2,"file=%s\n",rcmd->file);
+//	ft_dprintf(2," file=%s\n",rcmd->file);
+//	ft_dprintf(2,"efile=%s\n",rcmd->efile);
+//	free(state);
 	if (peek(ps, es, "<>"))
 		rcmd->cmd = parseredirs(cmd, ps, es);
 //	else
@@ -84,11 +134,13 @@ t_strcmd	*parse_word(t_strstate *state)
 		s++;
 	state->end = s;
 	state->pos = s;
+	/*
 	if (state->end == state->beg)
 	{
 		ft_dprintf(2, "Error: word of zerosize.\n");
 		state->flag = SYNTAX_ERROR;
 	}
+	*/
 	node = strcmd(STR_NODE, state->beg, state->end);
 	if (node == NULL)
 		state->flag = MALLOC_ERROR;
@@ -108,11 +160,13 @@ t_strcmd	*parse_str_till(t_strstate *state, char *stop_toks)
 		s++;
 	state->end = s;
 	state->pos = s;
+	/*
 	if (state->end == state->beg)
 	{
 		ft_dprintf(2, "Error: str of zerosize.\n");
 		state->flag |= SYNTAX_ERROR;
 	}
+	*/
 	node = strcmd(STR_NODE, state->beg, state->end);
 	if (node == NULL)
 		state->flag |= MALLOC_ERROR;
@@ -321,12 +375,12 @@ t_cmd*	parseexec(char **ps, char *es)
 		return (NULL);
 	cmd = (t_execcmd*)head;
 	head = parseredirs((t_cmd *)cmd, ps, es);
-	printf("head =%p\n", head);
-	printf("cmd =%p\n", cmd);
+//	printf("head =%p\n", head);
+//	printf("cmd =%p\n", cmd);
 	exec_redir_loop(&head, cmd, ps, es);
-	//remove next two lines 
+	//remove next two lines later 
 	if (cmd->argc == 0)
-		ft_dprintf(2,"command is not specified, but it's ok. ");
+		ft_dprintf(2,"parseexec:command is not specified, but it's ok.\n");
 	return (head);
 }
 

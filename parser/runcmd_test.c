@@ -74,7 +74,10 @@ void	runcmd_test(t_cmd *cmd)
 	{
 		ecmd = (t_execcmd*)cmd;
 		if(ecmd->argv[0] == 0)
-			exit (1);
+		{
+			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");
+//			exit (1);
+		}
 		ft_dprintf(2, "EXEC: argv=%s, %s, %s, %s\n", ecmd->argv[0], ecmd->argv[1], ecmd->argv[2], ecmd->argv[3]);
 		printargs(ecmd->args);
 	}
