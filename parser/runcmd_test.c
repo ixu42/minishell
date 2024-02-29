@@ -75,14 +75,13 @@ void	runcmd_test(t_cmd *cmd)
 		ecmd = (t_execcmd*)cmd;
 		if(ecmd->argv[0] == 0)
 			exit (1);
-		printf("EXEC: argv=%s, %s, %s, %s\n", ecmd->argv[0], ecmd->argv[1], ecmd->argv[2], ecmd->argv[3]);
+		ft_dprintf(2, "EXEC: argv=%s, %s, %s, %s\n", ecmd->argv[0], ecmd->argv[1], ecmd->argv[2], ecmd->argv[3]);
 		printargs(ecmd->args);
 	}
 	else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd*)cmd;
-//		printf("close(fd=%d);\n",rcmd->fd);
-		printf("REDIR: file=%s, mode=%d, fd=%d);\n", rcmd->file, rcmd->mode,rcmd->fd);
+		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d);\n", rcmd->file, rcmd->mode,rcmd->fd);
 		runcmd_test(rcmd->cmd);
 	}
 	else if (cmd->type == LIST)

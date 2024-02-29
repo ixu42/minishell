@@ -61,6 +61,7 @@ t_cmd* redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd)
 	cmd->efile = efile;
 	cmd->mode = mode;
 	cmd->fd = fd;
+	cmd->str = NULL;
 	return ((t_cmd*)cmd);
 }
 

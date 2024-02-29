@@ -7,7 +7,6 @@ t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 	t_cmd *tail;
 	t_redircmd *last;
 
-	//tail = (t_redircmd *)head;
 	tail = head;
 	while (tail->type == REDIR)
 	{
@@ -27,23 +26,30 @@ t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 
 t_cmd*	parse_one_redir(t_cmd *cmd, char **ps, char *es)
 {
-	int tok;
-	char *q, *eq;
-	t_cmd *ret;
+	int		tok;
+	char	*q;
+	char	*eq;
+//	t_cmd	*ret;
+/*	t_strstate	*state;
 
+	state = make_strstate(q, eq); 
+	if (!state)
+		return (1);
+	str_node = parsestr(state);
+*/
 	if (peek(ps, es, "<>"))
 	{
 		tok = gettoken(ps, es, 0, 0);
-		if (gettoken(ps, es, &q, &eq) != WORD)
-			panic_test("missing file for redirection");
+		if (gettoken(ps, es, &q, &eq) != STR_TOK)
+			ft_dprintf(2,"Syntax error: missing name for redirection\n");
 		if (tok == '<')
 			cmd = redircmd(cmd, q, eq, O_RDONLY, 0);
 		else if (tok == '>')
 			cmd = redircmd(cmd, q, eq, O_WRONLY | O_CREAT | O_TRUNC, 1);
-		else if (tok == '+')
+		else if (tok == RED_OUT_APP)
 			cmd = redircmd(cmd, q, eq, O_WRONLY| O_CREAT | O_APPEND, 1);
-		// else toc == "-"
-		// do heredoc
+		else if (tok == HEREDOC)
+			cmd = redircmd(cmd, q, eq, -1, 0);
 	}
 	return (cmd);
 }
@@ -57,7 +63,7 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 	if (node->type != REDIR)
 		return (cmd);
 	rcmd = (t_redircmd *)node;
-	printf("file=%s\n",rcmd->file);
+	ft_dprintf(2,"file=%s\n",rcmd->file);
 	if (peek(ps, es, "<>"))
 		rcmd->cmd = parseredirs(cmd, ps, es);
 //	else
@@ -65,23 +71,8 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 	return (node);
 }
 
-/*
-int	get_word_old(char **current, char *finish, char **start, char **end)
-{
-	char	*s;
 
-	s = *current;
-	if (start)
-		*start = s;
-	while (!ft_strchr("*$\'\"", *s) && s < finish)
-		s++;
-	if (end)
-		*end = s;
-	*current = s;
-	return (*s);
-}
-*/
-
+// parsing string
 t_strcmd	*parse_word(t_strstate *state)
 {
 	char	*s;
@@ -267,11 +258,9 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 	if (!state)
 		return (1);
 	str_node = parsestr(state);
+	free(state);
 	if (!str_node)
-	{
-		free(state);
 		return (1);
-	}
 	last_arg = *arg;
 	new_node = argcmd(str_node, NULL, q, eq);
 //	new_node->right = new_node;
@@ -281,8 +270,7 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 	return (0);
 }
 
-//int	add_argument(t_execcmd *cmd, )
-int	exec_redir_loop(t_cmd *head, t_execcmd *cmd, char **ps, char *es)
+int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 {
 	char	*q;
 	char	*eq;
@@ -296,16 +284,12 @@ int	exec_redir_loop(t_cmd *head, t_execcmd *cmd, char **ps, char *es)
 		if (*ps == es)
 			break;
 		tok = gettoken(ps, es, &q, &eq);
-//		if (tok == NUL_STR)
-	//		break;
-		if (tok != WORD)
+		if (tok != STR_TOK)
 		{
 			printf("Liteshell: -syntax error, leftover around %s \n", *ps);
 			panic_test("");
 		}
-	//	printf("hi\n");
 		extend_arg_node(&new_arg, q, eq);
-	//	printf("hi\n");
 		if (cmd->argc == 0)
 			cmd->args = new_arg;
 		if (cmd->argc < MAXARGS - 1)
@@ -315,13 +299,12 @@ int	exec_redir_loop(t_cmd *head, t_execcmd *cmd, char **ps, char *es)
 		}
 		cmd->argc++;
 		new_redir = parseredirs((t_cmd *)cmd,  ps, es);
-		head = combine_redirs(head, new_redir, (t_cmd *)cmd);
+		*head = combine_redirs(*head, new_redir, (t_cmd *)cmd);
 	}
 	if (cmd->argc <= MAXARGS - 1)
 	{
 		cmd->argv[cmd->argc] = 0;
 		cmd->eargv[cmd->argc] = 0;
-		//ft_dprintf(2, "number of argument more than %d", MAXARGS - 1);
 	}
 	return (0);
 }
@@ -338,38 +321,12 @@ t_cmd*	parseexec(char **ps, char *es)
 		return (NULL);
 	cmd = (t_execcmd*)head;
 	head = parseredirs((t_cmd *)cmd, ps, es);
-	exec_redir_loop(head, cmd, ps, es);
-//	printf("head=%p\n",head);
-//	printf("cmd=%p\n",cmd);
-/*	int		tok;
-	int		argc;
-	t_cmd *extra;
-	argc = 0;
-	while(!peek(ps, es, "|)&;"))
-	{
-		tok = gettoken(ps, es, &q, &eq);
-		if (tok == 0)
-			break;
-		if (tok != 'a')
-		{
-			printf("Liteshell: -syntax error, leftover around %s \n", *ps);
-			panic_test("");
-		}
-		cmd->argv[argc] = q;
-		cmd->eargv[argc] = eq;
-		argc++;
-		if (argc >= MAXARGS)
-			panic_test("too many args");
-		extra = parseredirs((t_cmd *)cmd,  ps, es);
-		head = combine_redirs(head, extra, (t_cmd *)cmd);
-	}
-	*/
+	printf("head =%p\n", head);
+	printf("cmd =%p\n", cmd);
+	exec_redir_loop(&head, cmd, ps, es);
+	//remove next two lines 
 	if (cmd->argc == 0)
-	{
-//		dprintf(2, "check command around:...%s\n", (*ps) - 3);
-		panic_test("command is not specified, see parseexec");
-	}
-//	printf("hi?\n");
+		ft_dprintf(2,"command is not specified, but it's ok. ");
 	return (head);
 }
 

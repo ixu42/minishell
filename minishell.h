@@ -68,7 +68,7 @@ typedef enum e_node_type
 // types of tockens
 typedef enum e_token
 {
-	WORD,
+	STR_TOK,
 	RED_IN,
 	HEREDOC,
 	RED_OUT,
