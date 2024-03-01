@@ -85,6 +85,7 @@ void	runcmd_test(t_cmd *cmd)
 	{
 		rcmd = (t_redircmd*)cmd;
 		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d);\n", rcmd->file, rcmd->mode,rcmd->fd);
+		printstr(rcmd->str);
 		runcmd_test(rcmd->cmd);
 	}
 	else if (cmd->type == LIST)

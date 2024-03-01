@@ -55,11 +55,34 @@ t_cmd*	parse_one_redir_old(t_cmd *cmd, char **ps, char *es)
 	return (cmd);
 }
 
+
+void	make_redir_str(t_cmd *cmd, t_strstate *state)
+{
+	t_strstate	*state_str;
+	t_redircmd	*rcmd;
+
+
+	if (cmd->type != REDIR)
+		return ;
+	rcmd = (t_redircmd *)cmd;
+	state_str = make_strstate(state->beg, state->end);
+	if (!state_str)
+	{	
+		rcmd->flag = MALLOC_ERROR;
+		return ;
+	}
+	rcmd->str = parsestr(state_str);
+	if (rcmd->str == NULL)
+	{
+		rcmd->flag = rcmd->str->flag;
+		return ;
+	}
+	return ;
+}
+
 t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 {
 	int		tok;
-	t_redircmd	*rcmd;
-	t_strstate	*sta;
 
 	if (!state)
 		return (NULL);
@@ -80,7 +103,10 @@ t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 	}
 	if (!cmd)
 		return (NULL);
+	make_redir_str(cmd, state);
+	/*
 	t_strstate	*state_str;
+	t_redircmd	*rcmd;
 	state_str = make_strstate(state->pos, state->finish);
 	if (!state_str)
 		return (NULL);
@@ -89,7 +115,8 @@ t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 		rcmd = (t_redircmd *)cmd;
 		rcmd->str = parsestr(state_str);
 	}
-//	printf("parse_one_redir: state->pos=%p\n", state->pos);
+	*/
+	//printf("parse_one_redir: state->pos=%p\n", state->pos);
 	return (cmd);
 }
 
@@ -235,7 +262,12 @@ t_strcmd	*parse_double(t_strstate *state)
 {
 	t_strcmd *node;
 
-	if (*(state->pos) == '$')
+	if (*(state->pos) == '$' && *(state->pos + 1) == '?')
+	{
+		node = strcmd(STR_EXIT_CODE, state->pos + 1, state->pos + 2);
+		state->pos +=2;
+	}
+	else if (*(state->pos) == '$')
 		node = parse_variable(state);
 	else
 		node = parse_str_till(state, "$\"");
