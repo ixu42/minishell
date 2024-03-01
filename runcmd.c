@@ -10,156 +10,6 @@ int	fork1(t_data *data)
 	return (pid);
 }
 
-void	free_data(t_data *data)
-{
-	int	i;
-
-	i = -1;
-	while (data->envp[++i] != NULL)
-		free(data->envp[i]);
-	free(data->buf);
-}
-
-void	panic(char *err_msg, t_data *data, int exit_code)
-{
-	if (exit_code == EXIT_CMD_NOT_FOUND)
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0m%s: command not found\n", err_msg); // protect
-	else
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0m%s\n", err_msg); // protect
-	free_data(data);
-	// free tree nodes?
-	exit(exit_code);
-}
-
-int	exec_echo(char **argv) // the expanded argv
-{
-	int	add_new_line;
-	int	start_index;
-	int	i;
-
-	add_new_line = 0;
-	start_index = 1;
-	if (argv[1] != NULL && ft_strcmp(argv[1], "-n") == 0)
-		start_index++;
-	else
-		add_new_line = 1;
-	i = start_index;
-	while (argv[i] != NULL)
-	{
-		if (printf("%s", argv[i]) < 0)
-		{
-			ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0, %s", ERR_PRINTF);
-			return (1);
-		}
-		i++;
-		if (argv[i] != NULL)
-		{
-			if (printf(" ") < 0)
-			{
-				ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0, %s", ERR_PRINTF);
-				return (1);
-			}
-		}
-	}
-	if (add_new_line)
-	{
-		if (printf("\n") < 0)
-		{
-			ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0, %s", ERR_PRINTF);
-			return (1);
-		}
-	}
-	return (0);
-}
-
-/* Exit the shell, returning a status of n to the shell’s parent. 
-If n is omitted, the exit status is that of the last command executed */
-
-int	exec_exit(char **argv) // the expanded argv
-{
-	if (argv[1] == NULL) // n is omitted
-		exit(0);
-	else if (argv[2] != NULL) // too many args
-	{
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mexit: too many arguments\n"); // protect
-		return (1);
-	}
-	else
-		exit(ft_atoi(argv[1]));
-	return (0);
-}
-
-int	exec_cd(char **argv)
-{
-	if (argv[1] == NULL) // If directory is not supplied, the value of the HOME shell variable is used.
-	{
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mcd: too few arguments\n"); // protect
-		return (1);
-	}
-	else if (argv[2] != NULL) // too many args
-	{
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mcd: too many arguments\n"); // protect
-		return (1);
-	}
-	else
-	{
-		if (chdir(argv[1]) == -1)
-		{
-			ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0mcd: ");
-			perror(argv[1]);
-			return (1);
-		}
-	}
-	return (0);
-}
-
-int	exec_pwd(char **argv)
-{
-	char	cwd[1024]; // malloc?
-
-	if (getcwd(cwd, sizeof(cwd)) == NULL) // error msg?
-		return (1);
-	if (printf("%s\n", cwd) < 0)
-	{
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0, %s", ERR_PRINTF);
-		return (1);
-	}
-	return (0);
-}
-
-int	is_builtin(char **argv, t_data **data) // the expanded argv
-{
-	if (ft_strcmp(argv[0], "echo") == 0)
-		(*data)->builtin = ECHO;
-	else if (ft_strcmp(argv[0], "cd") == 0)
-		(*data)->builtin = CD;
-	else if (ft_strcmp(argv[0], "pwd") == 0)
-		(*data)->builtin = PWD;
-	else if (ft_strcmp(argv[0], "export") == 0)
-		(*data)->builtin = EXPORT;
-	else if (ft_strcmp(argv[0], "unset") == 0)
-		(*data)->builtin = UNSET;
-	else if (ft_strcmp(argv[0], "env") == 0)
-		(*data)->builtin = ENV;
-	else if (ft_strcmp(argv[0], "exit") == 0)
-		(*data)->builtin = EXIT;
-	else
-		return (0);
-	return (1);
-}
-
-int	run_builtin(char **argv, t_data *data) // the expanded argv
-{
-	if (data->builtin == ECHO)
-		return (exec_echo(argv));
-	else if (data->builtin == CD)
-		return (exec_cd(argv));
-	else if (data->builtin == PWD)
-		return (exec_pwd(argv));
-	else if (data->builtin == EXIT)
-		return (exec_exit(argv));
-}
-
 /* the parameter process to indicate if runcmd 
 is executed in child process or in parent process
 in child process -> exit with status code; 
@@ -200,11 +50,17 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 		else
 		{
 			// ------ debug ------
-			// dprintf(2, "non-builtin\n");
+			dprintf(2, "non-builtin\n");
 			// -------------------
 			if (process == CHILD_PROC)
 			{
-				execve(ecmd->argv[0], ecmd->argv, data->envp);
+				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
+				data->envp = copy_env_lst_to_arr(data->env_lst);
+				// ------ print out arr ------
+				// for (int n = 0; data->envp[n] != NULL; n++)
+				// 	printf("%s\n", data->envp[n]);
+				// ----------------------------
+				execve(data->cmd_path, ecmd->argv, data->envp);
 				panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
 			}
 			else
@@ -212,7 +68,27 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 				pid = fork1(data);
 				if (pid == 0)
 				{
-					execve(ecmd->argv[0], ecmd->argv, data->envp);
+					dprintf(2, "debug0\n");
+					data->cmd_path = get_cmd_path(ecmd->argv, data); // free
+					dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
+					dprintf(2, "debug1\n");
+					// ------ print out list ------
+					// t_env	*tmp = data->env_lst;
+					// while (tmp != NULL)
+					// {
+					// 	printf("%s=%s\n", tmp->name, tmp->value);
+					// 	tmp = tmp->next;
+					// }
+					// ----------------------------
+					data->envp = copy_env_lst_to_arr(data->env_lst);
+					dprintf(2, "debug2\n");
+					dprintf(2, "envp: %s\n", *(data->envp));
+					// ------ print out arr ------
+					for (int n = 0; data->envp[n] != NULL; n++)
+						dprintf(2 ,"%s\n", data->envp[n]);
+					dprintf(2, "debug\n");
+					// ----------------------------
+					execve(data->cmd_path, ecmd->argv, data->envp);
 					panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
 				}
 				if (waitpid(pid, &status, 0) == -1)
@@ -231,7 +107,7 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 		pid = fork1(data);
 		if (pid == 0)
 		{
-			fd = open(rcmd->file, rcmd->mode); // rcmd->mode is actually flag; in addition, we need to know mode from parsing
+			fd = open(rcmd->file, rcmd->mode, 0644);
 			if (fd == -1)
 				panic(ERR_OPEN, data, EXIT_FAILURE);
 			if (dup2(fd, rcmd->fd) == -1)

@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 14:45:07 by ixu               #+#    #+#             */
-/*   Updated: 2024/02/17 17:08:53 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/25 19:11:36 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 // width and all flags are intialized to 0 (false), and precision to -1
 
-t_dprintf	data_init(int fd)
+t_dprintf	initialize_data(int fd)
 {
 	t_dprintf	data;
 

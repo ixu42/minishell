@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 14:47:55 by ixu               #+#    #+#             */
-/*   Updated: 2024/02/17 16:49:35 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/25 19:11:51 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ typedef struct s_dprintf
 int			ft_dprintf(int fd, const char *format, ...);
 
 // funcs for analyzing or modifying flags
-t_dprintf	data_init(int fd);
+t_dprintf	initialize_data(int fd);
 void		set_left_flag(t_dprintf **data);
 void		eval_star(t_dprintf **data, va_list ap);
 void		get_width(char c, t_dprintf **data);

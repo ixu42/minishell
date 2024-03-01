@@ -13,7 +13,6 @@ SRCS = testparser.c \
 		parser/parseexec.c \
 		parser/parsecmd.c \
 		parser/parsing_utils.c
-		parser/runcmd_test.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -22,10 +21,10 @@ all: $(NAME)
 #$(NAME): $(OBJS) $(LIBFT)
 #	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -L$(LIBFT_DIR) -lft
 $(NAME): $(OBJS) $(LIBFT)
-	cc -g -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -I ~/.brew/opt/readline/include -L ~/.brew/opt/readline/lib -L$(LIBFT_DIR) -lft
+	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -I ~/.brew/opt/readline/include -L ~/.brew/opt/readline/lib -L$(LIBFT_DIR) -lft
 
 %.o: %.c
-	cc -g -c $< -o $@ -I ~/.brew/opt/readline/include
+	cc -c $< -o $@ -I ~/.brew/opt/readline/include
 	#cc $(CFLAGS) -c $< -o $@ -I ~/.brew/opt/readline/include
 
 $(LIBFT):

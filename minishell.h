@@ -34,7 +34,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # define ERR_OPEN "open error"
 # define ERR_CLOSE "close error"
 # define ERR_DUP2 "dup2 error"
-// # define EXIT_CMD_PERM_ERR 126
+# define EXIT_CMD_PERM_ERR 126
 # define EXIT_CMD_NOT_FOUND 127
 
 // macros for processes
@@ -42,8 +42,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # define CHILD_PROC 1
 
 
-#define TESTMODE 1 
-#define MAXARGS 4
+#define MAXARGS 10
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&;()\\"
 
@@ -58,9 +57,7 @@ typedef enum e_node_type
 	ARG_NODE,
 	STR_NODE,
 	STR_NODE_VAR,
-	STR_NODE_VAR_P,
-	STR_EXIT_CODE,
-	STR_STAR,
+	STR_NODE_EXT,
 	// to be remove?
 	LIST
 }   t_node_type;
@@ -80,12 +77,6 @@ typedef enum e_token
 	RPAR
 }   t_token_type;
 
-typedef enum e_parse_error
-{
-	SYNTAX_ERROR = 0x2,
-	MALLOC_ERROR = 0x4,
-}	t_parse_error;
-
 typedef enum e_builtin
 {
 	ECHO = 1,
@@ -97,57 +88,52 @@ typedef enum e_builtin
 	EXIT,
 }   t_builtin;
 
+typedef struct s_env
+{
+	char			*name;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
+
 typedef struct s_data
 {
 	char		*buf;
 	char		**envp;
+	t_env		*env_lst;
+	char		**env_paths;
+	char		*cmd_path;
 	t_builtin	builtin;
 }	t_data;
-
-typedef struct s_strstate
-{
-	char	*start;
-	char	*pos;
-	char	*finish;
-	char	*beg;
-	char	*end;
-	int		d_quotes;
-	int		s_quotes;
-	int		flag;
-} t_strstate;
 
 typedef struct s_cmd
 {
 	int	type;
 }	t_cmd;
 
-typedef struct s_strcmd
-{
-	int		type;
-	int		flag;
-	char	*start;
-	char	*end;
-	struct s_strcmd	*next;
-}	t_strcmd;
-
-typedef struct s_argcmd
-{
-	int		type;
-	t_strcmd	*left;
-	struct s_argcmd	*right;
-	char			*start;
-	char			*end;
-}	t_argcmd;
-
 typedef struct s_execcmd
 {
 	int		type;
 	char	*argv[MAXARGS];
 	char	*eargv[MAXARGS];
-	char	**argv_full;
-	int		argc;
-	t_argcmd	*args;
+	t_cmd	*args;
 }	t_execcmd;
+
+/*
+typedef struct s_argcmd
+{
+	int		type;
+	t_cmd	*data;
+	t_cmd	*next;
+}	t_argcmd;
+*/
+
+typedef struct s_strcmd
+{
+	int		type;
+	char	*start;
+	char	*end;
+	t_cmd	*next;
+}	t_strcmd;
 
 typedef struct s_redircmd
 {
@@ -173,12 +159,8 @@ typedef struct s_listcmd
 	t_cmd	*right;
 }	t_listcmd;
 
-char	**copy_env(char **envp);
 int		fork1(t_data *data);
-void	panic(char *err_msg, t_data *data, int exit_code);
 t_cmd	*parsecmd(char *s);
-int		is_builtin(char **argv, t_data **data);
-int		run_builtin(char **argv, t_data *data);
 int		runcmd(t_cmd *cmd, t_data *data, int child_proc);
 // to be removed at some point
 void	runcmd_old(t_cmd *cmd, t_data *data);
@@ -186,13 +168,10 @@ void	runcmd_test(t_cmd *cmd);
 
 // constructors.c
 t_cmd   *execcmd(void);
+t_cmd   *strcmd(int type);
 t_cmd   *redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
 t_cmd   *pipecmd(t_cmd *left, t_cmd *right);
 t_cmd   *list_cmd(t_cmd *left, t_cmd *right, int type);
-t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
-t_strcmd   *strcmd(int type, char *start, char *end);
-t_strstate	*make_strstate(char *pos, char *finish);
-
 
 // parseexec.c
 t_cmd	*parseexec(char**, char*);
@@ -209,5 +188,33 @@ int gettoken(char **ps, char *es, char **q, char **eq);
 int peek(char **ps, char *es, char *toks);
 t_cmd   *nulterminate(t_cmd *cmd);
 void    panic_test(char *s);  //this is temporal function that exit(1) from parser
+
+// handling builtins
+int		exec_echo(char **argv);
+int		exec_exit(char **argv);
+int		exec_cd(char **argv);
+int		exec_pwd(char **argv);
+int		is_builtin(char **argv, t_data **data);
+int		run_builtin(char **argv, t_data *data);
+
+// handling env
+char	**copy_env(char **envp);
+char	*get_value(char *name_value_str);
+t_env	*get_node(char *name_value_str);
+void	lst_append(t_env **env_lst, t_env *new_node);
+t_env	*copy_env_arr_to_lst(char **envp);
+char	**copy_env_lst_to_arr(t_env *env_lst);
+char	**get_env_paths(char **envp, t_data *data);
+
+// parsing cmd path
+char	*get_cmd_path(char **argv, t_data *data);
+
+// freeing
+void	free_arr(char **arr);
+void	free_data(t_data *data);
+
+// error handling
+void	print_error_n_exit(char *err_msg);
+void	panic(char *err_msg, t_data *data, int exit_code);
 
 #endif
