@@ -3,6 +3,7 @@
 //parseexec.c
 t_strcmd	*parsestr(t_strstate *state);
 
+// parseredirs.c
 t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 {
 	t_cmd *tail;
@@ -24,37 +25,6 @@ t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 		return(extra); 
 	return (head);
 }
-
-
-t_cmd*	parse_one_redir_old(t_cmd *cmd, char **ps, char *es)
-{
-	int		tok;
-	char	*q;
-	char	*eq;
-/*	t_strstate	*state;
-
-	state = make_strstate(q, eq); 
-	if (!state)
-		return (1);
-	str_node = parsestr(state);
-*/
-	if (peek(ps, es, "<>"))
-	{
-		tok = gettoken(ps, es, 0, 0);
-		if (gettoken(ps, es, &q, &eq) != STR_TOK)
-			ft_dprintf(2,"Syntax error: missing name for redirection\n");
-		if (tok == '<')
-			cmd = redircmd_old(cmd, q, eq, O_RDONLY, 0);
-		else if (tok == '>')
-			cmd = redircmd_old(cmd, q, eq, O_WRONLY | O_CREAT | O_TRUNC, 1);
-		else if (tok == RED_OUT_APP)
-			cmd = redircmd_old(cmd, q, eq, O_WRONLY| O_CREAT | O_APPEND, 1);
-		else if (tok == HEREDOC)
-			cmd = redircmd_old(cmd, q, eq, -1, 0);
-	}
-	return (cmd);
-}
-
 
 void	make_redir_str(t_cmd *cmd, t_strstate *state)
 {
@@ -104,19 +74,6 @@ t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 	if (!cmd)
 		return (NULL);
 	make_redir_str(cmd, state);
-	/*
-	t_strstate	*state_str;
-	t_redircmd	*rcmd;
-	state_str = make_strstate(state->pos, state->finish);
-	if (!state_str)
-		return (NULL);
-	if (cmd->type == REDIR)
-	{
-		rcmd = (t_redircmd *)cmd;
-		rcmd->str = parsestr(state_str);
-	}
-	*/
-	//printf("parse_one_redir: state->pos=%p\n", state->pos);
 	return (cmd);
 }
 
@@ -149,7 +106,7 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 }
 
 
-// parsing string
+// parse_word_singl_var.c
 t_strcmd	*parse_word(t_strstate *state)
 {
 	char	*s;
@@ -236,14 +193,13 @@ t_strcmd	*parse_variable(t_strstate *state)
 
 	s = state->pos + 1;
 	state->beg = s;
-	while (((47 < *s && *s < 58) || (64 < *s && *s < 91) || \
-		(96 < *s && *s < 123) || *s == '_') && s < state->finish)
+	while ((ft_isalnum(*s) || *s == '_') && s < state->finish)
 		s++;
 	state->end = s;
 	state->pos = s;
 	if (state->end == state->beg)
 	{
-		ft_dprintf(2, "Error: variable name of zero size.\n");
+		ft_dprintf(2, "Error: no variable name provided after $.\n");
 		state->flag |= SYNTAX_ERROR;
 	}
 	node = strcmd(STR_NODE_VAR, state->beg, state->end);
@@ -258,7 +214,9 @@ t_strcmd	*parse_variable(t_strstate *state)
 	return (node);
 }
 
-t_strcmd	*parse_double(t_strstate *state)
+
+//parsestr.c
+t_strcmd	*parse_double_elem(t_strstate *state)
 {
 	t_strcmd *node;
 
@@ -271,6 +229,14 @@ t_strcmd	*parse_double(t_strstate *state)
 		node = parse_variable(state);
 	else
 		node = parse_str_till(state, "$\"");
+	return (node);
+}
+
+t_strcmd	*parse_double(t_strstate *state)
+{
+	t_strcmd *node;
+
+	node = parse_double_elem(state);
 	if (node == NULL)
 	{
 		state->flag |= MALLOC_ERROR;
@@ -290,16 +256,10 @@ t_strcmd	*parse_double(t_strstate *state)
 	return (node);
 }
 
-t_strcmd	*parsestr(t_strstate *state)
+t_strcmd	*parse_element(t_strstate *state)
 {
 	t_strcmd	*node;
-	t_strcmd	*new;
-
-	if (*(state->pos) == '\"' && state->d_quotes == 0)
-	{
-		state->d_quotes = 1;
-		state->pos++;
-	}
+	
 	if (state->d_quotes == 1)
 		node = parse_double(state);
 	else if (!ft_strchr("*$\'\"", *(state->pos)))
@@ -318,6 +278,20 @@ t_strcmd	*parsestr(t_strstate *state)
 		node = strcmd(STR_STAR, state->pos, state->pos + 1);
 		state->pos++;
 	}
+	return (node);
+}
+
+t_strcmd	*parsestr(t_strstate *state)
+{
+	t_strcmd	*node;
+	t_strcmd	*new;
+
+	if (*(state->pos) == '\"' && state->d_quotes == 0)
+	{
+		state->d_quotes = 1;
+		state->pos++;
+	}
+	node = parse_element(state);
 	if (!node)
 		return (NULL);
 	if (state->pos < state->finish && node->flag == 0)
@@ -333,6 +307,7 @@ t_strcmd	*parsestr(t_strstate *state)
 }
 
 
+//parseexec.c
 int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 {
 	t_strcmd *str_node;
@@ -356,10 +331,18 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 	return (0);
 }
 
+void	set_execcmd_argv(t_execcmd *cmd, char **tok_str)
+{
+		if (cmd->argc < MAXARGS - 1)
+		{
+			cmd->argv[cmd->argc] = tok_str[0];
+			cmd->eargv[cmd->argc] = tok_str[1];
+		}
+}
+
 int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 {
-	char	*q;
-	char	*eq;
+	char	*tok_str[2];
 	int		tok;
 	t_cmd *new_redir;
 	t_argcmd *new_arg;
@@ -369,28 +352,16 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 	{
 		if (*ps == es)
 			break;
-		tok = gettoken(ps, es, &q, &eq);
-		if (tok != STR_TOK)
-		{
-			printf("Liteshell: -syntax error, leftover around %s \n", *ps);
-			panic_test("");
-		}
-		extend_arg_node(&new_arg, q, eq);
+		tok = gettoken(ps, es, tok_str, tok_str + 1);
+		if (tok != STR_TOK)  // I am not sure if is ever happens
+			printf("Liteshell: exec_redir_loop: syntax error. unexpected token %d \n", tok);
+		extend_arg_node(&new_arg, tok_str[0], tok_str[1]);
 		if (cmd->argc == 0)
 			cmd->args = new_arg;
-		if (cmd->argc < MAXARGS - 1)
-		{
-			cmd->argv[cmd->argc] = q;
-			cmd->eargv[cmd->argc] = eq;
-		}
+		set_execcmd_argv(cmd, tok_str);
 		cmd->argc++;
 		new_redir = parseredirs((t_cmd *)cmd,  ps, es);
 		*head = combine_redirs(*head, new_redir, (t_cmd *)cmd);
-	}
-	if (cmd->argc <= MAXARGS - 1)
-	{
-		cmd->argv[cmd->argc] = 0;
-		cmd->eargv[cmd->argc] = 0;
 	}
 	return (0);
 }
@@ -415,4 +386,3 @@ t_cmd*	parseexec(char **ps, char *es)
 		ft_dprintf(2,"parseexec:command is not specified, but it's ok.\n");
 	return (head);
 }
-

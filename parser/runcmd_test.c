@@ -21,10 +21,9 @@ void	printstr(t_strcmd *str)
 	{
 		start = str->start;
 		end = str->end;
-		write(2, "\t ", 2);
+		ft_dprintf(2, "   |   |---->");
 		write(2, start, end - start);
-		//ft_dprintf(2, "\t i=%d, len=%d, flag=%d, type=%d\n", i, (int)(end - start), str->flag, str->type);
-		ft_dprintf(2, "\t\t type=%d, flag=%d\n", str->type, str->flag);
+		ft_dprintf(2, "<-\t type=%d, flag=%d\n", str->type, str->flag);
 		str = str->next;
 		i++;
 	}
@@ -43,18 +42,19 @@ void	printargs(t_argcmd *args)
 		//printf("arg number %d for rrr=%p=>\n", i, args->right);
 		start = args->start;
 		end = args->end;
-		ft_dprintf(2,"argument i=%d : ", i);
+		ft_dprintf(2,"   |--arg-%d\t->", i);
 		if (start < end)
 			write(2, start, end - start);
-		ft_dprintf(2, "\n");
+		ft_dprintf(2, "<-\n");
 		printstr(args->left);
+		ft_dprintf(2, "   |\n");
 		if (args->right == args)
 			break;
 		args = args->right;
 		i++;
 	}
 	if (args == NULL)
-		ft_dprintf(2, "NULL terminated arg node.\n");
+		ft_dprintf(2, "   NULL terminated arg node.\n");
 }
 // test version of runcmd for testing AST
 void	runcmd_test(t_cmd *cmd)
