@@ -30,7 +30,13 @@ SRCS = main.c \
 		runcmd.c \
 		get_cmd_path.c \
 		env.c \
-		builtins.c \
+		builtins/builtins.c \
+		builtins/echo.c \
+		builtins/directory.c \
+		builtins/export.c \
+		builtins/unset.c \
+		builtins/env.c \
+		builtins/exit.c \
 		error.c \
 		free.c
 #		runcmd_old.c 
