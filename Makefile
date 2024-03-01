@@ -14,7 +14,9 @@ NAME = minishell
 
 LIBFT_DIR = libft
 
-RL_DIR = ~/.brew/opt/readline/lib
+RL_DIR = $(HOME)/.brew/opt/readline/lib
+
+RL_HEADER_DIR = $(HOME)/.brew/opt/readline/include/readline
 
 LIBFT = $(LIBFT_DIR)/libft.a
 
@@ -37,14 +39,12 @@ OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-#$(NAME): $(OBJS) $(LIBFT)
-#	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -L$(LIBFT_DIR) -lft
 $(NAME): $(OBJS) $(LIBFT)
-	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -I ~/.brew/opt/readline/include -L ~/.brew/opt/readline/lib -L$(LIBFT_DIR) -lft
+	cc -o $(NAME) $(OBJS) $(LIBFT) -L$(RL_DIR) -lreadline -L$(LIBFT_DIR) -lft
 
 %.o: %.c
-	cc -c $< -o $@ -I ~/.brew/opt/readline/include
-	#cc $(CFLAGS) -c $< -o $@ -I ~/.brew/opt/readline/include
+	cc -c $< -o $@ -I$(RL_HEADER_DIR)
+	#cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFT_DIR)
