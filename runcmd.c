@@ -50,7 +50,7 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 		else
 		{
 			// ------ debug ------
-			dprintf(2, "non-builtin\n");
+			// dprintf(2, "non-builtin\n");
 			// -------------------
 			if (process == CHILD_PROC)
 			{
@@ -68,10 +68,8 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 				pid = fork1(data);
 				if (pid == 0)
 				{
-					dprintf(2, "debug0\n");
 					data->cmd_path = get_cmd_path(ecmd->argv, data); // free
-					dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
-					dprintf(2, "debug1\n");
+					// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
 					// ------ print out list ------
 					// t_env	*tmp = data->env_lst;
 					// while (tmp != NULL)
@@ -81,12 +79,10 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 					// }
 					// ----------------------------
 					data->envp = copy_env_lst_to_arr(data->env_lst);
-					dprintf(2, "debug2\n");
-					dprintf(2, "envp: %s\n", *(data->envp));
+					// dprintf(2, "envp: %s\n", *(data->envp));
 					// ------ print out arr ------
 					for (int n = 0; data->envp[n] != NULL; n++)
 						dprintf(2 ,"%s\n", data->envp[n]);
-					dprintf(2, "debug\n");
 					// ----------------------------
 					execve(data->cmd_path, ecmd->argv, data->envp);
 					panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);

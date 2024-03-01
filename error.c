@@ -4,7 +4,7 @@
 
 void	print_error_n_exit(char *err_msg)
 {
-	if (ft_putstr_fd("minishell: ", STDERR_FILENO) == -1)
+	if (ft_putstr_fd("minishell: ", 2) == -1)
 	{
 		perror("minishell: write error");
 		exit(EXIT_FAILURE);
@@ -18,9 +18,9 @@ void	print_error_n_exit(char *err_msg)
 void	panic(char *err_msg, t_data *data, int exit_code)
 {
 	if (exit_code == EXIT_CMD_NOT_FOUND)
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0m%s: command not found\n", err_msg); // protect
+		ft_dprintf(2, "%s%s: command not found\n", PMT, err_msg); // protect
 	else
-		ft_dprintf(STDERR_FILENO, "\033[0;31mLiteShell: \033[0m%s\n", err_msg); // protect
+		ft_dprintf(2, "%s%s\n", PMT, err_msg); // protect
 	free_data(data);
 	// free tree nodes?
 	exit(exit_code);

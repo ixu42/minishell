@@ -9,8 +9,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
-/* write, close, dup2, fork, pipe, access, execve, unlink
-STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
+// write, close, dup2, fork, pipe, access, execve, unlink
 # include <unistd.h>
 
 //FILE CONTROL
@@ -34,6 +33,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # define ERR_OPEN "open error"
 # define ERR_CLOSE "close error"
 # define ERR_DUP2 "dup2 error"
+# define ERR_NAME "not a valid identifier"
 # define EXIT_CMD_PERM_ERR 126
 # define EXIT_CMD_NOT_FOUND 127
 
@@ -41,6 +41,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 # define PARENT_PROC 0
 # define CHILD_PROC 1
 
+# define PMT "\033[0;31mLiteShell: \033[0m"
 
 #define MAXARGS 10
 #define WHITESPACE  " \t\r\n\v"
@@ -194,6 +195,10 @@ int		exec_echo(char **argv);
 int		exec_exit(char **argv);
 int		exec_cd(char **argv);
 int		exec_pwd(char **argv);
+int		exec_export(char **argv, t_env *env_lst);
+int		exec_unset(char **argv, t_env *env_lst);
+int		exec_env(t_env *env_lst);
+int		name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
 int		is_builtin(char **argv, t_data **data);
 int		run_builtin(char **argv, t_data *data);
 

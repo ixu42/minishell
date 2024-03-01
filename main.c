@@ -4,9 +4,9 @@ static void	validate_args(int argc)
 {
 	if (argc != 1)
 	{
-		if (ft_putendl_fd(ERR_ARGS, STDERR_FILENO) == -1)
+		if (ft_putendl_fd(ERR_ARGS, 2) == -1)
 			print_error_n_exit(ERR_WRITE);
-		if (ft_putendl_fd(USAGE, STDOUT_FILENO) == -1)
+		if (ft_putendl_fd(USAGE, 1) == -1)
 			print_error_n_exit(ERR_WRITE);
 		exit(EXIT_FAILURE);
 	}

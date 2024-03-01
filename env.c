@@ -1,65 +1,5 @@
 #include "minishell.h"
 
-/* static int	arr_len(char **arr)
-{
-	int	len;
-
-	len = 0;
-	while (arr[len] != NULL)
-		len++;
-	return (len);
-}
-
-char	**copy_env(char **envp)
-{
-	int		len;
-	char	**envs;
-	int		i;
-	int		j;
-
-	len = arr_len(envp);
-	envs = (char **)malloc(sizeof(char *) * (len + 1));
-	if (envs == NULL)
-		print_error_n_exit(ERR_MALLOC);
-	i = -1;
-	while (++i < len)
-	{
-		envs[i] = (char *)malloc(sizeof(char) * ((int)ft_strlen(envp[i]) + 1));
-		if (envs[i] == NULL)
-		{
-			free_arr(envs);
-			print_error_n_exit(ERR_MALLOC);
-		}
-		j = -1;
-		while (++j < (int)ft_strlen(envp[i]))
-			envs[i][j] = envp[i][j];
-		envs[i][j] = '\0';
-	}
-	envs[i] = NULL;
-	return (envs);
-} */
-
-static char	*remove_quotes(char *s)
-{
-	char	*new_s;
-	int		new_len;
-	int		i;
-
-	new_len = ft_strlen(s) - 1;
-	new_s = (char *)malloc(new_len * sizeof(char));
-	if (new_s == NULL)
-		return (NULL);
-	i = 0;
-	while (i < new_len - 1)
-	{
-		new_s[i] = s[i + 1];
-		i++;
-	}
-	new_s[i] = '\0';
-	free(s);
-	return (new_s);
-}
-
 char	*get_value(char *name_value_str)
 {
 	char	*equal_sign;
@@ -71,13 +11,6 @@ char	*get_value(char *name_value_str)
 		value = ft_strdup(equal_sign + 1);
  		if (value == NULL)
 			print_error_n_exit(ERR_MALLOC); // to be updated
-		int	len = ft_strlen(value);
-		if (len > 1)
-		{
-			if ((value[0] == '"' && value[len - 1] == '"') ||
-				(value[0] == '\'' && value[len - 1] == '\''))
-				value = remove_quotes(value);
-		}
 		*equal_sign = '\0';
 	}
 	else
@@ -127,7 +60,6 @@ t_env	*copy_env_arr_to_lst(char **envp)
 {
 	t_env	*head;
 	t_env	*new_node;
-	t_env	*last_node;
 	int		i;
 
 	head = NULL;
@@ -136,16 +68,6 @@ t_env	*copy_env_arr_to_lst(char **envp)
 	{
 		new_node = get_node(envp[i]);
 		lst_append(&head, new_node);
-		// if (head == NULL)
-		// {
-		// 	head = new_node;
-		// 	last_node = new_node;
-		// }
-		// else
-		// {
-		// 	last_node->next = new_node;
-		// 	last_node = new_node;
-		// }
 	}
 	return (head);	
 }
@@ -166,7 +88,7 @@ size_t	lst_len(t_env *lst)
 	return (len);
 }
 
-char	**copy_env_lst_to_arr(t_env *env_lst) // when value == NULL, is the var copied?
+char	**copy_env_lst_to_arr(t_env *env_lst)
 {
 	t_env	*tmp;
 	char	**env_arr;
@@ -214,7 +136,7 @@ char	**copy_env_lst_to_arr(t_env *env_lst) // when value == NULL, is the var cop
 static void	print_error_partial_free(char *name, t_data *data)
 {
 
-	if (ft_putstr_fd("minishell: ", STDERR_FILENO) == -1)
+	if (ft_putstr_fd("minishell: ", 2) == -1)
 	{
 		perror("minishell: write error");
 		free_arr(data->envp);
