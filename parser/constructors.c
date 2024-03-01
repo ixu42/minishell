@@ -47,7 +47,7 @@ t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end)
 	return (cmd);
 }
 
-t_cmd* redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd)
+t_cmd* redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd)
 {
 	t_redircmd *cmd;
 
@@ -61,6 +61,25 @@ t_cmd* redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd)
 	cmd->efile = efile;
 	cmd->mode = mode;
 	cmd->fd = fd;
+	cmd->str = NULL;
+	return ((t_cmd*)cmd);
+}
+
+t_cmd* redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
+{
+	t_redircmd *cmd;
+
+	cmd = malloc(sizeof(*cmd));
+	if (!cmd)
+		return (NULL);
+	ft_memset(cmd, 0, sizeof(*cmd));
+	cmd->type = REDIR;
+	cmd->cmd = subcmd;
+	cmd->file = state->beg;
+	cmd->efile = state->end;
+	cmd->mode = mode;
+	cmd->fd = fd;
+	cmd->str = NULL;
 	return ((t_cmd*)cmd);
 }
 
@@ -102,7 +121,7 @@ t_strstate	*make_strstate(char *start, char *finish)
 	state->beg = NULL;
 	state->end = NULL;
 	state->d_quotes = 0;
-	state->s_quotes = 0;
+//	state->s_quotes = 0; //unused sofar
 	state->flag = 0;
 	return (state);
 }
