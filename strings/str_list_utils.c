@@ -35,6 +35,7 @@ char *strlist_join(t_strcmd *str)
 	}
 	return (res);
 }
+
 /*
 void	replace_var_nodes(t_strcmd *str, char *data)
 {
