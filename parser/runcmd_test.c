@@ -10,6 +10,15 @@ int	fork1_test(void)	// Fork but panics on failure.
 	return pid;
 }
 
+void    ft_print_char2d(char **split)
+{
+    size_t  i;
+
+    i = 0;
+    while (split[i])
+        ft_dprintf(2, "\t->%s<-\n", split[i++]);
+}
+
 void	printstr(t_strcmd *str)
 {
 	t_strcmd	*first;
@@ -82,12 +91,15 @@ void	runcmd_test(t_cmd *cmd)
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd*)cmd;
+		make_argv(ecmd, NULL);
 		if(ecmd->argv[0] == 0)
 		{
 			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");
 //			exit (1);
 		}
-		ft_dprintf(2, "EXEC: argv=%s, %s, %s, %s\n", ecmd->argv[0], ecmd->argv[1], ecmd->argv[2], ecmd->argv[3]);
+		ft_dprintf(2, "EXEC:    MAXARG limited sargv=%s, %s, %s, %s\n", ecmd->sargv[0], ecmd->sargv[1], ecmd->sargv[2], ecmd->sargv[3]);
+		ft_dprintf(2, "    argv=\n");
+		ft_print_char2d(ecmd->argv);
 		printargs(ecmd->args);
 	}
 	else if (cmd->type == REDIR)
