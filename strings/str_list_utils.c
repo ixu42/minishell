@@ -46,3 +46,20 @@ void	replace_var_nodes(t_strcmd *str, char *data)
 	}
 }
 */
+/*
+int make_argv(t_execcmd *cmd, t_data *data)
+{
+	t_argcmd	*args;
+	char			*str;
+
+	args = cmd->args;
+	while (args != NULL)
+	{
+		str = strlist_join(args->left);
+		args = args->right;
+	}
+}
+
+	while ()
+}
+*/
