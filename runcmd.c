@@ -79,10 +79,9 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 					// }
 					// ----------------------------
 					data->envp = copy_env_lst_to_arr(data->env_lst);
-					// dprintf(2, "envp: %s\n", *(data->envp));
 					// ------ print out arr ------
-					for (int n = 0; data->envp[n] != NULL; n++)
-						dprintf(2 ,"%s\n", data->envp[n]);
+					// for (int n = 0; data->envp[n] != NULL; n++)
+					// 	dprintf(2 ,"%s\n", data->envp[n]);
 					// ----------------------------
 					execve(data->cmd_path, ecmd->argv, data->envp);
 					panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);

@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-int	exec_cd(char **argv)
+static int	validate_args(char **argv)
 {
 	if (argv[1] == NULL)
 	{
@@ -14,28 +14,35 @@ int	exec_cd(char **argv)
 			perror(PMT_ERR_WRITE);
 		return (1);
 	}
-	else
+	return (0);
+}
+
+int	exec_cd(char **argv)
+{
+	if (validate_args(argv) == 1)
+		return (1);
+	if (chdir(argv[1]) == -1)
 	{
-		if (chdir(argv[1]) == -1)
+		if (ft_dprintf(2, "%scd: ", PMT) == -1)
 		{
-			if (ft_dprintf(2, "%scd: ", PMT) == -1)
-			{
-				perror(PMT_ERR_WRITE);
-				return (1);
-			}
-			perror(argv[1]);
+			perror(PMT_ERR_WRITE);
 			return (1);
 		}
+		perror(argv[1]);
+		return (1);
 	}
 	return (0);
 }
 
-int	exec_pwd(char **argv)
+int	exec_pwd(char **argv) // malloc char *cwd?
 {
-	char	cwd[1024]; // malloc?
+	char	cwd[1024];
 
-	if (getcwd(cwd, sizeof(cwd)) == NULL) // error msg?
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	{
+		perror(PMT_ERR_GETCWD);
 		return (1);
+	}
 	if (printf("%s\n", cwd) < 0)
 	{
 		perror(PMT_ERR_PRINTF);

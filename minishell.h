@@ -37,6 +37,7 @@
 # define PMT "\033[0;31mLiteShell: \033[0m"
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
 # define PMT_ERR_PRINTF "\033[0;31mLiteShell: \033[0mprintf error"
+# define PMT_ERR_GETCWD "\033[0;31mLiteShell: \033[0mgetcwd error"
 # define EXIT_CMD_PERM_ERR 126
 # define EXIT_CMD_NOT_FOUND 127
 
