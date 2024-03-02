@@ -30,7 +30,7 @@ int	exec_env(t_env *env_lst)
 		{
 			if (printf("%s=%s\n", tmp->name, tmp->value) < 0)
 			{
-				ft_dprintf(2, "%s%s", PMT, ERR_PRINTF);
+				perror(PMT_ERR_PRINTF);
 				return (1);
 			}
 		}

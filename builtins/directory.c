@@ -4,19 +4,25 @@ int	exec_cd(char **argv)
 {
 	if (argv[1] == NULL)
 	{
-		ft_dprintf(2, "%scd: too few arguments\n", PMT); // protect
+		if (ft_dprintf(2, "%scd: too few arguments\n", PMT) == -1)
+			perror(PMT_ERR_WRITE);
 		return (1);
 	}
 	else if (argv[2] != NULL)
 	{
-		ft_dprintf(2, "%scd: too many arguments\n", PMT); // protect
+		if (ft_dprintf(2, "%scd: too many arguments\n", PMT) == -1)
+			perror(PMT_ERR_WRITE);
 		return (1);
 	}
 	else
 	{
 		if (chdir(argv[1]) == -1)
 		{
-			ft_dprintf(2, "%scd: ", PMT);
+			if (ft_dprintf(2, "%scd: ", PMT) == -1)
+			{
+				perror(PMT_ERR_WRITE);
+				return (1);
+			}
 			perror(argv[1]);
 			return (1);
 		}
@@ -32,7 +38,7 @@ int	exec_pwd(char **argv)
 		return (1);
 	if (printf("%s\n", cwd) < 0)
 	{
-		ft_dprintf(2, "%s%s\n", PMT, ERR_PRINTF); // protect
+		perror(PMT_ERR_PRINTF);
 		return (1);
 	}
 	return (0);

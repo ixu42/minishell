@@ -9,7 +9,8 @@ int	exec_exit(char **argv)
 		exit(0);
 	else if (argv[2] != NULL)
 	{
-		ft_dprintf(2, "%sexit: too many arguments\n", PMT); // protect
+		if (ft_dprintf(2, "%sexit: too many arguments\n", PMT) == -1)
+			perror(PMT_ERR_WRITE);
 		return (1);
 	}
 	else

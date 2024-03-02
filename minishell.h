@@ -34,14 +34,15 @@
 # define ERR_CLOSE "close error"
 # define ERR_DUP2 "dup2 error"
 # define ERR_NAME "not a valid identifier"
+# define PMT "\033[0;31mLiteShell: \033[0m"
+# define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
+# define PMT_ERR_PRINTF "\033[0;31mLiteShell: \033[0mprintf error"
 # define EXIT_CMD_PERM_ERR 126
 # define EXIT_CMD_NOT_FOUND 127
 
 // macros for processes
 # define PARENT_PROC 0
 # define CHILD_PROC 1
-
-# define PMT "\033[0;31mLiteShell: \033[0m"
 
 #define MAXARGS 10
 #define WHITESPACE  " \t\r\n\v"

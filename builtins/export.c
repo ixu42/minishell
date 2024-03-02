@@ -8,9 +8,15 @@ static int	print_exported(t_env *env_lst)
 	while (tmp != NULL)
 	{
 		if (tmp->value == NULL)
-			printf("declare -x %s\n", tmp->name);
+		{
+			if (printf("declare -x %s\n", tmp->name) < 0)
+				perror(PMT_ERR_PRINTF);
+		}
 		else
-			printf("declare -x %s=\"%s\"\n", tmp->name, tmp->value);
+		{
+			if (printf("declare -x %s=\"%s\"\n", tmp->name, tmp->value) < 0)
+				perror(PMT_ERR_PRINTF);
+		}
 		tmp = tmp->next;
 	}
 	return (0);
@@ -68,7 +74,6 @@ int	exec_export(char **argv, t_env *env_lst)
 {
 	int		i;
 	t_env	*node;
-	t_env	*new_node;
 	size_t	name_len;
 
 	if (argv[1] == NULL)
@@ -79,16 +84,14 @@ int	exec_export(char **argv, t_env *env_lst)
 		name_len = get_name_len(argv[i]);
 		if (!is_valid_identifier(argv[i], name_len))
 		{
-			ft_dprintf(2, "%sexport: '%s': %s\n", PMT, argv[i], ERR_NAME);
+			if (ft_dprintf(2, "%sexport: '%s': %s\n", PMT, argv[i], ERR_NAME) == -1)
+				perror(PMT_ERR_WRITE);
 			return (1);
 		}
 		if (name_in_env_lst(env_lst, argv[i], name_len, &node))
 			set_value(argv[i], node);
 		else
-		{
-			new_node = get_node(argv[i]);
-			lst_append(&env_lst, new_node);
-		}
+			lst_append(&env_lst, get_node(argv[i]));
 	}
 	return (0);
 }
