@@ -335,7 +335,7 @@ void	set_execcmd_argv(t_execcmd *cmd, char **tok_str)
 {
 		if (cmd->argc < MAXARGS - 1)
 		{
-			cmd->argv[cmd->argc] = tok_str[0];
+			cmd->sargv[cmd->argc] = tok_str[0];
 			cmd->eargv[cmd->argc] = tok_str[1];
 		}
 }

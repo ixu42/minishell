@@ -143,9 +143,9 @@ typedef struct s_argcmd
 typedef struct s_execcmd
 {
 	int		type;
-	char	*argv[MAXARGS];
+	char	*sargv[MAXARGS];
 	char	*eargv[MAXARGS];
-	char	**argv_full;
+	char	**argv;
 	int		argc;
 	t_argcmd	*args;
 }	t_execcmd;
@@ -215,7 +215,9 @@ t_cmd   *nulterminate(t_cmd *cmd);
 void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
 
-char *strlist_join(t_strcmd *str);
+// string operations
+char	*strlist_join(t_strcmd *str);
+int		make_argv(t_execcmd *cmd, t_data *data);
 
 
 #endif

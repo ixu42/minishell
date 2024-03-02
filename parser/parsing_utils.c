@@ -95,14 +95,8 @@ t_cmd	*nulterminate(t_cmd *cmd)
 	{
 		ecmd = (t_execcmd*)cmd;
 		i = 0;
-	//	printf("nulterminating EXEC started\n");
-		while (ecmd->argv[i])
-		{
+		while (ecmd->sargv[i])
 			*ecmd->eargv[i++] = 0;
-		}
-		//for(i=0; ecmd->argv[i]; i++)
-			// *ecmd->eargv[i] = 0;
-	//	printf("nulterminating EXEC passed well\n");
 	}
 	else if (cmd->type == REDIR)
 	{
