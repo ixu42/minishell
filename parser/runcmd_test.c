@@ -12,11 +12,14 @@ int	fork1_test(void)	// Fork but panics on failure.
 
 void	printstr(t_strcmd *str)
 {
+	t_strcmd	*first;
 	char *start;
 	char *end;
+	char *joined;
 	int i;
 
 	i = 0;
+	first = str;
 	while (str !=NULL)
 	{
 		start = str->start;
@@ -26,6 +29,12 @@ void	printstr(t_strcmd *str)
 		ft_dprintf(2, "<-\t type=%d, flag=%d\n", str->type, str->flag);
 		str = str->next;
 		i++;
+	}
+	joined = strlist_join(first);
+	if (joined)
+	{
+		ft_dprintf(2, "   |     joined string  ->%s<-\n", joined);
+		free(joined);
 	}
 }
 

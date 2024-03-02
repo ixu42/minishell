@@ -214,4 +214,8 @@ int peek(char **ps, char *es, char *toks);
 t_cmd   *nulterminate(t_cmd *cmd);
 void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
+
+char *strlist_join(t_strcmd *str);
+
+
 #endif
