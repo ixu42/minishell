@@ -6,9 +6,12 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/23 15:42:20 by ixu               #+#    #+#              #
-#    Updated: 2024/02/17 17:14:42 by ixu              ###   ########.fr        #
+#    Updated: 2024/03/04 13:28:45 by ixu              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+# Name of the program
+NAME = libft.a
 
 # Directory locations
 NBR_DIR = nbr/
@@ -90,22 +93,20 @@ SRCS = $(addprefix $(NBR_DIR), $(NBR_FILES)) \
 
 OBJS := $(SRCS:.c=.o)
 
-NAME = libft.a
-
 CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	ar rcs $(NAME) $(OBJS)
+	@ar rcs $(NAME) $(OBJS)
 
 %.o: %.c
-	cc $(CFLAGS) -c $< -o $@
+	@cc $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	@rm -f $(OBJS)
  
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
 	
 re: fclean all
