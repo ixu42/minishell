@@ -20,6 +20,12 @@ int	main(int argc, char **argv, char **envp)
 			// ------
 			// dprintf(2, "data.buf(before): %s\n", data.buf);
 			cmd = parsecmd(data.buf); // data.buf is modified
+			if (TESTMODE)
+			{
+				ft_dprintf(2,"------------->TESTMODE<----------\n");
+				runcmd_test(cmd);
+				ft_dprintf(2,"------------->  END   <----------\n");
+			}
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
 			status = runcmd(cmd, &data, PARENT_PROC);
 			printf("\033[0;35m[status: %d]\033[0m\n", status);

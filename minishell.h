@@ -279,5 +279,4 @@ void	rl_clear_history(void);
 char	*strlist_join(t_strcmd *str);
 int		make_argv(t_execcmd *cmd, t_data *data);
 
-
 #endif
