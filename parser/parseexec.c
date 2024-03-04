@@ -100,8 +100,6 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 //	free(state);
 	if (peek(ps, es, "<>"))
 		rcmd->cmd = parseredirs(cmd, ps, es);
-//	else
-//		rcmd->cmd = cmd;
 	return (node);
 }
 
@@ -370,12 +368,15 @@ t_cmd*	parseexec(char **ps, char *es)
 {
 	t_execcmd *cmd;
 	t_cmd *head;
-	
+	t_cmd *extra;
+
+	//redir
+	t_cmd *last_node;
+	t_cmd *temp;
+
 	if (peek(ps, es, "("))
 		return (parseblock(ps, es));
 	head = execcmd();
-	if (!head)
-		return (NULL);
 	cmd = (t_execcmd*)head;
 	head = parseredirs((t_cmd *)cmd, ps, es);
 //	printf("head =%p\n", head);
