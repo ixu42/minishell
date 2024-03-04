@@ -1,4 +1,4 @@
-#include "../minishell.h"
+#include "../../minishell.h"
 
 static void	unset_var(t_env *env_lst, t_env *node)
 {

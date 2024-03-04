@@ -1,4 +1,4 @@
-#include "../minishell.h"
+#include "../../minishell.h"
 
 static int	print_exported(t_env *env_lst)
 {

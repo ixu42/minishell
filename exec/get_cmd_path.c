@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 /* verify the validity of the executable/cmd, 
 if the provided name is already with a path */

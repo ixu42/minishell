@@ -192,6 +192,17 @@ int peek(char **ps, char *es, char *toks);
 t_cmd   *nulterminate(t_cmd *cmd);
 void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
+// data init
+t_env	*copy_env_arr_to_lst(char **envp);
+char	**get_env_paths(char **envp, t_data *data);
+void	data_init(t_data *data, char **envp);
+
+// data init utils
+char	*get_value(char *name_value_str);
+t_env	*get_node(char *name_value_str);
+void	lst_append(t_env **env_lst, t_env *new_node);
+void	print_error_partial_free(char *name, t_data *data);
+
 // handling builtins
 int		exec_echo(char **argv);
 int		exec_exit(char **argv);
@@ -221,7 +232,11 @@ void	free_arr(char **arr);
 void	free_data(t_data *data);
 
 // error handling
+void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
 void	panic(char *err_msg, t_data *data, int exit_code);
+
+// readline
+void	rl_clear_history(void);
 
 #endif

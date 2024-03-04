@@ -1,4 +1,4 @@
-#include "../minishell.h"
+#include "../../minishell.h"
 
 int	name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node)
 {

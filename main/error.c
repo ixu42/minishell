@@ -1,4 +1,16 @@
-#include "minishell.h"
+#include "../minishell.h"
+
+void	validate_args(int argc)
+{
+	if (argc != 1)
+	{
+		if (ft_putendl_fd(ERR_ARGS, 2) == -1)
+			print_error_n_exit(ERR_WRITE);
+		if (ft_putendl_fd(USAGE, 1) == -1)
+			print_error_n_exit(ERR_WRITE);
+		exit(EXIT_FAILURE);
+	}
+}
 
 // (1) print error message, (2) exit
 

@@ -1,6 +1,6 @@
-#include "../minishell.h"
+#include "../../minishell.h"
 
-static int	validate_args(char **argv)
+static int	validate_argv(char **argv)
 {
 	if (argv[1] == NULL)
 	{
@@ -19,7 +19,7 @@ static int	validate_args(char **argv)
 
 int	exec_cd(char **argv)
 {
-	if (validate_args(argv) == 1)
+	if (validate_argv(argv) == 1)
 		return (1);
 	if (chdir(argv[1]) == -1)
 	{
@@ -34,7 +34,7 @@ int	exec_cd(char **argv)
 	return (0);
 }
 
-int	exec_pwd(char **argv) // malloc char *cwd?
+int	exec_pwd(char **argv) // malloc char *cwd? work with env lst
 {
 	char	cwd[1024];
 

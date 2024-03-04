@@ -1,4 +1,4 @@
-#include "../minishell.h"
+#include "../../minishell.h"
 
 /* Exit the shell, returning a status of n to the shell’s parent. 
 If n is omitted, the exit status is that of the last command executed */
