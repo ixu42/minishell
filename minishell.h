@@ -47,7 +47,8 @@
 
 #define MAXARGS 10
 #define WHITESPACE  " \t\r\n\v"
-#define SYMBOLS "<>|&;()\\"
+//#define SYMBOLS "<>|&;()\\"
+#define SYMBOLS "<>|&;()"
 
 // AST's node types
 typedef enum e_node_type
@@ -68,7 +69,7 @@ typedef enum e_node_type
 // types of tockens
 typedef enum e_token
 {
-	WORD,
+	STR_TOK,
 	RED_IN,
 	HEREDOC,
 	RED_OUT,
@@ -133,10 +134,12 @@ typedef struct s_argcmd
 typedef struct s_strcmd
 {
 	int		type;
-	char	*start;
-	char	*end;
-	t_cmd	*next;
-}	t_strcmd;
+	char	*sargv[MAXARGS];
+	char	*eargv[MAXARGS];
+	char	**argv;
+	int		argc;
+	t_argcmd	*args;
+}	t_execcmd;
 
 typedef struct s_redircmd
 {
@@ -146,6 +149,8 @@ typedef struct s_redircmd
 	char	*efile;
 	int		mode;
 	int		fd;
+	t_strcmd	*str;
+	int		flag;
 }	t_redircmd;
 
 typedef struct s_pipecmd
@@ -171,8 +176,8 @@ void	runcmd_test(t_cmd *cmd);
 
 // constructors.c
 t_cmd   *execcmd(void);
-t_cmd   *strcmd(int type);
-t_cmd   *redircmd(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
+t_cmd   *redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
+t_cmd   *redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd);
 t_cmd   *pipecmd(t_cmd *left, t_cmd *right);
 t_cmd   *list_cmd(t_cmd *left, t_cmd *right, int type);
 
@@ -238,5 +243,10 @@ void	panic(char *err_msg, t_data *data, int exit_code);
 
 // readline
 void	rl_clear_history(void);
+
+// string operations
+char	*strlist_join(t_strcmd *str);
+int		make_argv(t_execcmd *cmd, t_data *data);
+
 
 #endif

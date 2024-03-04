@@ -34,7 +34,12 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 		if (s[0] == s[1] && s[0] == '>')
 		{
 			s++;
-			ret = '+';
+			ret = RED_OUT_APP;
+		}
+		if (s[0] == s[1] && s[0] == '<')
+		{
+			s++;
+			ret = HEREDOC;
 		}
 		if (s[0] == s[1] && s[0] == '&')
 		{
@@ -50,7 +55,7 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	}
 	else
 	{
-		ret = 'a';
+		ret = STR_TOK;
 			while (s < es && ((!ft_strchr(WHITESPACE, *s) && !ft_strchr(SYMBOLS, *s)) \
 				|| (quotes[0] || quotes[1])))
 				increase_s_quotes(&s, quotes);
@@ -63,46 +68,6 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	return (ret);
 }
 
-/*
-
-int	gettoken(char **ps, char *es, char **q, char **eq)
-{
-	char *s;
-	int ret;
-
-	s = *ps;
-	while (s < es && ft_strchr(WHITESPACE, *s))
-		s++;
-	
-	if(q)
-		*q = s;
-	ret = *s;
-	if (*s == 0)
-		;
-	else if (ft_strchr(SYMBOLS, *s))
-	{
-		if (s[0] == s[1] && s[0] == '>')
-		{
-			s++;
-			ret = '+';
-		}
-		s++;
-	}
-	else
-	{
-		ret = 'a';
-		while(s < es && !ft_strchr(WHITESPACE, *s) && !ft_strchr(SYMBOLS, *s))
-			s++;
-	}
-	if (eq)
-		*eq = s;
-	while (s < es && ft_strchr(WHITESPACE, *s))
-		s++;
-	*ps = s;
-	return (ret);
-}
-
-*/
 
 int	peek(char **ps, char *es, char *toks)
 {
@@ -130,10 +95,8 @@ t_cmd	*nulterminate(t_cmd *cmd)
 	{
 		ecmd = (t_execcmd*)cmd;
 		i = 0;
-		while (ecmd->argv[i])
+		while (ecmd->sargv[i])
 			*ecmd->eargv[i++] = 0;
-		//for(i=0; ecmd->argv[i]; i++)
-			//*ecmd->eargv[i] = 0;
 	}
 	else if (cmd->type == REDIR)
 	{
@@ -158,6 +121,7 @@ t_cmd	*nulterminate(t_cmd *cmd)
 
 void    panic_test(char *s)
 {
+//remove this function. use fd_dprintf instead and rise flags for errorcases.  
 //  printf(2, "%s\n", s);
     ft_putstr_fd(s, 2);
     ft_putstr_fd("\n", 2);

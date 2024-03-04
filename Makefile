@@ -6,7 +6,7 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
-#    Updated: 2024/02/24 12:06:36 by apimikov         ###   ########.fr        #
+#    Updated: 2024/03/01 14:03:47 by apimikov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ NAME = minishell
 # Directory locations
 MAIN_DIR = main/
 PARSER_DIR = parser/
+STRINGS_DIR = strings/
 EXEC_DIR = exec/
 BUILTINS_DIR = builtins/
 OBJS_DIR = objs/
@@ -32,7 +33,9 @@ MAIN_FILES = main.c \
 PARSER_FILES = constructors.c \
 				parseexec.c \
 				parsecmd.c \
-				parsing_utils.c
+				parsing_utils.c \
+				runcmd_test.c
+STRINGS_FILES = str_list_utils.c
 EXEC_FILES = runcmd.c \
 				get_cmd_path.c \
 				environment.c
@@ -47,6 +50,7 @@ BUILTINS_FILES = builtins.c \
 # Source files including paths
 SRCS = $(addprefix $(MAIN_DIR), $(MAIN_FILES)) \
 		$(addprefix $(PARSER_DIR), $(PARSER_FILES)) \
+		$(addprefix $(STRINGS_DIR), $(STRINGS_FILES)) \
 		$(addprefix $(EXEC_DIR), $(EXEC_FILES)) \
 		$(addprefix $(EXEC_DIR), $(addprefix $(BUILTINS_DIR), $(BUILTINS_FILES)))
 

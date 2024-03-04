@@ -32,6 +32,7 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 	if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
+		make_argv(ecmd, NULL);
 		// ------ print out args ------
 		// for (int i = 0; ecmd->argv[i] != NULL; i++)
 		// 	dprintf(2, "ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
