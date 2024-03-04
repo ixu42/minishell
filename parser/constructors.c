@@ -51,6 +51,7 @@ t_cmd* redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd)
 {
 	t_redircmd *cmd;
 
+	//this funstion is unused. remove it?!
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
 		return (NULL);
@@ -71,7 +72,11 @@ t_cmd* redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
+	{
+		subcmd->flag |= MALLOC_ERROR;
+		state->flag |= MALLOC_ERROR;
 		return (NULL);
+	}
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = REDIR;
 	cmd->cmd = subcmd;

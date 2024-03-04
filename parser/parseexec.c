@@ -59,9 +59,21 @@ t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 	if (peek(&(state->pos), state->finish, "<>"))
 	{
 		tok = gettoken(&(state->pos), state->finish, 0, 0);
-		if (gettoken(&(state->pos), state->finish, &(state->beg), &(state->end)) != STR_TOK)
-			ft_dprintf(2,"Syntax error: missing name for redirection\n");
+		if (tok == UNDEFINED_TOK)
+		{
+			cmd->flag |= SYNTAX_ERR_UNDEFTOK;
+			// remove next line
+			ft_dprintf(2,"Liteshell: from parse_one_redir \n");
+			ft_dprintf(2,"Liteshell: %s \"%s'\n", ERR_SYNTAX_UNEXP, state->pos);
+			return (NULL);
+		}
+		if (gettoken(&(state->pos), state->finish, &(state->beg), &(state->end)) \
+			   	!= STR_TOK)
+		{
+//			cmd->flag
+			ft_dprintf(2,"Liteshell: from parse_one_redir Syntax error: missing name for redirection\n");
 //		printf("parse_one_redir: ps=%s\n", state->pos);
+		}
 		if (tok == '<')
 			cmd = redircmd(cmd, state, O_RDONLY, 0);
 		else if (tok == '>')
@@ -83,25 +95,19 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 	t_redircmd *rcmd;
 	t_strstate	*state;
 	
-//	ft_dprintf(2,"*ps=->%s<-\n",*ps);
 	state = make_strstate(*ps, es);
 	if (!state)
 		return (NULL);
-//	ft_dprintf(2,"*ps=->%s<-\n",*ps);
 	node = parse_one_redir(cmd, state);
+	if (!node)
+		return (cmd);
 	*ps =state->pos;
-//	ft_dprintf(2,"*ps=->%p<-\n",*ps);
-//	ft_dprintf(2,"es=->%p<-\n",es);
 	if (node->type != REDIR)
 		return (cmd);
 	rcmd = (t_redircmd *)node;
-//	ft_dprintf(2," file=%s\n",rcmd->file);
-//	ft_dprintf(2,"efile=%s\n",rcmd->efile);
-//	free(state);
+//	free(state);  ???
 	if (peek(ps, es, "<>"))
 		rcmd->cmd = parseredirs(cmd, ps, es);
-//	else
-//		rcmd->cmd = cmd;
 	return (node);
 }
 
@@ -378,7 +384,14 @@ t_cmd*	parseexec(char **ps, char *es)
 		return (NULL);
 	cmd = (t_execcmd*)head;
 	head = parseredirs((t_cmd *)cmd, ps, es);
-//	printf("head =%p\n", head);
+	if (cmd->flag)
+	{
+		ft_dprintf(2, "flag = %d\n", cmd->flag);
+		ft_dprintf(2, "head = %p\n", head);
+		ft_dprintf(2, "cmd = %p\n", cmd);
+
+		return (head);
+	}
 //	printf("cmd =%p\n", cmd);
 	exec_redir_loop(&head, cmd, ps, es);
 	//remove next two lines later 

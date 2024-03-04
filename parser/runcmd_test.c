@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/04 06:12:06 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/04 12:22:26 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,10 +109,11 @@ void	runcmd_test(t_cmd *cmd)
 			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");
 //			exit (1);
 		}
-		ft_dprintf(2, "EXEC:    MAXARG limited sargv=%s, %s, %s, %s\n", ecmd->sargv[0], ecmd->sargv[1], ecmd->sargv[2], ecmd->sargv[3]);
+		ft_dprintf(2, "EXEC:   flag=%d\n", ecmd->flag);
 		ft_dprintf(2, "    argv=\n");
 		ft_print_char2d(ecmd->argv);
 		printargs(ecmd->args);
+		ft_dprintf(2, "    MAXARG limited sargv=%s, %s, %s, %s\n", ecmd->sargv[0], ecmd->sargv[1], ecmd->sargv[2], ecmd->sargv[3]);
 	}
 	else if (cmd->type == REDIR)
 	{

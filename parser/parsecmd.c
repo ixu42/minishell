@@ -9,11 +9,17 @@ t_cmd*	parsepipe(char **ps, char *es)
 	int		tok;
 
 	cmd = parseexec(ps, es);
-	if(peek(ps, es, "|") && (*ps)[1] != '|')
+	tok = peek(ps, es, "|");
+	if(tok && (*ps)[1] != '|')
 	{
 		tok = gettoken(ps, es, 0, 0);
-		if (tok == '|')
+		if (tok == PIPE_TOK)
 			cmd = pipecmd(cmd, parsepipe(ps, es));
+		else
+		{
+			ft_dprintf(2, "From parsepipe:\n", PMT, ERR_SYNTAX_UNEXP);
+			ft_dprintf(2, "%s %s\n", PMT, ERR_SYNTAX_UNEXP);
+		}
 	}
 	return (cmd);
 }
@@ -88,7 +94,7 @@ t_cmd	*parsecmd(char *s)
 	peek(&s, es, "");
 	if(s != es)
 	{
-		ft_putstr_fd("leftovers after paesed line", 2);
+		ft_putstr_fd("leftovers after parsed line", 2);
 		ft_putstr_fd(s, 2);
 		ft_putstr_fd("\n", 2);
 		panic_test("syntax error after parsing line");
