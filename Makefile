@@ -92,6 +92,11 @@ $(OBJS_DIR)%.o: $(PARSER_DIR)%.c
 	@#cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
 	@echo "$(COLOR_CYAN)$@ created$(COLOR_END)"
 
+$(OBJS_DIR)%.o: $(STRINGS_DIR)%.c
+	@cc -c $< -o $@ -I$(RL_HEADER_DIR)
+	@#cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
+	@echo "$(COLOR_CYAN)$@ created$(COLOR_END)"
+
 $(OBJS_DIR)%.o: $(EXEC_DIR)%.c
 	@cc -c $< -o $@ -I$(RL_HEADER_DIR)
 	@#cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)

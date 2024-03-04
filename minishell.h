@@ -45,10 +45,13 @@
 # define PARENT_PROC 0
 # define CHILD_PROC 1
 
-#define MAXARGS 10
+
+#define TESTMODE 1 
+#define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 //#define SYMBOLS "<>|&;()\\"
 #define SYMBOLS "<>|&;()"
+#define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 
 // AST's node types
 typedef enum e_node_type
@@ -61,7 +64,9 @@ typedef enum e_node_type
 	ARG_NODE,
 	STR_NODE,
 	STR_NODE_VAR,
-	STR_NODE_EXT,
+	STR_NODE_VAR_P,
+	STR_EXIT_CODE,
+	STR_STAR,
 	// to be remove?
 	LIST
 }   t_node_type;
@@ -69,17 +74,26 @@ typedef enum e_node_type
 // types of tockens
 typedef enum e_token
 {
+	UNDEFINED_TOK,
 	STR_TOK,
 	RED_IN,
-	HEREDOC,
 	RED_OUT,
+	HEREDOC,
 	RED_OUT_APP,
 	PIPE_TOK,
 	OR_TOK,
 	AND_TOK,
+	//unused tok
 	LPAR,
 	RPAR
 }   t_token_type;
+
+typedef enum e_parse_error
+{
+	SYNTAX_ERR_UNDEFTOK = 0x1,
+	SYNTAX_ERROR = 0x2,
+	MALLOC_ERROR = 0x4,
+}	t_parse_error;
 
 typedef enum e_builtin
 {
@@ -109,29 +123,43 @@ typedef struct s_data
 	t_builtin	builtin;
 }	t_data;
 
+typedef struct s_strstate
+{
+	char	*start;
+	char	*pos;
+	char	*finish;
+	char	*beg;
+	char	*end;
+	int		d_quotes;
+	int		s_quotes;
+	int		flag;
+} t_strstate;
+
 typedef struct s_cmd
 {
 	int	type;
 }	t_cmd;
 
-typedef struct s_execcmd
+typedef struct s_strcmd
 {
 	int		type;
-	char	*argv[MAXARGS];
-	char	*eargv[MAXARGS];
-	t_cmd	*args;
-}	t_execcmd;
+	int		flag;
+	char	*start;
+	char	*end;
+	struct s_strcmd	*next;
+}	t_strcmd;
 
-/*
 typedef struct s_argcmd
 {
 	int		type;
-	t_cmd	*data;
-	t_cmd	*next;
+	int		flag;
+	t_strcmd	*left;
+	struct s_argcmd	*right;
+	char			*start;
+	char			*end;
 }	t_argcmd;
-*/
 
-typedef struct s_strcmd
+typedef struct s_execcmd
 {
 	int		type;
 	char	*sargv[MAXARGS];
@@ -175,11 +203,14 @@ void	runcmd_old(t_cmd *cmd, t_data *data);
 void	runcmd_test(t_cmd *cmd);
 
 // constructors.c
-t_cmd   *execcmd(void);
-t_cmd   *redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
-t_cmd   *redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd);
-t_cmd   *pipecmd(t_cmd *left, t_cmd *right);
-t_cmd   *list_cmd(t_cmd *left, t_cmd *right, int type);
+t_cmd		*execcmd(void);
+t_cmd		*redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
+t_cmd		*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd);
+t_cmd		*pipecmd(t_cmd *left, t_cmd *right);
+t_cmd		*list_cmd(t_cmd *left, t_cmd *right, int type);
+t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
+t_strcmd	*strcmd(int type, char *start, char *end);
+t_strstate	*make_strstate(char *pos, char *finish);
 
 // parseexec.c
 t_cmd	*parseexec(char**, char*);
