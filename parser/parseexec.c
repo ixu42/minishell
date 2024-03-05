@@ -64,8 +64,8 @@ t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 			cmd->flag |= SYNTAX_ERR_UNDEFTOK;
 			// remove next line
 			ft_dprintf(2,"Liteshell: from parse_one_redir \n");
-			ft_dprintf(2,"Liteshell: %s \"%s'\n", ERR_SYNTAX_UNEXP, state->pos);
-			return (NULL);
+			ft_dprintf(2,"%s %s \"%s'\n", PMT, ERR_SYNTAX_UNEXP, state->pos);
+			return (cmd);
 		}
 		if (gettoken(&(state->pos), state->finish, &(state->beg), &(state->end)) \
 			   	!= STR_TOK)
@@ -74,9 +74,9 @@ t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 			ft_dprintf(2,"Liteshell: from parse_one_redir Syntax error: missing name for redirection\n");
 //		printf("parse_one_redir: ps=%s\n", state->pos);
 		}
-		if (tok == '<')
+		if (tok == RED_IN)
 			cmd = redircmd(cmd, state, O_RDONLY, 0);
-		else if (tok == '>')
+		else if (tok == RED_OUT)
 			cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_TRUNC, 1);
 		else if (tok == RED_OUT_APP)
 			cmd = redircmd(cmd, state, O_WRONLY| O_CREAT | O_APPEND, 1);
@@ -99,7 +99,7 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 	if (!state)
 		return (NULL);
 	node = parse_one_redir(cmd, state);
-	if (!node)
+	if (node->flag)
 		return (cmd);
 	*ps =state->pos;
 	if (node->type != REDIR)
@@ -354,7 +354,7 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 	t_argcmd *new_arg;
 
 	new_arg = NULL;
-	while(!peek(ps, es, "|)&;"))
+	while(!peek(ps, es, "|)&"))
 	{
 		if (*ps == es)
 			break;
@@ -362,9 +362,11 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 		if (tok != STR_TOK || tok == UNDEFINED_TOK)
 		{
 			ft_dprintf(2, "Liteshell: exec_redir_loop 1\n");
-			ft_dprintf(2, "%s %s %s\n",PMT, ERR_SYNTAX_UNEXP, *ps);
+			ft_dprintf(2, "%s %s '%s'\n",PMT, ERR_SYNTAX_UNEXP, *ps);
 			if (*head)
 				(*head)->flag |= SYNTAX_ERR_UNDEFTOK;
+			if (cmd)
+				cmd->flag |= SYNTAX_ERR_UNDEFTOK;
 			return (1);
 		}
 		extend_arg_node(&new_arg, tok_str[0], tok_str[1]);
@@ -374,6 +376,11 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 		cmd->argc++;
 		new_redir = parseredirs((t_cmd *)cmd,  ps, es);
 		*head = combine_redirs(*head, new_redir, (t_cmd *)cmd);
+		if (new_redir->flag)
+		{
+			(*head)->flag = new_redir->flag;
+			return (1);
+		}
 	}
 	return (0);
 }
@@ -391,17 +398,18 @@ t_cmd*	parseexec(char **ps, char *es)
 	cmd = (t_execcmd*)head;
 	head = parseredirs((t_cmd *)cmd, ps, es);
 	if (cmd->flag)
-	{
+		return (head);
+/*	{
 		ft_dprintf(2, "flag = %d\n", cmd->flag);
 		ft_dprintf(2, "head = %p\n", head);
 		ft_dprintf(2, "cmd = %p\n", cmd);
 
 		return (head);
-	}
+	} */
 //	printf("cmd =%p\n", cmd);
 	exec_redir_loop(&head, cmd, ps, es);
 	//remove next two lines later 
 	if (cmd->argc == 0)
-		ft_dprintf(2,"parseexec:command is not specified, but it's ok.\n");
+		ft_dprintf(2,"parseexec:command is not specified, but it could be ok or not!.\n");
 	return (head);
 }
