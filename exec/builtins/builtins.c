@@ -26,9 +26,9 @@ int	run_builtin(char **argv, t_data *data)
 	if (data->builtin == ECHO)
 		return (exec_echo(argv));
 	else if (data->builtin == CD)
-		return (exec_cd(argv));
+		return (exec_cd(argv, data->env_lst));
 	else if (data->builtin == PWD)
-		return (exec_pwd(argv));
+		return (exec_pwd(argv, data->env_lst));
 	else if (data->builtin == EXPORT)
 		return (exec_export(argv, data->env_lst));
 	else if (data->builtin == UNSET)

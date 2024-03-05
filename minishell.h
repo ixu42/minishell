@@ -242,8 +242,8 @@ void	print_error_partial_free(char *name, t_data *data);
 // handling builtins
 int		exec_echo(char **argv);
 int		exec_exit(char **argv);
-int		exec_cd(char **argv);
-int		exec_pwd(char **argv);
+int		exec_cd(char **argv, t_env *env_lst);
+int		exec_pwd(char **argv, t_env *env_lst);
 int		exec_export(char **argv, t_env *env_lst);
 int		exec_unset(char **argv, t_env *env_lst);
 int		exec_env(t_env *env_lst);
