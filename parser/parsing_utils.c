@@ -29,15 +29,15 @@ int	select_token(char **pnt)
 		ret = set_token(&s, 2, RED_OUT_APP);
 	else if (s[0] == s[1] && s[0] == '<' && !ft_strchr(SYMBOLS, s[2]))
 		ret = set_token(&s, 2, HEREDOC);
-	else if (s[0] == s[1] && s[0] == '&' && !ft_strchr("&", s[2]))
+	else if (s[0] == s[1] && s[0] == '&' && !ft_strchr("&|", s[2]))
 		ret = set_token(&s, 2, AND_TOK);
-	else if (s[0] == s[1] && s[0] == '|' && !ft_strchr("|", s[2]))
+	else if (s[0] == s[1] && s[0] == '|' && !ft_strchr("|&", s[2]))
 		ret = set_token(&s, 2, OR_TOK);
 	else if (s[0] == '>' && !ft_strchr(SYMBOLS, s[1]))
 		ret = set_token(&s, 1, RED_OUT);
 	else if (s[0] == '<' && !ft_strchr(SYMBOLS, s[1]))
 		ret = set_token(&s, 1, RED_IN);
-	else if (s[0] == '|')
+	else if (s[0] == '|' && !ft_strchr("|&",s[1]))
 		ret = set_token(&s, 1, PIPE_TOK);
 	else 
 		ret = UNDEFINED_TOK;

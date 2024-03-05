@@ -359,8 +359,14 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 		if (*ps == es)
 			break;
 		tok = gettoken(ps, es, tok_str, tok_str + 1);
-		if (tok != STR_TOK)  // I am not sure if is ever happens
-			printf("Liteshell: exec_redir_loop: syntax error. unexpected token %d \n", tok);
+		if (tok != STR_TOK || tok == UNDEFINED_TOK)
+		{
+			ft_dprintf(2, "Liteshell: exec_redir_loop 1\n");
+			ft_dprintf(2, "%s %s %s\n",PMT, ERR_SYNTAX_UNEXP, *ps);
+			if (*head)
+				(*head)->flag |= SYNTAX_ERR_UNDEFTOK;
+			return (1);
+		}
 		extend_arg_node(&new_arg, tok_str[0], tok_str[1]);
 		if (cmd->argc == 0)
 			cmd->args = new_arg;

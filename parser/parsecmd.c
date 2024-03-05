@@ -15,6 +15,7 @@ t_cmd*	parsepipe(char **ps, char *es)
 		tok = gettoken(ps, es, 0, 0);
 		if (tok == PIPE_TOK)
 			cmd = pipecmd(cmd, parsepipe(ps, es));
+		//next 4 lines newer happens 
 		else
 		{
 			ft_dprintf(2, "From parsepipe:\n", PMT, ERR_SYNTAX_UNEXP);
