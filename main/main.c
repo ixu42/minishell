@@ -28,6 +28,10 @@ int	main(int argc, char **argv, char **envp)
 			}
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
 			status = runcmd(cmd, &data, PARENT_PROC);
+			// ------ print out envp ------
+			// for (int k = 0; envp[k] != NULL; k++)
+			// 	printf("%s\n", envp[k]);
+			// ----------------------------
 			printf("\033[0;35m[status: %d]\033[0m\n", status);
 			// ------
 		}

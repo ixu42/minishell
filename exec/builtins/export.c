@@ -84,7 +84,7 @@ int	exec_export(char **argv, t_env *env_lst)
 		name_len = get_name_len(argv[i]);
 		if (!is_valid_identifier(argv[i], name_len))
 		{
-			if (ft_dprintf(2, "%sexport: '%s': %s\n", PMT, argv[i], ERR_NAME) == -1)
+			if (ft_dprintf(2, "%sexport: '%s': %s\n", PMT, argv[i], ERR_ID) < 0)
 				perror(PMT_ERR_WRITE);
 			return (1);
 		}

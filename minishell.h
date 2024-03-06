@@ -33,7 +33,7 @@
 # define ERR_OPEN "open error"
 # define ERR_CLOSE "close error"
 # define ERR_DUP2 "dup2 error"
-# define ERR_NAME "not a valid identifier"
+# define ERR_ID "not a valid identifier"
 # define PMT "\033[0;31mLiteShell: \033[0m"
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
 # define PMT_ERR_PRINTF "\033[0;31mLiteShell: \033[0mprintf error"
@@ -243,7 +243,7 @@ void	print_error_partial_free(char *name, t_data *data);
 int		exec_echo(char **argv);
 int		exec_exit(char **argv);
 int		exec_cd(char **argv, t_env *env_lst);
-int		exec_pwd(char **argv, t_env *env_lst);
+int		exec_pwd(char **argv);
 int		exec_export(char **argv, t_env *env_lst);
 int		exec_unset(char **argv, t_env *env_lst);
 int		exec_env(t_env *env_lst);
