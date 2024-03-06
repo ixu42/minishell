@@ -47,7 +47,7 @@ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO */
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 //#define SYMBOLS "<>|&;()\\"
-#define SYMBOLS "<>|&;()"
+#define SYMBOLS "<>|&()"
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 
 // AST's node types
@@ -72,6 +72,7 @@ typedef enum e_node_type
 typedef enum e_token
 {
 	UNDEFINED_TOK,
+	NEWLINE_TOK,
 	STR_TOK,
 	RED_IN,
 	RED_OUT,
@@ -87,9 +88,10 @@ typedef enum e_token
 
 typedef enum e_parse_error
 {
-	SYNTAX_ERR_UNDEFTOK = 0x1,
-	SYNTAX_ERROR = 0x2,
-	MALLOC_ERROR = 0x4,
+	SYNTAX_ERR_UNDEFTOK = 0x01,
+	SYNTAX_ERR_UNEXPTOK = 0x02,
+	SYNTAX_ERROR = 0x04,
+	MALLOC_ERROR = 0x08,
 }	t_parse_error;
 
 typedef enum e_builtin
@@ -222,7 +224,8 @@ t_cmd   *parseblock(char **ps, char *es);
 int gettoken(char **ps, char *es, char **q, char **eq);
 int peek(char **ps, char *es, char *toks);
 t_cmd   *nulterminate(t_cmd *cmd);
-void    panic_test(char *s);  //this is temporal function that exit(1) from parser
+const char  *token_type_to_str(t_token_type token);
+//void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
 
 // string operations

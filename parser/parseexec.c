@@ -32,7 +32,7 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 	t_redircmd	*rcmd;
 
 
-	if (cmd->type != REDIR)
+	if (cmd->type != REDIR || cmd->flag)
 		return ;
 	rcmd = (t_redircmd *)cmd;
 	state_str = make_strstate(state->beg, state->end);
@@ -53,28 +53,34 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 {
 	int		tok;
+	int		tok_2;
 
-	if (!state)
+	if (!state || !cmd)
 		return (NULL);
 	if (peek(&(state->pos), state->finish, "<>"))
 	{
 		tok = gettoken(&(state->pos), state->finish, 0, 0);
-		if (tok == UNDEFINED_TOK)
+		if (tok == UNDEFINED_TOK || tok == NEWLINE_TOK)
 		{
-			cmd->flag |= SYNTAX_ERR_UNDEFTOK;
+			cmd->flag |= SYNTAX_ERR_UNDEFTOK | SYNTAX_ERR_UNEXPTOK;
+			state->flag |= cmd->flag;
 			// remove next line
-			ft_dprintf(2,"Liteshell: from parse_one_redir \n");
-			ft_dprintf(2,"%s %s \"%s'\n", PMT, ERR_SYNTAX_UNEXP, state->pos);
+//			ft_dprintf(2,"parse_one_redir 1:\n");
+//			ft_dprintf(2,"%s %s \"%s'\n", PMT, ERR_SYNTAX_UNEXP, state->pos);
 			return (cmd);
 		}
-		if (gettoken(&(state->pos), state->finish, &(state->beg), &(state->end)) \
-			   	!= STR_TOK)
+		tok_2 = gettoken(&(state->pos), state->finish, &(state->beg), &(state->end));
+		//ft_dprintf(2, "gettoken tok_2=%d ->  %s\n",tok_2, token_type_to_str(tok_2));
+		if (tok_2 != STR_TOK)
 		{
-//			cmd->flag
-			ft_dprintf(2,"Liteshell: from parse_one_redir Syntax error: missing name for redirection\n");
-//		printf("parse_one_redir: ps=%s\n", state->pos);
+			cmd->flag |= SYNTAX_ERR_UNEXPTOK;
+			state->pos = state->beg;
+//			ft_dprintf(2,"parse_one_redir 2 Syntax error\n");
+//			ft_dprintf(2,"%s %s \"%s'\n", PMT, ERR_SYNTAX_UNEXP, state->pos);
 		}
-		if (tok == RED_IN)
+		if (cmd->flag)
+			;
+		else if (tok == RED_IN)
 			cmd = redircmd(cmd, state, O_RDONLY, 0);
 		else if (tok == RED_OUT)
 			cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_TRUNC, 1);
@@ -99,9 +105,9 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 	if (!state)
 		return (NULL);
 	node = parse_one_redir(cmd, state);
+	*ps = state->pos;
 	if (node->flag)
 		return (cmd);
-	*ps =state->pos;
 	if (node->type != REDIR)
 		return (cmd);
 	rcmd = (t_redircmd *)node;
@@ -359,10 +365,12 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 		if (*ps == es)
 			break;
 		tok = gettoken(ps, es, tok_str, tok_str + 1);
-		if (tok != STR_TOK || tok == UNDEFINED_TOK)
+//		ft_dprintf(2, "gettoken =%d ->  %s\n",tok, token_type_to_str(tok));
+	//	if (tok != STR_TOK || tok == UNDEFINED_TOK)
+		if (tok != STR_TOK)
 		{
-			ft_dprintf(2, "Liteshell: exec_redir_loop 1\n");
-			ft_dprintf(2, "%s %s '%s'\n",PMT, ERR_SYNTAX_UNEXP, *ps);
+//			ft_dprintf(2, "Liteshell: exec_redir_loop 1\n");
+//			ft_dprintf(2, "%s %s '%s'\n", PMT, ERR_SYNTAX_UNEXP, *ps);
 			if (*head)
 				(*head)->flag |= SYNTAX_ERR_UNDEFTOK;
 			if (cmd)
@@ -397,6 +405,7 @@ t_cmd*	parseexec(char **ps, char *es)
 		return (NULL);
 	cmd = (t_execcmd*)head;
 	head = parseredirs((t_cmd *)cmd, ps, es);
+//	ft_dprintf(2, "parseexec 1: ps=%s\n", *ps);
 	if (cmd->flag)
 		return (head);
 /*	{
@@ -409,7 +418,10 @@ t_cmd*	parseexec(char **ps, char *es)
 //	printf("cmd =%p\n", cmd);
 	exec_redir_loop(&head, cmd, ps, es);
 	//remove next two lines later 
-	if (cmd->argc == 0)
-		ft_dprintf(2,"parseexec:command is not specified, but it could be ok or not!.\n");
+	if (cmd->argc == 0 && head == (t_cmd *)cmd)
+		ft_dprintf(2,"parseexec: no redirects and argc=0.\n");
+	if (head->type ==REDIR  && head->flag)
+		ft_dprintf(2,"parseexec: error in redirection.\n");
+//	ft_dprintf(2, "parseexec 2: ps=%s\n", *ps);
 	return (head);
 }

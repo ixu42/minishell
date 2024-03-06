@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/04 12:22:26 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/06 12:55:27 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	fork1_test(void)	// Fork but panics on failure.
 
 	pid = fork();
 	if(pid == -1)
-		panic_test("fork");
+		ft_dprintf(2, "fork");
 	return pid;
 }
 

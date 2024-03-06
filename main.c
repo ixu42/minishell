@@ -107,10 +107,17 @@ int	main(int argc, char **argv, char **envp)
 			if (TESTMODE)
 			{
 				ft_dprintf(2,"------------->TESTMODE<----------\n");
-				runcmd_test(cmd);
+				if (cmd)
+					runcmd_test(cmd);
+				ft_dprintf(2, "NULL AST\n");
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
-			status = runcmd(cmd, &data, PARENT_PROC);
+
+			if (cmd)
+			{
+				if (cmd ->flag == 0) 
+					status = runcmd(cmd, &data, PARENT_PROC);
+			}
 			printf("\033[0;35m[status: %d]\033[0m\n", status);
 			// ------
 		}
