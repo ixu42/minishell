@@ -234,7 +234,7 @@ char	**get_env_paths(char **envp, t_data *data);
 void	data_init(t_data *data, char **envp);
 
 // data init utils
-char	*get_value(char *name_value_str);
+char	*get_value(char *name_value_str, t_env *new_node);
 t_env	*get_node(char *name_value_str);
 void	lst_append(t_env **env_lst, t_env *new_node);
 void	print_error_partial_free(char *name, t_data *data);
@@ -253,9 +253,9 @@ int		run_builtin(char **argv, t_data *data);
 
 // handling env
 char	**copy_env(char **envp);
-char	*get_value(char *name_value_str);
-t_env	*get_node(char *name_value_str);
-void	lst_append(t_env **env_lst, t_env *new_node);
+// char	*get_value(char *name_value_str, t_env *new_node, int *status);
+// t_env	*get_node(char *name_value_str, int *status);
+// void	lst_append(t_env **env_lst, t_env *new_node);
 t_env	*copy_env_arr_to_lst(char **envp);
 char	**copy_env_lst_to_arr(t_env *env_lst);
 char	**get_env_paths(char **envp, t_data *data);

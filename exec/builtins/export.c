@@ -61,7 +61,7 @@ static void	set_value(char *arg, t_env	*node)
 	char	*value;
 
 	arg_cpy = ft_strdup(arg);
-	value = get_value(arg_cpy);
+	value = get_value(arg_cpy, node); // check this
 	free(arg_cpy);
 	if (value != NULL)
 	{
