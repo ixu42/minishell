@@ -118,7 +118,7 @@ void	runcmd_test(t_cmd *cmd)
 	else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd*)cmd;
-		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d);\n", rcmd->file, rcmd->mode,rcmd->fd);
+		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d, flag=%d);\n", rcmd->file, rcmd->mode,rcmd->fd, rcmd->flag);
 		printstr(rcmd->str);
 		runcmd_test(rcmd->cmd);
 	}

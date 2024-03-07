@@ -9,12 +9,14 @@ t_cmd*	parsepipe(char **ps, char *es)
 	int		tok;
 
 	cmd = parseexec(ps, es);
-//	if (cmd->flag)
-//		return (cmd);
+	if (cmd->flag)
+		return (cmd);
 	tok = peek(ps, es, "|");
 	if (tok && (*ps)[1] != '|')
 	{
 		tok = gettoken(ps, es, 0, 0);
+		cmd = pipecmd(cmd, parsepipe(ps, es));
+		/*
 		if (tok == PIPE_TOK)
 			cmd = pipecmd(cmd, parsepipe(ps, es));
 		//next 4 lines newer happens 
@@ -23,6 +25,7 @@ t_cmd*	parsepipe(char **ps, char *es)
 			ft_dprintf(2, "From parsepipe:\n", PMT, ERR_SYNTAX_UNEXP);
 			ft_dprintf(2, "%s %s\n", PMT, ERR_SYNTAX_UNEXP);
 		}
+		*/
 	}
 //	printf("parsepipe: ps=%s\n", *ps);
 	return (cmd);
@@ -94,10 +97,15 @@ t_cmd	*parsecmd(char *s)
 
 	es = s + ft_strlen(s);
 	cmd = parseline(&s, es);
-	if (cmd->flag)
+	if (cmd->flag || s != es)
 	{
 		tok = gettoken(&s, es, 0, 0);
-		ft_dprintf(2,"%s %s '%s'\n", PMT, ERR_SYNTAX_UNEXP, token_type_to_str(tok));
+	//	ft_dprintf(2,"%s %s '%s'\n", PMT, ERR_SYNTAX_UNEXP, token_type_to_str(tok));
+		ft_dprintf(2,"%s %s ", PMT, ERR_SYNTAX_UNEXP);
+		if (tok == UNDEFINED_TOK)
+			ft_dprintf(2, "'%s'\n", s);
+		else
+			ft_dprintf(2,"'%s'\n", token_type_to_str(tok));
 	}
 /*	ft_dprintf(2,"Leftover %s\n", s);
 	peek(&s, es, "");
