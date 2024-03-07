@@ -136,7 +136,7 @@ void	runcmd_test(t_cmd *cmd)
 		if(fork1_test() == 0)
 			runcmd_test(lcmd->left);
 		wait(NULL);
-		printf("&&\n");
+		printf("&& flag=%d\n", lcmd->flag);
 		runcmd_test(lcmd->right);
 	}
 	else if (cmd->type == OR_CMD)
@@ -145,13 +145,13 @@ void	runcmd_test(t_cmd *cmd)
 		if(fork1_test() == 0)
 			runcmd_test(lcmd->left);
 		wait(NULL);
-		printf("||\n");
+		printf("|| flag=%d\n", lcmd->flag);
 		runcmd_test(lcmd->right);
 	}
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd*)cmd;
-		printf("make pipe\n");
+		printf("make pipe,  flag=%d\n", cmd->flag);
 		if (fork1_test() == 0){
 			runcmd_test(pcmd->left);
 		}

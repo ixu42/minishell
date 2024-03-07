@@ -110,6 +110,7 @@ t_cmd	*list_cmd(t_cmd *left, t_cmd *right, int type)
 	cmd->type = type;
 	cmd->left = left;
 	cmd->right = right;
+	cmd->flag = left->flag | right->flag;
 	return ((t_cmd*)cmd);
 }
 

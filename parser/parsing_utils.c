@@ -97,7 +97,7 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 		s++;
 	if(q)
 		*q = s;
-//	ret = UNDEFINED_TOK;
+	ret = UNDEFINED_TOK;
 //	if (*s == '\0')
 //		ret = ;
 	if (ft_strchr(SYMBOLS, *s) || *s == '\0')

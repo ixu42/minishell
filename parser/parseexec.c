@@ -42,7 +42,7 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 		return ;
 	}
 	rcmd->str = parsestr(state_str);
-	if (rcmd->str == NULL)
+	if (rcmd->str != NULL)
 	{
 		rcmd->flag = rcmd->str->flag;
 		return ;
@@ -50,13 +50,28 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 	return ;
 }
 
+t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok)
+{
+	if (cmd->flag)
+		return (cmd);
+	else if (tok == RED_IN)
+		cmd = redircmd(cmd, state, O_RDONLY, 0);
+	else if (tok == RED_OUT)
+		cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_TRUNC, 1);
+	else if (tok == RED_OUT_APP)
+		cmd = redircmd(cmd, state, O_WRONLY| O_CREAT | O_APPEND, 1);
+	else if (tok == HEREDOC)
+		cmd = redircmd(cmd, state, -1, 0);
+	return (cmd);
+}
+
 t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 {
 	int		tok;
-	int		tok_2;
 
 	if (!state || !cmd)
-		return (NULL);
+		return (cmd);
+//	ft_dprintf(2,"parse_one_redir: pos=%s\n",state->pos);
 	if (peek(&(state->pos), state->finish, "<>"))
 	{
 		tok = gettoken(&(state->pos), state->finish, 0, 0);
@@ -66,27 +81,17 @@ t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 			state->flag |= cmd->flag;
 			return (cmd);
 		}
-//		ft_dprintf(2, "parse_one_redir: pos=%s\n", state->pos);
-		tok_2 = gettoken(&(state->pos), state->finish, &(state->beg), &(state->end));
-		if (tok_2 != STR_TOK)
+		if (STR_TOK != \
+				gettoken(&(state->pos), state->finish, &(state->beg), &(state->end)))
 		{
 			cmd->flag |= SYNTAX_ERR_UNEXPTOK;
 			state->pos = state->beg;
 		}
-		if (cmd->flag)
-			;
-		else if (tok == RED_IN)
-			cmd = redircmd(cmd, state, O_RDONLY, 0);
-		else if (tok == RED_OUT)
-			cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_TRUNC, 1);
-		else if (tok == RED_OUT_APP)
-			cmd = redircmd(cmd, state, O_WRONLY| O_CREAT | O_APPEND, 1);
-		else if (tok == HEREDOC)
-			cmd = redircmd(cmd, state, -1, 0);
+		cmd = make_redir_node(cmd, state, tok);
 	}
-	if (!cmd)
-		return (NULL);
-	make_redir_str(cmd, state);
+//	ft_dprintf(2,"parse_one_redir: pos=%s\n",state->pos);
+	if (cmd && cmd->type == REDIR)
+		make_redir_str(cmd, state);
 	return (cmd);
 }
 

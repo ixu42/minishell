@@ -16,18 +16,7 @@ t_cmd*	parsepipe(char **ps, char *es)
 	{
 		tok = gettoken(ps, es, 0, 0);
 		cmd = pipecmd(cmd, parsepipe(ps, es));
-		/*
-		if (tok == PIPE_TOK)
-			cmd = pipecmd(cmd, parsepipe(ps, es));
-		//next 4 lines newer happens 
-		else
-		{
-			ft_dprintf(2, "From parsepipe:\n", PMT, ERR_SYNTAX_UNEXP);
-			ft_dprintf(2, "%s %s\n", PMT, ERR_SYNTAX_UNEXP);
-		}
-		*/
 	}
-//	printf("parsepipe: ps=%s\n", *ps);
 	return (cmd);
 }
 
@@ -67,20 +56,23 @@ t_cmd	*parseblock(char **ps, char *es)
 {
 	t_cmd *cmd;
 
-	if (!peek(ps, es, "("))
-		ft_dprintf(2, "parseblock");
-	gettoken(ps, es, 0, 0);
+	(*ps)++;
 	cmd = parseline(ps, es);
-	if (!peek(ps, es, ")"))
-		ft_dprintf(2, "syntax - missing )");
-	gettoken(ps, es, 0, 0);
-	cmd = parseredirs(cmd, ps, es);
+	if (peek(ps, es, ")") && cmd->flag == 0)
+		(*ps)++;
+	else
+		cmd->flag |= SYNTAX_ERROR;
+//	gettoken(ps, es, 0, 0);
+//	ft_dprintf(2, "parseblock: *ps=%s, cmd->flag=%d\n", *ps, cmd->flag);
+//	if (cmd->flag == 0)
+	//	cmd = parseredirs(cmd, ps, es);
 	return (cmd);
 }
 
 t_cmd	*parsecmd(char *s)
 {
-	char		*es;
+	char	*es;
+	char	*str[2];
 	t_cmd	*cmd;
 	int		tok;
 	
@@ -99,13 +91,19 @@ t_cmd	*parsecmd(char *s)
 	cmd = parseline(&s, es);
 	if (cmd->flag || s != es)
 	{
-		tok = gettoken(&s, es, 0, 0);
-	//	ft_dprintf(2,"%s %s '%s'\n", PMT, ERR_SYNTAX_UNEXP, token_type_to_str(tok));
 		ft_dprintf(2,"%s %s ", PMT, ERR_SYNTAX_UNEXP);
+		tok = gettoken(&s, es, &str[0], &str[1]);
+//		ft_dprintf(2,"'tok = %s'\n", token_type_to_str(tok));
+		//*str[1] = '\0';
 		if (tok == UNDEFINED_TOK)
-			ft_dprintf(2, "'%s'\n", s);
+			ft_dprintf(2, "'%c'\n", *str[0]);
+		else if (tok == STR_TOK)
+		{
+			*str[1] = '\0';
+			ft_dprintf(2, "'%s'\n", str[0]);
+		}
 		else
-			ft_dprintf(2,"'%s'\n", token_type_to_str(tok));
+		ft_dprintf(2,"'%s'\n", token_type_to_str(tok));
 	}
 /*	ft_dprintf(2,"Leftover %s\n", s);
 	peek(&s, es, "");
