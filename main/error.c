@@ -12,21 +12,6 @@ void	validate_args(int argc)
 	}
 }
 
-/* (1) print error message, (2) set status to 1 to indicate error, 
-and (3) return NULL */
-
-/* char	*print_error(char *err_msg, int *status)
-{
-	if (ft_putstr_fd("minishell: ", 2) == -1)
-	{
-		perror("minishell: write error");
-		return ;
-	}
-	perror(err_msg);
-	*status = 1;
-	return (NULL);
-} */
-
 // (1) print error message, (2) exit
 
 void	print_error_n_exit(char *err_msg)
@@ -38,6 +23,21 @@ void	print_error_n_exit(char *err_msg)
 	}
 	perror(err_msg);
 	exit(EXIT_FAILURE);
+}
+
+// (1) print error message, (2) set error flag to 1, and (3) return NULL
+
+t_env	*error_handler(char *err_msg, int *err_flag)
+{
+	if (ft_putstr_fd("minishell: ", 2) == -1)
+	{
+		perror(PMT_ERR_WRITE);
+		*err_flag = 1;
+		return (NULL);
+	}
+	perror(err_msg);
+	*err_flag = 1;
+	return (NULL);
 }
 
 // (1) print error message, (2) free all heap allocated memory, (3) exit with status code

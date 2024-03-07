@@ -234,9 +234,8 @@ char	**get_env_paths(char **envp, t_data *data);
 void	data_init(t_data *data, char **envp);
 
 // data init utils
-char	*get_value(char *name_value_str, t_env *new_node);
-t_env	*get_node(char *name_value_str);
-void	lst_append(t_env **env_lst, t_env *new_node);
+t_env	*get_node_in_init(char *name_value_str);
+void	lst_append_in_init(t_env **env_lst, t_env *new_node);
 void	print_error_partial_free(char *name, t_data *data);
 
 // handling builtins
@@ -248,6 +247,9 @@ int		exec_export(char **argv, t_env *env_lst);
 int		exec_unset(char **argv, t_env *env_lst);
 int		exec_env(t_env *env_lst);
 int		name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
+char	*get_value(char *name_value_str, t_env *new_node, int *err_flag);
+t_env	*get_node(char *name_value_str);
+void	lst_append(t_env **env_lst, t_env *new_node);
 int		is_builtin(char **argv, t_data **data);
 int		run_builtin(char **argv, t_data *data);
 
@@ -270,6 +272,7 @@ void	free_data(t_data *data);
 // error handling
 void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
+t_env	*error_handler(char *err_msg, int *err_flag);
 void	panic(char *err_msg, t_data *data, int exit_code);
 
 // readline

@@ -54,20 +54,24 @@ static int	is_valid_identifier(char *name, int name_len)
 	return (1);
 }
 
-static void	set_value(char *arg, t_env	*node)
+static int	set_value(char *arg, t_env *node)
 {
 	t_env	*tmp;
 	char	*arg_cpy;
 	char	*value;
+	int		err_flag;
 
 	arg_cpy = ft_strdup(arg);
-	value = get_value(arg_cpy, node); // check this
+	value = get_value(arg_cpy, node, &err_flag);
+	if (err_flag == 1)
+		return (1);
 	free(arg_cpy);
 	if (value != NULL)
 	{
 		free(node->value);
 		node->value = value;
 	}
+	return (0);
 }
 
 int	exec_export(char **argv, t_env *env_lst)
@@ -89,9 +93,17 @@ int	exec_export(char **argv, t_env *env_lst)
 			return (1);
 		}
 		if (name_in_env_lst(env_lst, argv[i], name_len, &node))
-			set_value(argv[i], node);
+		{
+			if (set_value(argv[i], node) == 1)
+				return (1);
+		}
 		else
-			lst_append(&env_lst, get_node(argv[i]));
+		{
+			node = get_node(argv[i]);
+			if (node == NULL)
+				return (1);
+			lst_append(&env_lst, node);
+		}
 	}
 	return (0);
 }

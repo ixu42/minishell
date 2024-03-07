@@ -6,16 +6,12 @@ to linked list(t_envs *envs) */
 t_env	*copy_env_arr_to_lst(char **envp)
 {
 	t_env	*head;
-	t_env	*new_node;
 	int		i;
 
 	head = NULL;
 	i = -1;
 	while (envp[++i] != NULL)
-	{
-		new_node = get_node(envp[i]);
-		lst_append(&head, new_node);
-	}
+		lst_append_in_init(&head, get_node_in_init(envp[i]));
 	return (head);
 }
 

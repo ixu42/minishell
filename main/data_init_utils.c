@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-char	*get_value(char *name_value_str, t_env *new_node)
+static char	*get_value_in_init(char *name_value_str, t_env *new_node)
 {
 	char	*equal_sign;
 	char	*value;
@@ -22,13 +22,10 @@ char	*get_value(char *name_value_str, t_env *new_node)
 	return (value);
 }
 
-// if the status is set to 1, it indicates malloc error
-
-t_env	*get_node(char *name_value_str)
+t_env	*get_node_in_init(char *name_value_str)
 {
 	t_env	*new_node;
 	char	*name_value_cpy;
-	int		i;
 
 	name_value_cpy = ft_strdup(name_value_str);
 	if (name_value_cpy == NULL)
@@ -39,7 +36,7 @@ t_env	*get_node(char *name_value_str)
 		free(name_value_cpy);
 		print_error_n_exit(ERR_MALLOC);
 	}
-	new_node->value = get_value(name_value_cpy, new_node);
+	new_node->value = get_value_in_init(name_value_cpy, new_node);
 	new_node->name = ft_strdup(name_value_cpy);
 	if (new_node->name == NULL)
 	{
@@ -53,7 +50,7 @@ t_env	*get_node(char *name_value_str)
 	return (new_node);
 }
 
-void	lst_append(t_env **env_lst, t_env *new_node)
+void	lst_append_in_init(t_env **env_lst, t_env *new_node)
 {
 	t_env	*last_node;
 
