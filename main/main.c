@@ -20,14 +20,33 @@ int	main(int argc, char **argv, char **envp)
 			// ------
 			// dprintf(2, "data.buf(before): %s\n", data.buf);
 			cmd = parsecmd(data.buf); // data.buf is modified
+			// status = parsefun(&cmd, data.buf);
+			// if (status == 0)
+			//		status = runcmd
+			// else if (status == malloc error )
+			// {
+			//        clean cmd
+			//       break
+			//  }
+			// clean cmd including argv
+			//  
 			if (TESTMODE)
 			{
 				ft_dprintf(2,"------------->TESTMODE<----------\n");
+				if (cmd)
 				runcmd_test(cmd);
+				//ft_dprintf(2, "NULL AST\n");
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
-			status = runcmd(cmd, &data, PARENT_PROC);
+			if (cmd)
+			{
+				if (cmd ->flag == 0) 
+					status = runcmd(cmd, &data, PARENT_PROC);
+			}
+			//else terminate everything ??? malloc error
+
+			//status = runcmd(cmd, &data, PARENT_PROC);
 			// ------ print out envp ------
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);

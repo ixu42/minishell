@@ -13,6 +13,77 @@ void increase_s_quotes(char **pnt_s, int *p_quotes)
 	(*pnt_s)++;
 }
 
+int	set_token(char **pnt, int tok_size, int tok_code)
+{
+	if (pnt)
+		*pnt +=tok_size;
+	return (tok_code);
+}
+
+int not_ft_strchr(char *symb, char c)
+{
+//	return (!ft_strchr(symb, c) || !c);	
+//	return (!ft_strchr(symb, c) || !c);	
+	return (1);
+}
+
+int	select_token(char **pnt)
+{
+	char	*s;
+	int		ret;
+
+	s = *pnt;
+	if (s[0] == s[1] && s[0] == '>' && not_ft_strchr(SYMBOLS, s[2]))
+		ret = set_token(&s, 2, RED_OUT_APP);
+	else if (s[0] == s[1] && s[0] == '<' && not_ft_strchr(SYMBOLS, s[2]))
+		ret = set_token(&s, 2, HEREDOC);
+	else if (s[0] == s[1] && s[0] == '&' && not_ft_strchr("&|", s[2]))
+		ret = set_token(&s, 2, AND_TOK);
+	else if (s[0] == s[1] && s[0] == '|' && not_ft_strchr("|&", s[2]))
+		ret = set_token(&s, 2, OR_TOK);
+	else if (s[0] == '>' && not_ft_strchr(SYMBOLS, s[1]))
+		ret = set_token(&s, 1, RED_OUT);
+	else if (s[0] == '<' && not_ft_strchr(SYMBOLS, s[1]))
+		ret = set_token(&s, 1, RED_IN);
+	else if (s[0] == '|' && not_ft_strchr("|&",s[1]))
+		ret = set_token(&s, 1, PIPE_TOK);
+	else if (s[0] == '\0')
+		ret = NEWLINE_TOK;
+	else 
+		ret = UNDEFINED_TOK;
+	*pnt = s;
+	return (ret);
+}
+
+const char	*token_type_to_str(t_token_type token)
+{
+	if (token == UNDEFINED_TOK)
+		return ("UNDEF");
+	else if (token == NEWLINE_TOK)
+		return "newline";
+	else if (token == STR_TOK)
+		return "a";
+	else if (token == RED_IN)
+		return "<";
+	else if (token == RED_OUT)
+		return ">";
+	else if (token == HEREDOC)
+		return "<<";
+	else if (token == RED_OUT_APP)
+		return ">>";
+	else if (token == PIPE_TOK)
+		return "|";
+	else if (token == OR_TOK)
+		return "||";
+	else if (token == AND_TOK)
+		return "&&";
+	else if (token == LPAR)
+		return "(";
+	else if (token == RPAR)
+		return ")";
+	return "UNKNOWN";
+}
+
 int	gettoken(char **ps, char *es, char **q, char **eq)
 {
 	char *s;
@@ -26,48 +97,25 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 		s++;
 	if(q)
 		*q = s;
-	ret = *s;
-	if (*s == 0)
-		;
-	else if (ft_strchr(SYMBOLS, *s))
-	{
-		if (s[0] == s[1] && s[0] == '>')
-		{
-			s++;
-			ret = RED_OUT_APP;
-		}
-		if (s[0] == s[1] && s[0] == '<')
-		{
-			s++;
-			ret = HEREDOC;
-		}
-		if (s[0] == s[1] && s[0] == '&')
-		{
-			s++;
-			ret = AND_TOK;
-		}
-		if (s[0] == s[1] && s[0] == '|')
-		{
-			s++;
-			ret = OR_TOK;
-		}
-		s++;
-	}
+	ret = UNDEFINED_TOK;
+	if (ft_strchr(SYMBOLS, *s) || *s == '\0')
+		ret = select_token(&s);
 	else
 	{
 		ret = STR_TOK;
-			while (s < es && ((!ft_strchr(WHITESPACE, *s) && !ft_strchr(SYMBOLS, *s)) \
-				|| (quotes[0] || quotes[1])))
-				increase_s_quotes(&s, quotes);
+		while (s < es && ( (quotes[0] || quotes[1]) || \
+					(!ft_strchr(WHITESPACE, *s) && !ft_strchr(SYMBOLS, *s))))
+			increase_s_quotes(&s, quotes);
 	}
 	if (eq)
 		*eq = s;
 	while (s < es && ft_strchr(WHITESPACE, *s))
 		s++;
 	*ps = s;
+//	ft_dprintf(2, "gettoken -> '%s';",token_type_to_str(ret));
+//	ft_dprintf(2, "\tpos->%s\n", s);
 	return (ret);
 }
-
 
 int	peek(char **ps, char *es, char *toks)
 {
@@ -119,11 +167,13 @@ t_cmd	*nulterminate(t_cmd *cmd)
 	return (cmd);
 }
 
-void    panic_test(char *s)
+/*
+void	panic_test(char *s)
 {
 //remove this function. use fd_dprintf instead and rise flags for errorcases.  
 //  printf(2, "%s\n", s);
-    ft_putstr_fd(s, 2);
-    ft_putstr_fd("\n", 2);
-    exit(1);
+	ft_putstr_fd(s, 2);
+	ft_putstr_fd("\n", 2);
+ //	exit(1);
 }
+*/

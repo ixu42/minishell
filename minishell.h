@@ -40,6 +40,7 @@
 # define PMT_ERR_GETCWD "\033[0;31mLiteShell: \033[0mgetcwd error"
 # define EXIT_CMD_PERM_ERR 126
 # define EXIT_CMD_NOT_FOUND 127
+# define PMT "\033[0;31mLiteShell: \033[0m"
 
 // macros for processes
 # define PARENT_PROC 0
@@ -50,7 +51,7 @@
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 //#define SYMBOLS "<>|&;()\\"
-#define SYMBOLS "<>|&;()"
+#define SYMBOLS "<>|&()"
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 
 // AST's node types
@@ -75,6 +76,7 @@ typedef enum e_node_type
 typedef enum e_token
 {
 	UNDEFINED_TOK,
+	NEWLINE_TOK,
 	STR_TOK,
 	RED_IN,
 	RED_OUT,
@@ -90,9 +92,11 @@ typedef enum e_token
 
 typedef enum e_parse_error
 {
-	SYNTAX_ERR_UNDEFTOK = 0x1,
-	SYNTAX_ERROR = 0x2,
-	MALLOC_ERROR = 0x4,
+	SYNTAX_ERR_UNDEFTOK = 0x01,
+	SYNTAX_ERR_UNEXPTOK = 0x02,
+	SYNTAX_ERR_UNCLOSED = 0x04,
+	SYNTAX_ERROR = 0x08,
+	MALLOC_ERROR = 0x10,
 }	t_parse_error;
 
 typedef enum e_builtin
@@ -138,6 +142,7 @@ typedef struct s_strstate
 typedef struct s_cmd
 {
 	int	type;
+	int		flag;
 }	t_cmd;
 
 typedef struct s_strcmd
@@ -162,6 +167,7 @@ typedef struct s_argcmd
 typedef struct s_execcmd
 {
 	int		type;
+	int		flag;
 	char	*sargv[MAXARGS];
 	char	*eargv[MAXARGS];
 	char	**argv;
@@ -172,18 +178,19 @@ typedef struct s_execcmd
 typedef struct s_redircmd
 {
 	int		type;
+	int		flag;
 	t_cmd	*cmd;
 	char	*file;
 	char	*efile;
 	int		mode;
 	int		fd;
 	t_strcmd	*str;
-	int		flag;
 }	t_redircmd;
 
 typedef struct s_pipecmd
 {
 	int		type;
+	int		flag;
 	t_cmd	*left;
 	t_cmd	*right;
 }	t_pipecmd;
@@ -191,6 +198,7 @@ typedef struct s_pipecmd
 typedef struct s_listcmd
 {
 	int		type;
+	int		flag;
 	t_cmd	*left;
 	t_cmd	*right;
 }	t_listcmd;
@@ -226,7 +234,8 @@ t_cmd   *parseblock(char **ps, char *es);
 int gettoken(char **ps, char *es, char **q, char **eq);
 int peek(char **ps, char *es, char *toks);
 t_cmd   *nulterminate(t_cmd *cmd);
-void    panic_test(char *s);  //this is temporal function that exit(1) from parser
+const char  *token_type_to_str(t_token_type token);
+//void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
 // data init
 t_env	*copy_env_arr_to_lst(char **envp);

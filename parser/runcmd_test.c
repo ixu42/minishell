@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   runcmd_test.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/06 12:55:27 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	fork1_test(void)	// Fork but panics on failure.
@@ -6,7 +18,7 @@ int	fork1_test(void)	// Fork but panics on failure.
 
 	pid = fork();
 	if(pid == -1)
-		panic_test("fork");
+		ft_dprintf(2, "fork");
 	return pid;
 }
 
@@ -56,14 +68,12 @@ void	printargs(t_argcmd *args)
 	i = 0;
 	while (args != NULL)
 	{
-		//printf("arg number %d for pnt=%p=>\n", i, args);
-		//printf("arg number %d for rrr=%p=>\n", i, args->right);
 		start = args->start;
 		end = args->end;
 		ft_dprintf(2,"   |--arg-%d\t->", i);
 		if (start < end)
 			write(2, start, end - start);
-		ft_dprintf(2, "<-\n");
+		ft_dprintf(2, "<- flag=%d\n",args->flag);
 		printstr(args->left);
 		ft_dprintf(2, "   |\n");
 		if (args->right == args)
@@ -97,15 +107,16 @@ void	runcmd_test(t_cmd *cmd)
 			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");
 //			exit (1);
 		}
-		ft_dprintf(2, "EXEC:    MAXARG limited sargv=%s, %s, %s, %s\n", ecmd->sargv[0], ecmd->sargv[1], ecmd->sargv[2], ecmd->sargv[3]);
+		ft_dprintf(2, "EXEC:   flag=%d\n", ecmd->flag);
 		ft_dprintf(2, "    argv=\n");
 		ft_print_char2d(ecmd->argv);
 		printargs(ecmd->args);
+		//ft_dprintf(2, "    MAXARG limited sargv=%s, %s, %s, %s\n", ecmd->sargv[0], ecmd->sargv[1], ecmd->sargv[2], ecmd->sargv[3]);
 	}
 	else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd*)cmd;
-		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d);\n", rcmd->file, rcmd->mode,rcmd->fd);
+		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d, flag=%d);\n", rcmd->file, rcmd->mode,rcmd->fd, rcmd->flag);
 		printstr(rcmd->str);
 		runcmd_test(rcmd->cmd);
 	}
@@ -123,7 +134,7 @@ void	runcmd_test(t_cmd *cmd)
 		if(fork1_test() == 0)
 			runcmd_test(lcmd->left);
 		wait(NULL);
-		printf("&&\n");
+		printf("&& flag=%d\n", lcmd->flag);
 		runcmd_test(lcmd->right);
 	}
 	else if (cmd->type == OR_CMD)
@@ -132,13 +143,13 @@ void	runcmd_test(t_cmd *cmd)
 		if(fork1_test() == 0)
 			runcmd_test(lcmd->left);
 		wait(NULL);
-		printf("||\n");
+		printf("|| flag=%d\n", lcmd->flag);
 		runcmd_test(lcmd->right);
 	}
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd*)cmd;
-		printf("make pipe\n");
+		printf("make pipe,  flag=%d\n", cmd->flag);
 		if (fork1_test() == 0){
 			runcmd_test(pcmd->left);
 		}
