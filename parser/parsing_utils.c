@@ -98,8 +98,6 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	if(q)
 		*q = s;
 	ret = UNDEFINED_TOK;
-//	if (*s == '\0')
-//		ret = ;
 	if (ft_strchr(SYMBOLS, *s) || *s == '\0')
 		ret = select_token(&s);
 	else

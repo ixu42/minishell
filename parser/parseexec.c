@@ -9,6 +9,8 @@ t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 	t_cmd *tail;
 	t_redircmd *last;
 
+	if (!head)
+		return (NULL);
 	tail = head;
 	while (tail->type == REDIR)
 	{
@@ -185,7 +187,7 @@ t_strcmd	*parse_single(t_strstate *state)
 		s++;
 	else
 	{
-		ft_dprintf(2, "Syntax error: unclosed single quote \'\n");
+		ft_dprintf(2, "%s syntax error: unclosed single quote \'\n", PMT);
 		state->flag |= SYNTAX_ERR_UNCLOSED;
 	}
 	state->pos = s;
@@ -260,7 +262,7 @@ t_strcmd	*parse_double(t_strstate *state)
 	}
 	if (state->pos == state->finish && state->d_quotes != 0)
 	{
-		ft_dprintf(2, "Syntax error: unclosed double quote \"\n");
+		ft_dprintf(2, "%s syntax error: unclosed double quote \"\n", PMT);
 		state->flag |= SYNTAX_ERR_UNCLOSED;
 	}
 	node->flag |= state->flag;
@@ -322,7 +324,6 @@ t_strcmd	*parsestr(t_strstate *state)
 int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 {
 	t_strcmd *str_node;
-	t_argcmd *last_arg;
 	t_argcmd *new_node;
 	t_strstate	*state;
 
@@ -333,8 +334,13 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 	free(state);
 	if (!str_node)
 		return (1);
-	last_arg = *arg;
 	new_node = argcmd(str_node, NULL, q, eq);
+	if (!new_node)
+	{
+		if (*arg)
+			(*arg)->flag |= MALLOC_ERROR;
+		return (1);
+	}
 	if (*arg)
 	{
 		(*arg)->right = new_node;
@@ -406,7 +412,8 @@ t_cmd*	parseexec(char **ps, char *es)
 	if (cmd->flag || head->flag)
 		return (head);
 	exec_redir_loop(&head, cmd, ps, es);
-	cmd->flag = cmd->args->flag;
+	if (cmd->args)
+		cmd->flag = cmd->args->flag;
 	if (head == (t_cmd *)cmd && cmd->argc == 0)
 			cmd->flag |= SYNTAX_ERROR;
 	return (head);
