@@ -6,7 +6,7 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
-#    Updated: 2024/02/16 13:57:30 by ixu              ###   ########.fr        #
+#    Updated: 2024/02/24 16:43:21 by ixu              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,8 +19,16 @@ LIBFT = $(LIBFT_DIR)/libft.a
 CFLAGS = -Wall -Wextra -Werror
 
 SRCS = main.c \
-		parcer-main.c \
-		runcmd.c
+		parser/constructors.c \
+		parser/parseexec.c \
+		parser/parsecmd.c \
+		parser/parsing_utils.c \
+		runcmd.c \
+		builtins.c \
+		parsing_pipex.c \
+		env.c \
+		free.c \
+		error.c
 
 OBJS = $(SRCS:.c=.o)
 

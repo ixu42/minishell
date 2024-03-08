@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 14:46:21 by ixu               #+#    #+#             */
-/*   Updated: 2024/02/17 17:09:06 by ixu              ###   ########.fr       */
+/*   Updated: 2024/02/25 19:12:56 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ static int	eval_format(const char *format, va_list ap, t_dprintf data)
 		{
 			i = parse_flags(format, i, &data, ap);
 			count_temp = print_arg(format, i, data, ap);
-			data = data_init(data.fd);
+			data = initialize_data(data.fd);
 		}
 		else if (format[i] == '%' && format[i + 1] == '\0')
 			return (-1);
@@ -105,7 +105,7 @@ int	ft_dprintf(int fd, const char *format, ...)
 	t_dprintf	data;
 	int			count;
 
-	data = data_init(fd);
+	data = initialize_data(fd);
 	va_start(ap, format);
 	count = eval_format(format, ap, data);
 	va_end(ap);

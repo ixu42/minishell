@@ -1,5 +1,4 @@
 #include "../minishell.h"
-#include <stdlib.h>
 // Constructors
 
 t_cmd	*execcmd(void)

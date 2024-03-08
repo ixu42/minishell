@@ -401,12 +401,15 @@ t_cmd*	parseexec(char **ps, char *es)
 {
 	t_execcmd *cmd;
 	t_cmd *head;
-	
+	t_cmd *extra;
+
+	//redir
+	t_cmd *last_node;
+	t_cmd *temp;
+
 	if (peek(ps, es, "("))
 		return (parseblock(ps, es));
 	head = execcmd();
-	if (!head)
-		return (NULL);
 	cmd = (t_execcmd*)head;
 	head = parseredirs((t_cmd *)cmd, ps, es);
 	if (cmd->flag || head->flag)
