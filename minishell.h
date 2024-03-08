@@ -90,8 +90,9 @@ typedef enum e_parse_error
 {
 	SYNTAX_ERR_UNDEFTOK = 0x01,
 	SYNTAX_ERR_UNEXPTOK = 0x02,
-	SYNTAX_ERROR = 0x04,
-	MALLOC_ERROR = 0x08,
+	SYNTAX_ERR_UNCLOSED = 0x04,
+	SYNTAX_ERROR = 0x08,
+	MALLOC_ERROR = 0x10,
 }	t_parse_error;
 
 typedef enum e_builtin

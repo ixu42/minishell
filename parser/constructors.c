@@ -39,7 +39,8 @@ t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end)
 	if (!cmd)
 		return (NULL);
 	ft_memset(cmd, 0, sizeof(*cmd));
-//	cmd->type = type;
+	cmd->type = ARG_NODE;
+	cmd->flag = str->flag;
 	cmd->left = str;
 	cmd->right = args;
 	cmd->start = start;

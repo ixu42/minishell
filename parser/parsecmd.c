@@ -89,7 +89,9 @@ t_cmd	*parsecmd(char *s)
 
 	es = s + ft_strlen(s);
 	cmd = parseline(&s, es);
-	if (cmd->flag || s != es)
+	if (cmd->flag == SYNTAX_ERR_UNCLOSED)
+		;
+	else if (cmd->flag || s != es)
 	{
 		ft_dprintf(2,"%s %s ", PMT, ERR_SYNTAX_UNEXP);
 		tok = gettoken(&s, es, &str[0], &str[1]);
