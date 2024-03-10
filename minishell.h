@@ -121,6 +121,7 @@ typedef struct s_data
 	char		**env_paths;
 	char		*cmd_path;
 	t_builtin	builtin;
+	int			status_code;
 }	t_data;
 
 typedef struct s_strstate

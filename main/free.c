@@ -11,11 +11,28 @@ void	free_arr(char **arr)
 	arr = NULL;
 }
 
+void	free_lst(t_env **lst)
+{
+	t_env	*current;
+	t_env	*prev;
+
+	current = *lst;
+	while (current != NULL)
+	{
+		free(current->name);
+		free(current->value);
+		prev = current;
+		current = current->next;
+		free(prev);
+	}
+	*lst = NULL;
+}
+
 // free data struct
 
 void	free_data(t_data *data)
 {
-	free_arr(data->envp);
+	free_lst(&(data->env_lst));
 	free_arr(data->env_paths);
 	free(data->buf);
 }
