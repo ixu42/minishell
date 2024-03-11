@@ -1,0 +1,54 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile_linux                                     :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
+#    Updated: 2024/02/24 16:43:21 by ixu              ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+NAME = minishell
+
+LIBFT_DIR = libft
+
+LIBFT = $(LIBFT_DIR)/libft.a
+
+CFLAGS = -Wall -Wextra -Werror
+
+SRCS = main.c \
+		parser/constructors.c \
+		parser/parseexec.c \
+		parser/parsecmd.c \
+		parser/parsing_utils.c \
+		runcmd.c \
+		builtins.c \
+		parsing_pipex.c \
+		env.c \
+		free.c \
+		error.c
+
+OBJS = $(SRCS:.c=.o)
+
+all: $(NAME)
+
+$(NAME): $(OBJS) $(LIBFT)
+	cc -o $(NAME) $(OBJS) $(LIBFT) -lreadline -L$(LIBFT_DIR) -lft
+
+%.o: %.c
+	cc $(CFLAGS) -c $< -o $@
+
+$(LIBFT):
+	$(MAKE) -C $(LIBFT_DIR)
+
+clean:
+	rm -f $(OBJS)
+	$(MAKE) -C $(LIBFT_DIR) clean
+ 
+fclean: clean
+	rm -f $(NAME)
+	rm -f $(LIBFT)
+
+re: fclean all
