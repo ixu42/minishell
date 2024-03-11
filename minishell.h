@@ -21,6 +21,9 @@
 // wait
 # include <sys/wait.h>
 
+// signal
+#include <signal.h>
+
 // macros for (error) messages
 # define ERR_ARGS "invalid number of arguments"
 # define USAGE "ex. usage: ./minishell"
@@ -52,6 +55,8 @@
 //#define SYMBOLS "<>|&;()\\"
 #define SYMBOLS "<>|&;()"
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
+
+typedef void (*sig_t) (int);
 
 // AST's node types
 typedef enum e_node_type
@@ -278,6 +283,7 @@ void	panic(char *err_msg, t_data *data, int exit_code);
 
 // readline
 void	rl_clear_history(void);
+void	rl_replace_line (const char *text, int clear_undo);
 
 // string operations
 char	*strlist_join(t_strcmd *str);

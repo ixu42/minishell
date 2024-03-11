@@ -30,21 +30,40 @@ int	is_valid_buf(char *buf)
 	return (0);	
 }
 
+// int	signum;
+
+// void	signal_handler(int signum)
+// {
+// 	printf("Received signal %d\n", signum);
+// 	if (signum == SIGINT)
+// 	{
+
+// 	}
+// }
+
+// sig_t	signal(int sig, sig_t func)
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
 	t_cmd	*cmd;
 	int 	status;
 
+	// ------ print out envp ------
+	// for (int k = 0; envp[k] != NULL; k++)
+	// 	printf("%s\n", envp[k]);
+	// ----------------------------
 	(void)argv;
 	validate_args(argc);
 	data_init(&data, envp);
 	while (data.status_code >= 0) 
 	{
+		// signal(signum, signal_handler);
 		data.buf = readline("\033[0;32mLiteShell$ \033[0m"); // free
-		if (data.buf == NULL)
+		if (data.buf == NULL) // Check for EOF (Ctrl+D)
 		{
-			printf("\n"); // check bash on MacOS
+			// check out readline funcs
+			printf("exit"); // bash on MacOS prints prompt + exit
 			break ;
 		}
 		if (is_valid_buf(data.buf))
@@ -55,12 +74,12 @@ int	main(int argc, char **argv, char **envp)
 			// ------
 			// dprintf(2, "data.buf(before): %s\n", data.buf);
 			cmd = parsecmd(data.buf); // data.buf is modified
-			if (TESTMODE)
-			{
-				ft_dprintf(2,"------------->TESTMODE<----------\n");
-				runcmd_test(cmd);
-				ft_dprintf(2,"------------->  END   <----------\n");
-			}
+			// if (TESTMODE)
+			// {
+			// 	ft_dprintf(2,"------------->TESTMODE<----------\n");
+			// 	runcmd_test(cmd);
+			// 	ft_dprintf(2,"------------->  END   <----------\n");
+			// }
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
 			status = runcmd(cmd, &data, PARENT_PROC);
 			// ------ print out envp ------
