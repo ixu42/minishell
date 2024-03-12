@@ -3,7 +3,7 @@
 
 t_cmd	*execcmd(void)
 {
-	t_execcmd *cmd;
+	t_execcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
@@ -11,12 +11,12 @@ t_cmd	*execcmd(void)
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = EXEC;
 	cmd->argc = 0;
-	return ((t_cmd*)cmd);
+	return ((t_cmd *)cmd);
 }
 
 t_strcmd	*strcmd(int type, char *start, char *end)
 {
-	t_strcmd *cmd;
+	t_strcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
@@ -32,7 +32,7 @@ t_strcmd	*strcmd(int type, char *start, char *end)
 
 t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end)
 {
-	t_argcmd *cmd;
+	t_argcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
@@ -69,16 +69,16 @@ t_cmd* redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd)
 }
 */
 
-t_cmd* redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
+t_cmd	*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 {
-	t_redircmd *cmd;
+	t_redircmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
 	{
 		subcmd->flag |= MALLOC_ERROR;
 		state->flag |= MALLOC_ERROR;
-		return (NULL);
+		return (subcmd);
 	}
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = REDIR;
@@ -88,12 +88,12 @@ t_cmd* redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 	cmd->mode = mode;
 	cmd->fd = fd;
 	cmd->str = NULL;
-	return ((t_cmd*)cmd);
+	return ((t_cmd *)cmd);
 }
 
-t_cmd* pipecmd(t_cmd *left, t_cmd *right)
+t_cmd	*pipecmd(t_cmd *left, t_cmd *right)
 {
-	t_pipecmd *cmd;
+	t_pipecmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
@@ -108,12 +108,12 @@ t_cmd* pipecmd(t_cmd *left, t_cmd *right)
 		cmd->flag |= right->flag;
 	else
 		cmd->flag = MALLOC_ERROR;
-	return ((t_cmd*)cmd);
+	return ((t_cmd *)cmd);
 }
 
 t_cmd	*list_cmd(t_cmd *left, t_cmd *right, int type)
 {
-	t_listcmd *cmd;
+	t_listcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
@@ -126,7 +126,7 @@ t_cmd	*list_cmd(t_cmd *left, t_cmd *right, int type)
 		cmd->flag = left->flag;
 	if (right)
 		cmd->flag |= right->flag;
-	return ((t_cmd*)cmd);
+	return ((t_cmd *)cmd);
 }
 
 t_strstate	*make_strstate(char *start, char *finish)

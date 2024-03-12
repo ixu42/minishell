@@ -1,21 +1,25 @@
 #include <stdio.h>
 #include <dirent.h>
 
-int main() {
-	DIR *directory;
-	struct dirent *entry;
+int	main(void)
+{
+	DIR				*directory;
+	struct dirent	*entry;
 
 	directory = opendir(".");
-	if (directory == NULL) {
+	if (!directory)
+	{
 		perror("Unable to open directory");
-		return 1;
+		return (1);
 	}
-	while ((entry = readdir(directory)) != NULL) 
+	entry = readdir(directory);
+	while (entry)
 	{
 		if (entry->d_type == DT_REG)
 			printf("%s\n", entry->d_name);
+		entry = readdir(directory);
 	}
 	closedir(directory);
-	return 0;
+	return (0);
 }
 

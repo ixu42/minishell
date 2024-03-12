@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   runcmd_test.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/06 12:55:27 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/12 17:42:55 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void	printargs(t_argcmd *args, t_data *data)
 		printstr(args->left, data);
 		ft_dprintf(2, "   |\n");
 		if (args->right == args)
-			break;
+			break ;
 		args = args->right;
 		i++;
 	}

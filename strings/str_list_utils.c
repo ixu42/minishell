@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   str_list_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/12 08:44:01 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/12 17:52:54 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 void	expand_var_in_args(t_argcmd *arg, t_env *env_list)
 {
 	t_strcmd	*str;
-  t_env			*node;
+	t_env		*node;
 
 	str = arg->left;
 	while (str != NULL)
@@ -139,7 +139,7 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 		return (1);
 	ft_memset(argv, 0, sizeof(*argv) * (argc + 1));
 	i = 0;
-	while (i <=  argc && args != NULL)
+	while (i <= argc && args != NULL)
 	{
 		expand_var_in_args(args, data->env_lst);
 		argv[i] = strlist_join(args->left);
