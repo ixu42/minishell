@@ -33,6 +33,13 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 	{
 		ecmd = (t_execcmd *)cmd;
 		make_argv(ecmd, data);
+		if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
+		{
+			if (process == CHILD_PROC)
+				exit(0); // free all heap allocated memory
+			else
+				return (0);
+		}
 		// ------ print out args ------
 		//for (int i = 0; ecmd->argv[i] != NULL; i++)
 		// 	dprintf(2, "ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
