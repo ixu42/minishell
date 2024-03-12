@@ -48,7 +48,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
 	t_cmd	*cmd;
-	int		status;
+	// int		status;
 
 	// ------ print out envp ------
 	// for (int k = 0; envp[k] != NULL; k++)
@@ -57,14 +57,14 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	validate_args(argc);
 	data_init(&data, envp);
-	while (data.status_code >= 0)
+	while (data.status >= 0)
 	{
 		struct sigaction	sa;
 		sa.sa_handler = &signal_handler;
 		// sa.sa_flags = SA_RESTART;
 		sigaction(SIGINT, &sa, NULL);
 		// signal(SIGINT, signal_handler);
-		// data.buf = readline("\033[0;32mLiteShell$ \033[0m"); // free
+		// data.buf = readline("\001\033[0;32mLiteShell$ \033[0m\002"); // free
 		data.buf = readline("LiteShell$ "); // free. discuss if all color formatting should be removed
 		if (data.buf == NULL) // Check for EOF (Ctrl+D)
 		{
@@ -86,12 +86,12 @@ int	main(int argc, char **argv, char **envp)
 			// 	ft_dprintf(2,"------------->  END   <----------\n");
 			// }
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
-			status = runcmd(cmd, &data, PARENT_PROC);
+			runcmd(cmd, &data, PARENT_PROC);
 			// ------ print out envp ------
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);
 			// ----------------------------
-			printf("\033[0;35m[status: %d]\033[0m\n", status);
+			printf("\033[0;35m[status: %d]\033[0m\n", data.status);
 			// ------
 		}
 		free(data.buf);

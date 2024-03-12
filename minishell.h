@@ -126,7 +126,7 @@ typedef struct s_data
 	char		**env_paths;
 	char		*cmd_path;
 	t_builtin	builtin;
-	int			status_code;
+	int			status;
 }	t_data;
 
 typedef struct s_strstate
@@ -203,7 +203,7 @@ typedef struct s_listcmd
 
 int		fork1(t_data *data);
 t_cmd	*parsecmd(char *s);
-int		runcmd(t_cmd *cmd, t_data *data, int child_proc);
+void	runcmd(t_cmd *cmd, t_data *data, int child_proc);
 // to be removed at some point
 void	runcmd_old(t_cmd *cmd, t_data *data);
 void	runcmd_test(t_cmd *cmd);

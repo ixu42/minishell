@@ -56,5 +56,5 @@ void	data_init(t_data *data, char **envp)
 	// ----------------------------
 	data->env_paths = get_env_paths(envp, data); // free
 	data->builtin = 0;
-	data->status_code = 0;
+	data->status = 0;
 }
