@@ -53,6 +53,8 @@
 //#define SYMBOLS "<>|&;()\\"
 #define SYMBOLS "<>|&()"
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
+#define ERR_CODE_SYNTAX 258
+#define ENOMEM 12
 
 // AST's node types
 typedef enum e_node_type
@@ -96,7 +98,7 @@ typedef enum e_parse_error
 	SYNTAX_ERR_UNEXPTOK = 0x02,
 	SYNTAX_ERR_UNCLOSED = 0x04,
 	SYNTAX_ERROR = 0x08,
-	MALLOC_ERROR = 0x10,
+	MALLOC_ERROR = 0x10
 }	t_parse_error;
 
 typedef enum e_builtin

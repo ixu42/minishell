@@ -6,34 +6,12 @@
 /*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/08 13:18:02 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/12 08:44:01 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-/*
-void	expand_var_node(t_strcmd *str, t_env *env_list)
-{
-	char	*end;
-  t_env	*node;
 
-	if (!(str->type == STR_NODE_VAR || str->type == STR_NODE_VAR_P))
-		return ;
-	printf("expand var?\n");
-	if (!name_in_env_lst(env_list, str->start, str->end - str->start, &node))
-	{
-		printf("expand var? type =%d\n", str->type);
-		str->end = str->start;
-		return ;
-	}
-	printf("hi I am var\n");
-	str->start = node->value;
-	end = node->value;
-	while (*end)
-		end++;
-	str->end = end;
-}
-*/
 
 void	expand_var_in_args(t_argcmd *arg, t_env *env_list)
 {

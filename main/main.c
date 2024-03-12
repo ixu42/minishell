@@ -15,14 +15,10 @@ int	main(int argc, char **argv, char **envp)
 		if (ft_strlen(data.buf) > 0) // should we check if data.buf only contains white spaces here?
 		{
 			add_history(data.buf);
-			// handling buf (parsing + execution)
-			// test parsing/execution funcs here!
-			// ------
-			// dprintf(2, "data.buf(before): %s\n", data.buf);
 			if (TESTMODE)
 			{
 				ft_dprintf(2,"------------->TESTMODE<----------\n");
-				cmd = parsecmd(data.buf, NULL); // data.buf is modified (nul terminated tockens)
+				cmd = parsecmd(data.buf, NULL);
 				if (cmd)
 					runcmd_test(cmd, &data);
 				// clean cmd
@@ -30,8 +26,8 @@ int	main(int argc, char **argv, char **envp)
 			}
 			status = make_ast(&cmd, data.buf);
 			if (status == 0)
-						status = runcmd(cmd, &data, PARENT_PROC);
-			else if (status == 3)
+				status = runcmd(cmd, &data, PARENT_PROC);
+			else if (status == ENOMEM)
 			{
 				dprintf(2, "%s malloc error\n", PMT);
 				//        clean all: data and cmd

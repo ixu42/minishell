@@ -93,9 +93,9 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 	char	*str[2];
 
 	if (cmd->flag & SYNTAX_ERR_UNCLOSED)
-		return (2);
+		return (ERR_CODE_SYNTAX);
 	if (cmd->flag & MALLOC_ERROR)
-		return (3);
+		return (ENOMEM);
 	else if (cmd->flag || s != es)
 	{
 		ft_dprintf(2,"%s %s ", PMT, ERR_SYNTAX_UNEXP);
@@ -109,7 +109,7 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 		}
 		else
 			ft_dprintf(2,"'%s'\n", token_type_to_str(tok));
-		return (2);
+		return (ERR_CODE_SYNTAX);
 	}
 	return (0);
 }
@@ -138,6 +138,6 @@ int	make_ast(t_cmd **p_cmd, char *s)
 	
 	*p_cmd = parsecmd(s, &status);
 	if (!*p_cmd)
-		status = 3;
+		status = ENOMEM;
 	return (status);
 }
