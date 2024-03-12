@@ -6,11 +6,37 @@
 /*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/02 12:34:25 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/12 08:44:01 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+
+void	expand_var_in_args(t_argcmd *arg, t_env *env_list)
+{
+	t_strcmd	*str;
+  t_env			*node;
+
+	str = arg->left;
+	while (str != NULL)
+	{
+		if (str->type == STR_NODE_VAR || str->type == STR_NODE_VAR_P)
+		{
+			if (!name_in_env_lst(env_list, str->start, str->end - str->start, &node))
+				str->end = str->start;
+			else
+			{
+				str->start = node->value;
+				str->end = node->value;
+				str->type = STR_NODE;
+				while (*str->end)
+					str->end++;
+			}
+		}
+		str = str->next;
+	}
+}
 
 int	strlist_len(t_strcmd *str)
 {
@@ -72,6 +98,12 @@ void	ft_free_char2d(char **split)
 	free(split);
 }
 
+int	ft_free_char2d_return(char **split, int ret)
+{
+	ft_free_char2d(split);
+	return (ret);
+}
+
 int	get_argc_strcmd(t_strcmd *str)
 {
 	// to be change when $VAR will be expanded
@@ -109,12 +141,10 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 	i = 0;
 	while (i <=  argc && args != NULL)
 	{
+		expand_var_in_args(args, data->env_lst);
 		argv[i] = strlist_join(args->left);
 		if (!argv[i++])
-		{
-			ft_free_char2d(argv);
-			return (1);
-		}
+			return (ft_free_char2d_return(argv, 1));
 		args = args->right;
 	}
 	cmd->argv = argv;

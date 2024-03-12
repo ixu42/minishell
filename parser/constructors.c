@@ -38,18 +38,22 @@ t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end)
 	if (!cmd)
 		return (NULL);
 	ft_memset(cmd, 0, sizeof(*cmd));
-//	cmd->type = type;
+	cmd->type = ARG_NODE;
 	cmd->left = str;
+	if (str)
+		cmd->flag = str->flag;
 	cmd->right = args;
 	cmd->start = start;
 	cmd->end = end;
 	return (cmd);
 }
 
+/*
 t_cmd* redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd)
 {
 	t_redircmd *cmd;
 
+	//this funstion is unused. remove it?!
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
 		return (NULL);
@@ -63,6 +67,7 @@ t_cmd* redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd)
 	cmd->str = NULL;
 	return ((t_cmd*)cmd);
 }
+*/
 
 t_cmd* redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 {
@@ -70,7 +75,11 @@ t_cmd* redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
+	{
+		subcmd->flag |= MALLOC_ERROR;
+		state->flag |= MALLOC_ERROR;
 		return (NULL);
+	}
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = REDIR;
 	cmd->cmd = subcmd;
@@ -87,11 +96,19 @@ t_cmd* pipecmd(t_cmd *left, t_cmd *right)
 	t_pipecmd *cmd;
 
 	cmd = malloc(sizeof(*cmd));
+	if (!cmd)
+		return (NULL);
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = PIPE;
 	cmd->left = left;
 	cmd->right = right;
-	return (t_cmd*)cmd;
+	if (left)
+		cmd->flag = left->flag;
+	if (right)
+		cmd->flag |= right->flag;
+	else
+		cmd->flag = MALLOC_ERROR;
+	return ((t_cmd*)cmd);
 }
 
 t_cmd	*list_cmd(t_cmd *left, t_cmd *right, int type)
@@ -99,10 +116,16 @@ t_cmd	*list_cmd(t_cmd *left, t_cmd *right, int type)
 	t_listcmd *cmd;
 
 	cmd = malloc(sizeof(*cmd));
+	if (!cmd)
+		return (NULL);
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = type;
 	cmd->left = left;
 	cmd->right = right;
+	if (left)
+		cmd->flag = left->flag;
+	if (right)
+		cmd->flag |= right->flag;
 	return ((t_cmd*)cmd);
 }
 

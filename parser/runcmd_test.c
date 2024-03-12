@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   runcmd_test.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/06 12:55:27 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	fork1_test(void)	// Fork but panics on failure.
@@ -6,7 +18,7 @@ int	fork1_test(void)	// Fork but panics on failure.
 
 	pid = fork();
 	if(pid == -1)
-		panic_test("fork");
+		ft_dprintf(2, "fork");
 	return pid;
 }
 
@@ -19,7 +31,20 @@ void    ft_print_char2d(char **split)
         ft_dprintf(2, "\t->%s<-\n", split[i++]);
 }
 
-void	printstr(t_strcmd *str)
+/*
+char *locate_var_env(char *start, char *end, t_env *env_list)
+{
+//	char	*value;
+  t_env	*node;
+
+//	name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node)
+  if (name_in_env_lst(env_list, start, end - start, &node))
+		return (node->value);
+	return (NULL);
+}
+*/
+
+void	printstr(t_strcmd *str, t_data *data)
 {
 	t_strcmd	*first;
 	char *start;
@@ -36,6 +61,14 @@ void	printstr(t_strcmd *str)
 		ft_dprintf(2, "   |   |---->");
 		write(2, start, end - start);
 		ft_dprintf(2, "<-\t type=%d, flag=%d\n", str->type, str->flag);
+		/*
+		if (str->type == STR_NODE_VAR || str->type == STR_NODE_VAR_P)
+		{
+			start = locate_var_env(start, end, data->env_lst);
+			if (start)
+				printf("var=%s\n", start);
+		}
+		*/
 		str = str->next;
 		i++;
 	}
@@ -47,7 +80,7 @@ void	printstr(t_strcmd *str)
 	}
 }
 
-void	printargs(t_argcmd *args)
+void	printargs(t_argcmd *args, t_data *data)
 {
 	char *start;
 	char *end;
@@ -56,15 +89,13 @@ void	printargs(t_argcmd *args)
 	i = 0;
 	while (args != NULL)
 	{
-		//printf("arg number %d for pnt=%p=>\n", i, args);
-		//printf("arg number %d for rrr=%p=>\n", i, args->right);
 		start = args->start;
 		end = args->end;
 		ft_dprintf(2,"   |--arg-%d\t->", i);
 		if (start < end)
 			write(2, start, end - start);
-		ft_dprintf(2, "<-\n");
-		printstr(args->left);
+		ft_dprintf(2, "<- flag=%d\n",args->flag);
+		printstr(args->left, data);
 		ft_dprintf(2, "   |\n");
 		if (args->right == args)
 			break;
@@ -75,7 +106,7 @@ void	printargs(t_argcmd *args)
 		ft_dprintf(2, "   NULL terminated arg node.\n");
 }
 // test version of runcmd for testing AST
-void	runcmd_test(t_cmd *cmd)
+void	runcmd_test(t_cmd *cmd, t_data *data)
 {
 	int p[2];
 	t_execcmd *ecmd;
@@ -91,60 +122,61 @@ void	runcmd_test(t_cmd *cmd)
 	else if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd*)cmd;
-		make_argv(ecmd, NULL);
+		make_argv(ecmd, data);
 		if(ecmd->argv[0] == 0)
 		{
 			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");
 //			exit (1);
 		}
-		ft_dprintf(2, "EXEC:    MAXARG limited sargv=%s, %s, %s, %s\n", ecmd->sargv[0], ecmd->sargv[1], ecmd->sargv[2], ecmd->sargv[3]);
+		ft_dprintf(2, "EXEC:   flag=%d\n", ecmd->flag);
 		ft_dprintf(2, "    argv=\n");
 		ft_print_char2d(ecmd->argv);
-		printargs(ecmd->args);
+		printargs(ecmd->args, data);
+		//ft_dprintf(2, "    MAXARG limited sargv=%s, %s, %s, %s\n", ecmd->sargv[0], ecmd->sargv[1], ecmd->sargv[2], ecmd->sargv[3]);
 	}
 	else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd*)cmd;
-		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d);\n", rcmd->file, rcmd->mode,rcmd->fd);
-		printstr(rcmd->str);
-		runcmd_test(rcmd->cmd);
+		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d, flag=%d);\n", rcmd->file, rcmd->mode,rcmd->fd, rcmd->flag);
+		printstr(rcmd->str, data);
+		runcmd_test(rcmd->cmd, data);
 	}
 	else if (cmd->type == LIST)
 	{
 		lcmd = (t_listcmd*)cmd;
 		if(fork1_test() == 0)
-			runcmd_test(lcmd->left);
+			runcmd_test(lcmd->left, data);
 		wait(NULL);
-		runcmd_test(lcmd->right);
+		runcmd_test(lcmd->right, data);
 	}
 	else if (cmd->type == AND_CMD)
 	{
 		lcmd = (t_listcmd*)cmd;
 		if(fork1_test() == 0)
-			runcmd_test(lcmd->left);
+			runcmd_test(lcmd->left, data);
 		wait(NULL);
-		printf("&&\n");
-		runcmd_test(lcmd->right);
+		printf("&& flag=%d\n", lcmd->flag);
+		runcmd_test(lcmd->right, data);
 	}
 	else if (cmd->type == OR_CMD)
 	{
 		lcmd = (t_listcmd*)cmd;
 		if(fork1_test() == 0)
-			runcmd_test(lcmd->left);
+			runcmd_test(lcmd->left, data);
 		wait(NULL);
-		printf("||\n");
-		runcmd_test(lcmd->right);
+		printf("|| flag=%d\n", lcmd->flag);
+		runcmd_test(lcmd->right, data);
 	}
 	else if (cmd->type == PIPE)
 	{
 		pcmd = (t_pipecmd*)cmd;
-		printf("make pipe\n");
+		printf("make pipe,  flag=%d\n", cmd->flag);
 		if (fork1_test() == 0){
-			runcmd_test(pcmd->left);
+			runcmd_test(pcmd->left, data);
 		}
 		wait(NULL);
 		if (fork1_test() == 0){
-			runcmd_test(pcmd->right);
+			runcmd_test(pcmd->right, data);
 		}
 		wait(NULL);
 	}
