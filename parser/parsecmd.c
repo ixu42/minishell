@@ -87,29 +87,15 @@ t_cmd	*parseblock(char **ps, char *es)
 	return (cmd);
 }
 
-t_cmd	*parsecmd(char *s)
+int	cmd_status(char *s, t_cmd *cmd, char *es)
 {
-	char	*es;
-	char	*str[2];
-	t_cmd	*cmd;
 	int		tok;
-	
-/*	if (s == NULL)
-	{
-		dprintf(2, "Error: buffer cmd = NULL\n");
-		return (NULL);
-	}
-	if (*s == '\0')
-	{
-		dprintf(2, "Error: buffer cmd is empty string\n");
-		return (NULL);
-	}
-*/
-	es = s + ft_strlen(s);
-	cmd = parseline(&s, es);
-	printf("flag? = %d\n", cmd->flag & SYNTAX_ERR_UNCLOSED);
-	if (cmd->flag == SYNTAX_ERR_UNCLOSED)
-		;
+	char	*str[2];
+
+	if (cmd->flag & SYNTAX_ERR_UNCLOSED)
+		return (ERR_CODE_SYNTAX);
+	if (cmd->flag & MALLOC_ERROR)
+		return (ENOMEM);
 	else if (cmd->flag || s != es)
 	{
 		ft_dprintf(2,"%s %s ", PMT, ERR_SYNTAX_UNEXP);
@@ -123,7 +109,35 @@ t_cmd	*parsecmd(char *s)
 		}
 		else
 			ft_dprintf(2,"'%s'\n", token_type_to_str(tok));
+		return (ERR_CODE_SYNTAX);
 	}
+	return (0);
+}
+
+t_cmd	*parsecmd(char *s, int *status)
+{
+	char	*es;
+	t_cmd	*cmd;
+	int		ret;
+	
+	ret = 0;
+	es = s + ft_strlen(s);
+	cmd = parseline(&s, es);
+	if (!cmd)
+		return (NULL);
+	ret = cmd_status(s, cmd, es);
 	nulterminate(cmd);
+	if (status)
+		*status = ret;
 	return (cmd);
+}
+
+int	make_ast(t_cmd **p_cmd, char *s)
+{
+	int		status;
+	
+	*p_cmd = parsecmd(s, &status);
+	if (!*p_cmd)
+		status = ENOMEM;
+	return (status);
 }

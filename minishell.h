@@ -47,12 +47,14 @@
 # define CHILD_PROC 1
 
 
-#define TESTMODE 1 
+#define TESTMODE 0 
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 //#define SYMBOLS "<>|&;()\\"
 #define SYMBOLS "<>|&()"
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
+#define ERR_CODE_SYNTAX 258
+#define ENOMEM 12
 
 // AST's node types
 typedef enum e_node_type
@@ -96,7 +98,7 @@ typedef enum e_parse_error
 	SYNTAX_ERR_UNEXPTOK = 0x02,
 	SYNTAX_ERR_UNCLOSED = 0x04,
 	SYNTAX_ERROR = 0x08,
-	MALLOC_ERROR = 0x10,
+	MALLOC_ERROR = 0x10
 }	t_parse_error;
 
 typedef enum e_builtin
@@ -204,11 +206,10 @@ typedef struct s_listcmd
 }	t_listcmd;
 
 int		fork1(t_data *data);
-t_cmd	*parsecmd(char *s);
 int		runcmd(t_cmd *cmd, t_data *data, int child_proc);
 // to be removed at some point
-void	runcmd_old(t_cmd *cmd, t_data *data);
-void	runcmd_test(t_cmd *cmd);
+void	runcmd_test(t_cmd *cmd, t_data *data);
+//void	runcmd_old(t_cmd *cmd, t_data *data);
 
 // constructors.c
 t_cmd		*execcmd(void);
@@ -225,7 +226,8 @@ t_cmd	*parseexec(char**, char*);
 t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es);
 
 // parsecmd.c
-t_cmd   *parsecmd(char*);
+int			make_ast(t_cmd **p_cmd, char *s);
+t_cmd   *parsecmd(char *buf, int *status);
 t_cmd   *parseblock(char **ps, char *es);
 //t_cmd   *parseline(char**, char*);
 //t_cmd   *parsepipe(char**, char*);

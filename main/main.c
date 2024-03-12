@@ -15,38 +15,37 @@ int	main(int argc, char **argv, char **envp)
 		if (ft_strlen(data.buf) > 0) // should we check if data.buf only contains white spaces here?
 		{
 			add_history(data.buf);
-			// handling buf (parsing + execution)
-			// test parsing/execution funcs here!
-			// ------
-			// dprintf(2, "data.buf(before): %s\n", data.buf);
-			cmd = parsecmd(data.buf); // data.buf is modified
-			// status = parsefun(&cmd, data.buf);
-			// if (status == 0)
-			//		status = runcmd
-			// else if (status == malloc error )
-			// {
-			//        clean cmd
-			//       break
-			//  }
-			// clean cmd including argv
-			//  
 			if (TESTMODE)
 			{
 				ft_dprintf(2,"------------->TESTMODE<----------\n");
+				cmd = parsecmd(data.buf, NULL);
 				if (cmd)
-				runcmd_test(cmd);
-				//ft_dprintf(2, "NULL AST\n");
+					runcmd_test(cmd, &data);
+				// clean cmd
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
+			status = make_ast(&cmd, data.buf);
+			if (status == 0)
+				status = runcmd(cmd, &data, PARENT_PROC);
+			else if (status == ENOMEM)
+			{
+				dprintf(2, "%s malloc error\n", PMT);
+				//        clean all: data and cmd
+				break ;
+			}
+			else
+			{
+				dprintf(2, "%s add code to clean cmd including argv\n", PMT);
+				// clean cmd including argv
+			}
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
+	/*
 			if (cmd)
 			{
 				if (cmd ->flag == 0) 
 					status = runcmd(cmd, &data, PARENT_PROC);
 			}
-			//else terminate everything ??? malloc error
-
-			//status = runcmd(cmd, &data, PARENT_PROC);
+	*/
 			// ------ print out envp ------
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);

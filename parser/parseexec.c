@@ -199,22 +199,11 @@ t_strcmd	*parse_single(t_strstate *state)
 	return (node);
 }
 
-t_strcmd	*parse_variable(t_strstate *state)
-{
-	char	*s;
-	t_strcmd *node;
 
-	s = state->pos + 1;
-	state->beg = s;
-	while ((ft_isalnum(*s) || *s == '_') && s < state->finish)
-		s++;
-	state->end = s;
-	state->pos = s;
-	if (state->end == state->beg)
-	{
-		ft_dprintf(2, "Error: no variable name provided after $.\n");
-		state->flag |= SYNTAX_ERROR;
-	}
+void	make_var_node(t_strcmd **p_node, t_strstate *state)
+{
+	t_strcmd	*node;
+
 	node = strcmd(STR_NODE_VAR, state->beg, state->end);
 	if (node)
 	{
@@ -224,6 +213,29 @@ t_strcmd	*parse_variable(t_strstate *state)
 	}
 	else
 		state->flag |= MALLOC_ERROR;
+	*p_node = node;
+}
+
+t_strcmd	*parse_variable(t_strstate *state)
+{
+	char	*s;
+	t_strcmd *node;
+
+	s = state->pos + 1;
+	state->beg = s;
+	if (!ft_isdigit(*s))
+	{
+		while ((ft_isalnum(*s) || *s == '_') && s < state->finish)
+			s++;
+	}
+	state->end = s;
+	state->pos = s;
+	if (state->end == state->beg )
+	{
+		ft_dprintf(2, "%s variable name is empty or starts from digit.\n", PMT);
+		state->flag |= SYNTAX_ERR_UNCLOSED;
+	}
+	make_var_node(&node, state);
 	return (node);
 }
 
@@ -342,10 +354,11 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 		return (1);
 	}
 	if (*arg)
-	{
 		(*arg)->right = new_node;
-		(*arg)->flag |= new_node->flag;
-	}
+//	{
+	//	(*arg)->right = new_node;
+		//(*arg)->flag |= new_node->flag;
+//	}
 	*arg = new_node;
 	return (0);
 }
@@ -380,10 +393,8 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 		}
 		extend_arg_node(&new_arg, tok_str[0], tok_str[1]);
 		if (cmd->argc == 0)
-		{
 			cmd->args = new_arg;
-			cmd->flag |= new_arg->flag;
-		}
+		cmd->flag |= new_arg->flag;
 		set_execcmd_sargv(cmd, tok_str);
 		cmd->argc++;
 		new_redir = parseredirs((t_cmd *)cmd,  ps, es);
@@ -416,7 +427,7 @@ t_cmd*	parseexec(char **ps, char *es)
 		return (head);
 	exec_redir_loop(&head, cmd, ps, es);
 	if (cmd->args)
-		cmd->flag = cmd->args->flag;
+		cmd->flag |= cmd->args->flag;
 	if (head == (t_cmd *)cmd && cmd->argc == 0)
 			cmd->flag |= SYNTAX_ERROR;
 	return (head);
