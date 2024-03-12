@@ -21,7 +21,8 @@ static int	update_oldpwd_in_env_lst(t_env *env_lst)
 {
 	char	cwd[PATH_MAX];
 	t_env	*tmp;
-	char	*name_value_pair;
+	t_env	*node;
+	// char	*name_value_pair;
 
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 	{
@@ -39,9 +40,12 @@ static int	update_oldpwd_in_env_lst(t_env *env_lst)
 		}
 		tmp = tmp->next;
 	}
-	name_value_pair = ft_strjoin("PWD=", cwd);
-	lst_append(&env_lst, get_node(name_value_pair));
-	free(name_value_pair);
+	// name_value_pair = ft_strjoin("PWD=", cwd);
+	// node = get_node(name_value_pair);
+	// if (node == NULL)
+	// 	return (1);
+	// lst_append(&env_lst, node);
+	// free(name_value_pair);
 	return (0);
 }
 
@@ -49,7 +53,8 @@ static int	update_pwd_in_env_lst(t_env *env_lst)
 {
 	char	cwd[PATH_MAX];
 	t_env	*tmp;
-	char	*name_value_pair;
+	t_env	*node;
+	// char	*name_value_pair;
 
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 	{
@@ -67,9 +72,12 @@ static int	update_pwd_in_env_lst(t_env *env_lst)
 		}
 		tmp = tmp->next;
 	}
-	name_value_pair = ft_strjoin("PWD=", cwd);
-	lst_append(&env_lst, get_node(name_value_pair));
-	free(name_value_pair);
+	// name_value_pair = ft_strjoin("PWD=", cwd);
+	// node = get_node(name_value_pair);
+	// if (node == NULL)
+	// 	return (1);
+	// lst_append(&env_lst, node);
+	// free(name_value_pair);
 	return (0);
 }
 

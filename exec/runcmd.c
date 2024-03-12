@@ -15,7 +15,7 @@ is executed in child process or in parent process
 in child process -> exit with status code; 
 in parent process -> return status code */
 
-int	runcmd(t_cmd *cmd, t_data *data, int process)
+void	runcmd(t_cmd *cmd, t_data *data, int process)
 {
 	int				pipe_fd[2];
 	t_execcmd		*ecmd;
@@ -49,11 +49,11 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 			// ------ debug ------
 			// dprintf(2, "builtin\n");
 			// -------------------
-			status = run_builtin(ecmd->argv, data);
+			data->status = run_builtin(ecmd->argv, data);
 			if (process == CHILD_PROC)
-				exit(status); // free all heap allocated memory
+				exit(data->status); // free all heap allocated memory
 			else
-				return (status);
+				return ;
 		}
 		else
 		{
@@ -97,7 +97,7 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 				if (waitpid(pid, &status, 0) == -1)
 					panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, to return, no exit
 				if (WIFEXITED(status))
-					return (WEXITSTATUS(status));
+					data->status = WEXITSTATUS(status);
 			}
 		}
 	}
@@ -122,7 +122,7 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 		if (waitpid(pid, &status, 0) == -1)
 			panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, exit/return depends on process!
 		if (WIFEXITED(status) && process == PARENT_PROC)
-			return (WEXITSTATUS(status));
+			data->status = WEXITSTATUS(status);
 		else if (WIFEXITED(status) && process == CHILD_PROC)
 			exit(WEXITSTATUS(status));
 	}
@@ -132,9 +132,9 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 		// dprintf(2, "&& operator\n");
 		// -------------------
 		lcmd = (t_listcmd *)cmd;
-		status = runcmd(lcmd->left, data, PARENT_PROC);
-		if (status == 0)
-			status = runcmd(lcmd->right, data, PARENT_PROC);
+		runcmd(lcmd->left, data, PARENT_PROC);
+		if (data->status == 0)
+			runcmd(lcmd->right, data, PARENT_PROC);
 	}
 	else if (cmd->type == OR_CMD)
 	{
@@ -142,9 +142,9 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 		// dprintf(2, "|| operator\n");
 		// -------------------
 		lcmd = (t_listcmd *)cmd;
-		status = runcmd(lcmd->left, data, PARENT_PROC);
-		if (status != 0)
-			status = runcmd(lcmd->right, data, PARENT_PROC);
+		runcmd(lcmd->left, data, PARENT_PROC);
+		if (data->status != 0)
+			runcmd(lcmd->right, data, PARENT_PROC);
 	}
 	else if (cmd->type == PIPE)
 	{
@@ -183,11 +183,10 @@ int	runcmd(t_cmd *cmd, t_data *data, int process)
 		if (waitpid(pid2, &status, 0) == -1)
 			panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, exit/return depends on process!
 		if (WIFEXITED(status) && process == PARENT_PROC)
-			status = WEXITSTATUS(status);
+			data->status = WEXITSTATUS(status);
 		if (WIFEXITED(status) && process == CHILD_PROC)
 			exit(WEXITSTATUS(status)); // free all heap allocated memory
 	}
-	return (status);
 }
 
 // previous version of runcmd() is commented out below

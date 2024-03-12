@@ -21,6 +21,9 @@
 // wait
 # include <sys/wait.h>
 
+// signal
+#include <signal.h>
+
 // macros for (error) messages
 # define ERR_ARGS "invalid number of arguments"
 # define USAGE "ex. usage: ./minishell"
@@ -55,6 +58,8 @@
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12
+
+typedef void (*sig_t) (int);
 
 // AST's node types
 typedef enum e_node_type
@@ -127,6 +132,7 @@ typedef struct s_data
 	char		**env_paths;
 	char		*cmd_path;
 	t_builtin	builtin;
+	int			status;
 }	t_data;
 
 typedef struct s_strstate
@@ -206,7 +212,7 @@ typedef struct s_listcmd
 }	t_listcmd;
 
 int		fork1(t_data *data);
-int		runcmd(t_cmd *cmd, t_data *data, int child_proc);
+void	runcmd(t_cmd *cmd, t_data *data, int child_proc);
 // to be removed at some point
 void	runcmd_test(t_cmd *cmd, t_data *data);
 //void	runcmd_old(t_cmd *cmd, t_data *data);
@@ -245,9 +251,8 @@ char	**get_env_paths(char **envp, t_data *data);
 void	data_init(t_data *data, char **envp);
 
 // data init utils
-char	*get_value(char *name_value_str);
-t_env	*get_node(char *name_value_str);
-void	lst_append(t_env **env_lst, t_env *new_node);
+t_env	*get_node_in_init(char *name_value_str);
+void	lst_append_in_init(t_env **env_lst, t_env *new_node);
 void	print_error_partial_free(char *name, t_data *data);
 
 // handling builtins
@@ -259,14 +264,17 @@ int		exec_export(char **argv, t_env *env_lst);
 int		exec_unset(char **argv, t_env *env_lst);
 int		exec_env(t_env *env_lst);
 int		name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
+char	*get_value(char *name_value_str, t_env *new_node, int *err_flag);
+t_env	*get_node(char *name_value_str);
+void	lst_append(t_env **env_lst, t_env *new_node);
 int		is_builtin(char **argv, t_data **data);
 int		run_builtin(char **argv, t_data *data);
 
 // handling env
 char	**copy_env(char **envp);
-char	*get_value(char *name_value_str);
-t_env	*get_node(char *name_value_str);
-void	lst_append(t_env **env_lst, t_env *new_node);
+// char	*get_value(char *name_value_str, t_env *new_node, int *status);
+// t_env	*get_node(char *name_value_str, int *status);
+// void	lst_append(t_env **env_lst, t_env *new_node);
 t_env	*copy_env_arr_to_lst(char **envp);
 char	**copy_env_lst_to_arr(t_env *env_lst);
 char	**get_env_paths(char **envp, t_data *data);
@@ -281,10 +289,12 @@ void	free_data(t_data *data);
 // error handling
 void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
+t_env	*error_handler(char *err_msg, int *err_flag);
 void	panic(char *err_msg, t_data *data, int exit_code);
 
 // readline
 void	rl_clear_history(void);
+void	rl_replace_line (const char *text, int clear_undo);
 
 // string operations
 char	*strlist_join(t_strcmd *str);
