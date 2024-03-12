@@ -38,7 +38,10 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 			if (process == CHILD_PROC)
 				exit(0); // free all heap allocated memory
 			else
-				return (0);
+			{
+				data->status = 0;
+				return ;
+			}
 		}
 		// ------ print out args ------
 		//for (int i = 0; ecmd->argv[i] != NULL; i++)

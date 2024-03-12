@@ -48,7 +48,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
 	t_cmd	*cmd;
-	// int		status;
+	int		status;
 
 	// ------ print out envp ------
 	// for (int k = 0; envp[k] != NULL; k++)
