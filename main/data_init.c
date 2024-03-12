@@ -57,4 +57,6 @@ void	data_init(t_data *data, char **envp)
 	data->env_paths = get_env_paths(envp, data); // free
 	data->builtin = 0;
 	data->status = 0;
+	data->fd_stdin = dup(0); // protect
+	data->fd_stdout = dup(1);
 }

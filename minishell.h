@@ -133,6 +133,8 @@ typedef struct s_data
 	char		*cmd_path;
 	t_builtin	builtin;
 	int			status;
+	int			fd_stdin;
+	int			fd_stdout;
 }	t_data;
 
 typedef struct s_strstate

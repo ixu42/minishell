@@ -53,6 +53,8 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 			// dprintf(2, "builtin\n");
 			// -------------------
 			data->status = run_builtin(ecmd->argv, data);
+			dup2(data->fd_stdin, 0);
+			dup2(data->fd_stdout, 1);
 			if (process == CHILD_PROC)
 				exit(data->status); // free all heap allocated memory
 			else
@@ -97,6 +99,8 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 					execve(data->cmd_path, ecmd->argv, data->envp);
 					panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
 				}
+				dup2(data->fd_stdin, 0);
+				dup2(data->fd_stdout, 1);
 				if (waitpid(pid, &status, 0) == -1)
 					panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, to return, no exit
 				if (WIFEXITED(status))
@@ -110,24 +114,14 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		// dprintf(2, "redir\n");
 		// -------------------
 		rcmd = (t_redircmd *)cmd;
-		pid = fork1(data);
-		if (pid == 0)
-		{
-			fd = open(rcmd->file, rcmd->mode, 0644);
-			if (fd == -1)
-				panic(ERR_OPEN, data, EXIT_FAILURE);
-			if (dup2(fd, rcmd->fd) == -1)
-				panic(ERR_DUP2, data, EXIT_FAILURE);
-			if (close(fd) == -1)
-				panic(ERR_CLOSE, data, EXIT_FAILURE);
-			runcmd(rcmd->cmd, data, CHILD_PROC);
-		}
-		if (waitpid(pid, &status, 0) == -1)
-			panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, exit/return depends on process!
-		if (WIFEXITED(status) && process == PARENT_PROC)
-			data->status = WEXITSTATUS(status);
-		else if (WIFEXITED(status) && process == CHILD_PROC)
-			exit(WEXITSTATUS(status));
+		fd = open(rcmd->file, rcmd->mode, 0644);
+		if (fd == -1)
+			panic(ERR_OPEN, data, EXIT_FAILURE);
+		if (dup2(fd, rcmd->fd) == -1)
+			panic(ERR_DUP2, data, EXIT_FAILURE);
+		if (close(fd) == -1)
+			panic(ERR_CLOSE, data, EXIT_FAILURE);
+		runcmd(rcmd->cmd, data, PARENT_PROC);
 	}
 	else if (cmd->type == AND_CMD)
 	{
