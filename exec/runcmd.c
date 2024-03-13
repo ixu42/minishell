@@ -32,7 +32,8 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 	if (cmd->type == EXEC)
 	{
 		ecmd = (t_execcmd *)cmd;
-		make_argv(ecmd, data);
+		make_argv(ecmd, data); //if make_argv returns 1 we have memory problem
+		//make_argv_expanded(ecmd, data); //if make_argv returns 1 we have memory problem
 		if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
 		{
 			if (process == CHILD_PROC)

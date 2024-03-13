@@ -86,14 +86,16 @@ int	main(int argc, char **argv, char **envp)
 			status = make_ast(&cmd, data.buf);
 			if (status == 0)
         runcmd(cmd, &data, PARENT_PROC);
-			else if (data.status == ENOMEM)
+//			else if (data.status == ENOMEM)
+			else if (status == ENOMEM)
 			{
 				dprintf(2, "%s malloc error\n", PMT);
 				//        clean all: data and cmd
-				break ;
+				break ; //do we need to break?
 			}
 			else
 			{
+				data.status = status;
 				dprintf(2, "%s add code to clean cmd including argv\n", PMT);
 				// clean cmd including argv
 			}

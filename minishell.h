@@ -133,6 +133,7 @@ typedef struct s_data
 	char		*cmd_path;
 	t_builtin	builtin;
 	int			status;
+	char		*stat_str;
 }	t_data;
 
 typedef struct s_strstate
@@ -299,5 +300,7 @@ void	rl_replace_line (const char *text, int clear_undo);
 // string operations
 char	*strlist_join(t_strcmd *str);
 int		make_argv(t_execcmd *cmd, t_data *data);
+//int	make_argv_expanded(t_execcmd *cmd, t_data *data);
+
 
 #endif
