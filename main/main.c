@@ -116,6 +116,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	close(data.fd_stdin);
 	close(data.fd_stdout);
+	unlink(".heredoc"); // or adding a boolean in data struct and clean it when .heredoc exists? when to clean
 	free_data(&data);
 	rl_clear_history();
 	exit(EXIT_SUCCESS);

@@ -37,6 +37,7 @@ PARSER_FILES = constructors.c \
 				runcmd_test.c
 STRINGS_FILES = str_list_utils.c
 EXEC_FILES = runcmd.c \
+				runcmd_utils.c \
 				get_cmd_path.c \
 				environment.c \
 				heredoc.c

@@ -219,7 +219,11 @@ typedef struct s_listcmd
 
 int		fork1(t_data *data);
 void	runcmd(t_cmd *cmd, t_data *data);
+void	run_redir(t_cmd *cmd, t_data *data);
 void	get_input(t_data *data, char *delimiter);
+void	run_and(t_cmd *cmd, t_data *data);
+void	run_or(t_cmd *cmd, t_data *data);
+void	run_pipe(t_cmd *cmd, t_data *data);
 // to be removed at some point
 void	runcmd_test(t_cmd *cmd, t_data *data);
 //void	runcmd_old(t_cmd *cmd, t_data *data);
@@ -298,6 +302,7 @@ void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
 t_env	*error_handler(char *err_msg, int *err_flag);
 void	panic(char *err_msg, t_data *data, int status_code);
+void	free_n_exit(t_data *data, int status_code);
 
 // readline
 void	rl_clear_history(void);
