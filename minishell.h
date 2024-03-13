@@ -24,6 +24,9 @@
 // signal
 #include <signal.h>
 
+//directory  entity
+# include <dirent.h>
+
 // macros for (error) messages
 # define ERR_ARGS "invalid number of arguments"
 # define USAGE "ex. usage: ./minishell"
@@ -49,17 +52,28 @@
 # define PARENT_PROC 0
 # define CHILD_PROC 1
 
+// macros for 2d arraylist
+#define INITIAL_CAPACITY 5
+#define GROWTH_FACTOR 2
 
+// macros for parsing 
 #define TESTMODE 0 
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
-//#define SYMBOLS "<>|&;()\\"
 #define SYMBOLS "<>|&()"
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12
 
+
 typedef void (*sig_t) (int);
+
+typedef struct s_arrlist
+{
+	 char		**data;
+	 size_t	size;
+	 size_t	capacity;
+} t_arrlist;
 
 // AST's node types
 typedef enum e_node_type
@@ -301,6 +315,15 @@ void	rl_replace_line (const char *text, int clear_undo);
 char	*strlist_join(t_strcmd *str);
 int		make_argv(t_execcmd *cmd, t_data *data);
 //int	make_argv_expanded(t_execcmd *cmd, t_data *data);
+int	match(const char *pattern, const char *text);
+void	ft_free_char2d(char **split);
+
+
+// arraylist
+t_arrlist	*create_arrlist(void);
+int				add_string_arrlist(t_arrlist *list, const char* str);
+void			free_arrlist(t_arrlist *list);
+int	wildcard_star(t_execcmd *cmd);
 
 
 #endif

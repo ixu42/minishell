@@ -115,17 +115,6 @@ char	*strlist_join(t_strcmd *str)
 	return (res);
 }
 
-/*
-void	replace_var_nodes(t_strcmd *str, char *data)
-{
-	while (str !=NULL)
-	{
-		
-		str = str->next;
-	}
-}
-*/
-
 void	ft_free_char2d(char **split)
 {
 	size_t	i;
@@ -194,6 +183,8 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 	}
 	cmd->argv = argv;
 	make_argv_expanded(cmd);
+	wildcard_star(cmd);
+	//data about of arraylist is losted ??? clean it arraylist aproprietry
 	return (0);
 }
 
