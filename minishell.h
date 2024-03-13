@@ -50,7 +50,7 @@
 # define CHILD_PROC 1
 
 
-#define TESTMODE 0 
+#define TESTMODE 0
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 //#define SYMBOLS "<>|&;()\\"

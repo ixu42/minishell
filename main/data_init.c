@@ -59,4 +59,6 @@ void	data_init(t_data *data, char **envp)
 	data->status = 0;
 	data->fd_stdin = dup(0); // protect
 	data->fd_stdout = dup(1);
+	dprintf(2, "data->fd_stdin: %d\n", data->fd_stdin);
+	dprintf(2, "data->fd_stdout: %d\n", data->fd_stdout);
 }

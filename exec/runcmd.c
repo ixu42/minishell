@@ -122,6 +122,8 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		if (close(fd) == -1)
 			panic(ERR_CLOSE, data, EXIT_FAILURE);
 		runcmd(rcmd->cmd, data, PARENT_PROC);
+		if (process == CHILD_PROC)
+			exit(data->status);
 	}
 	else if (cmd->type == AND_CMD)
 	{
@@ -156,7 +158,7 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		{
 			if (close(pipe_fd[0]) == -1)
 				panic(ERR_CLOSE, data, EXIT_FAILURE);
-			if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
+			if (dup2(pipe_fd[1], 1) == -1)
 				panic(ERR_DUP2, data, EXIT_FAILURE);
 			if (close(pipe_fd[1]) == -1)
 				panic(ERR_CLOSE, data, EXIT_FAILURE);
@@ -165,9 +167,9 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		pid2 = fork1(data);
 		if (pid2 == 0)
 		{
-			if (close(pipe_fd[1]) == -1)
+			if (close(pipe_fd[1]) ==  -1)
 				panic(ERR_CLOSE, data, EXIT_FAILURE);
-			if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
+			if (dup2(pipe_fd[0], 0) == -1)
 				panic(ERR_DUP2, data, EXIT_FAILURE);
 			if (close(pipe_fd[0]) == -1)
 				panic(ERR_CLOSE, data, EXIT_FAILURE);
