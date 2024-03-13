@@ -1,5 +1,105 @@
 #include "../minishell.h"
 
+int	fork1(t_data *data)
+{
+	int	pid;
+
+	pid = fork();
+	if (pid == -1)
+		panic(ERR_FORK, data, 1);
+	return (pid);
+}
+
+void	run_exec(t_cmd *cmd, t_data *data)
+{
+	t_execcmd	*ecmd;
+	int			pid;
+	int			status;
+
+	ecmd = (t_execcmd *)cmd;
+	make_argv(ecmd, data);
+	if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
+	{
+		if (data->proc == CHILD_PROC)
+			free_n_exit(data, 0);
+		else
+		{
+			data->status = 0;
+			return ;
+		}
+	}
+	// ------ print out args ------
+	//for (int i = 0; ecmd->argv[i] != NULL; i++)
+	// 	dprintf(2, "ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
+	// ----------------------------
+	if (is_builtin(ecmd->argv, &data))
+	{
+		// ------ debug ------
+		// dprintf(2, "builtin\n");
+		// -------------------
+		data->status = run_builtin(ecmd->argv, data);
+		dup2(data->fd_stdin, 0);
+		dup2(data->fd_stdout, 1);
+		if (data->proc == CHILD_PROC)
+			free_n_exit(data, data->status);
+		// else
+		// 	return ;
+	}
+	else
+	{
+		// ------ debug ------
+		// dprintf(2, "non-builtin\n");
+		// -------------------
+		if (data->proc == CHILD_PROC)
+		{
+			data->cmd_path = get_cmd_path(ecmd->argv, data); // free
+			data->envp = copy_env_lst_to_arr(data->env_lst);
+			// ------ print out arr ------
+			// for (int n = 0; data->envp[n] != NULL; n++)
+			// 	printf("%s\n", data->envp[n]);
+			// ----------------------------
+			execve(data->cmd_path, ecmd->argv, data->envp);
+			panic(ecmd->argv[0], data, 127);
+		}
+		else
+		{
+			pid = fork1(data);
+			if (data->status == 1)
+				return ;
+			if (pid == 0)
+			{
+				data->proc = CHILD_PROC;
+				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
+				// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
+				// ------ print out list ------
+				// t_env	*tmp = data->env_lst;
+				// while (tmp != NULL)
+				// {
+				// 	printf("%s=%s\n", tmp->name, tmp->value);
+				// 	tmp = tmp->next;
+				// }
+				// ----------------------------
+				data->envp = copy_env_lst_to_arr(data->env_lst);
+				// ------ print out arr ------
+				// for (int n = 0; data->envp[n] != NULL; n++)
+				// 	dprintf(2 ,"%s\n", data->envp[n]);
+				// ----------------------------
+				execve(data->cmd_path, ecmd->argv, data->envp);
+				panic(ecmd->argv[0], data, 127);
+			}
+			dup2(data->fd_stdin, 0);
+			dup2(data->fd_stdout, 1);
+			if (waitpid(pid, &status, 0) == -1)
+			{
+				panic(ERR_WAITPID, data, 1);
+				return ;
+			}
+			if (WIFEXITED(status))
+				data->status = WEXITSTATUS(status);
+		}
+	}
+}
+
 void	run_redir(t_cmd *cmd, t_data *data)
 {
 	t_redircmd	*rcmd;
@@ -87,6 +187,8 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 		return ;
 	}
 	pid1 = fork1(data);
+	if (data->status == 1)
+		return ;
 	if (pid1 == 0)
 	{
 		data->proc = CHILD_PROC;
@@ -99,6 +201,8 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 		runcmd(pcmd->left, data);
 	}
 	pid2 = fork1(data);
+	if (data->status == 1)
+		return ;
 	if (pid2 == 0)
 	{
 		data->proc = CHILD_PROC;

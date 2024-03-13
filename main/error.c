@@ -40,14 +40,22 @@ t_env	*error_handler(char *err_msg, int *err_flag)
 	return (NULL);
 }
 
-/* (1) print error message, (2) if in child process, free all heap allocated memory and exit with status code; if in parent process, data->status is set to status code */
+/* (1) print error message, (2) if in child process, 
+free all heap allocated memory and exit with status code; 
+if in parent process, data->status is set to status code */
 
 void	panic(char *err_msg, t_data *data, int status_code)
 {
 	if (status_code == 127)
-		ft_dprintf(2, "%s%s: command not found\n", PMT, err_msg); // protect
+	{
+		if (ft_dprintf(2, "%s%s: command not found\n", PMT, err_msg) == -1)
+			perror(PMT_ERR_WRITE);
+	}
 	else
-		ft_dprintf(2, "%s%s\n", PMT, err_msg); // protect
+	{
+		if (ft_dprintf(2, "%s%s\n", PMT, err_msg) == -1)
+			perror(PMT_ERR_WRITE);
+	}
 	if (data->proc == CHILD_PROC)
 	{
 		free_data(data);
@@ -57,7 +65,7 @@ void	panic(char *err_msg, t_data *data, int status_code)
 	data->status = status_code;
 }
 
-// used in during the execution
+// used during the execution
 
 void	free_n_exit(t_data *data, int status_code)
 {

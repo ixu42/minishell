@@ -13,16 +13,16 @@
 // write, close, dup, dup2, fork, pipe, access, execve, unlink
 # include <unistd.h>
 
-//FILE CONTROL
+// FILE CONTROL
 # include <fcntl.h>
 
-// EXIT_FAILURE, EXIT_SUCCESS, NULL
+// EXIT_FAILURE, EXIT_SUCCESS, NULL, malloc, free
 # include <stdlib.h>
 
-// wait
+// waitpid
 # include <sys/wait.h>
 
-// signal
+// sigaction
 #include <signal.h>
 
 // macros for (error) messages
@@ -51,7 +51,6 @@
 // macros for processes
 # define PARENT_PROC 0
 # define CHILD_PROC 1
-
 
 #define TESTMODE 0
 #define MAXARGS 4
@@ -217,16 +216,19 @@ typedef struct s_listcmd
 	t_cmd	*right;
 }	t_listcmd;
 
-int		fork1(t_data *data);
-void	runcmd(t_cmd *cmd, t_data *data);
-void	run_redir(t_cmd *cmd, t_data *data);
-void	get_input(t_data *data, char *delimiter);
-void	run_and(t_cmd *cmd, t_data *data);
-void	run_or(t_cmd *cmd, t_data *data);
-void	run_pipe(t_cmd *cmd, t_data *data);
-// to be removed at some point
-void	runcmd_test(t_cmd *cmd, t_data *data);
-//void	runcmd_old(t_cmd *cmd, t_data *data);
+// readline
+void	rl_clear_history(void);
+void	rl_replace_line(const char *text, int clear_undo);
+
+// data init
+t_env	*copy_env_arr_to_lst(char **envp);
+char	**get_env_paths(char **envp, t_data *data);
+void	data_init(t_data *data, char **envp);
+
+// data init utils
+t_env	*get_node_in_init(char *name_value_str);
+void	lst_append_in_init(t_env **env_lst, t_env *new_node);
+void	print_error_partial_free(char *name, t_data *data);
 
 // constructors.c
 t_cmd		*execcmd(void);
@@ -256,15 +258,24 @@ t_cmd   *nulterminate(t_cmd *cmd);
 const char  *token_type_to_str(t_token_type token);
 //void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
-// data init
-t_env	*copy_env_arr_to_lst(char **envp);
-char	**get_env_paths(char **envp, t_data *data);
-void	data_init(t_data *data, char **envp);
+// string operations
+char	*strlist_join(t_strcmd *str);
+int		make_argv(t_execcmd *cmd, t_data *data);
 
-// data init utils
-t_env	*get_node_in_init(char *name_value_str);
-void	lst_append_in_init(t_env **env_lst, t_env *new_node);
-void	print_error_partial_free(char *name, t_data *data);
+// runcmd() func and its helper funcs
+void	runcmd(t_cmd *cmd, t_data *data);
+int		fork1(t_data *data);
+void	run_exec(t_cmd *cmd, t_data *data);
+void	run_redir(t_cmd *cmd, t_data *data);
+void	get_input(t_data *data, char *delimiter);
+void	run_and(t_cmd *cmd, t_data *data);
+void	run_or(t_cmd *cmd, t_data *data);
+void	run_pipe(t_cmd *cmd, t_data *data);
+// to be removed at some point
+void	runcmd_test(t_cmd *cmd, t_data *data);
+
+// parsing cmd path
+char	*get_cmd_path(char **argv, t_data *data);
 
 // handling builtins
 int		exec_echo(char **argv);
@@ -283,15 +294,9 @@ int		run_builtin(char **argv, t_data *data);
 
 // handling env
 char	**copy_env(char **envp);
-// char	*get_value(char *name_value_str, t_env *new_node, int *status);
-// t_env	*get_node(char *name_value_str, int *status);
-// void	lst_append(t_env **env_lst, t_env *new_node);
 t_env	*copy_env_arr_to_lst(char **envp);
 char	**copy_env_lst_to_arr(t_env *env_lst);
 char	**get_env_paths(char **envp, t_data *data);
-
-// parsing cmd path
-char	*get_cmd_path(char **argv, t_data *data);
 
 // freeing
 void	free_arr(char **arr);
@@ -303,13 +308,5 @@ void	print_error_n_exit(char *err_msg);
 t_env	*error_handler(char *err_msg, int *err_flag);
 void	panic(char *err_msg, t_data *data, int status_code);
 void	free_n_exit(t_data *data, int status_code);
-
-// readline
-void	rl_clear_history(void);
-void	rl_replace_line (const char *text, int clear_undo);
-
-// string operations
-char	*strlist_join(t_strcmd *str);
-int		make_argv(t_execcmd *cmd, t_data *data);
 
 #endif
