@@ -38,7 +38,8 @@ PARSER_FILES = constructors.c \
 STRINGS_FILES = str_list_utils.c
 EXEC_FILES = runcmd.c \
 				get_cmd_path.c \
-				environment.c
+				environment.c \
+				heredoc.c
 BUILTINS_FILES = builtins.c \
 					echo.c \
 					directory.c \

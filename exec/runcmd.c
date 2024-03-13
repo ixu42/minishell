@@ -15,7 +15,7 @@ is executed in child process or in parent process
 in child process -> exit with status code; 
 in parent process -> return status code */
 
-void	runcmd(t_cmd *cmd, t_data *data, int process)
+void	runcmd(t_cmd *cmd, t_data *data)
 {
 	int				pipe_fd[2];
 	t_execcmd		*ecmd;
@@ -28,6 +28,7 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 	int				status;
 	int				pipe_cmd;
 	int				fd;
+	int				process;
 
 	if (cmd->type == EXEC)
 	{
@@ -35,8 +36,8 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		make_argv(ecmd, data);
 		if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
 		{
-			if (process == CHILD_PROC)
-				exit(0); // free all heap allocated memory
+			if (data->proc == CHILD_PROC)
+				free_n_exit(data, 0);
 			else
 			{
 				data->status = 0;
@@ -55,8 +56,8 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 			data->status = run_builtin(ecmd->argv, data);
 			dup2(data->fd_stdin, 0);
 			dup2(data->fd_stdout, 1);
-			if (process == CHILD_PROC)
-				exit(data->status); // free all heap allocated memory
+			if (data->proc == CHILD_PROC)
+				free_n_exit(data, data->status);
 			else
 				return ;
 		}
@@ -65,7 +66,7 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 			// ------ debug ------
 			// dprintf(2, "non-builtin\n");
 			// -------------------
-			if (process == CHILD_PROC)
+			if (data->proc == CHILD_PROC)
 			{
 				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 				data->envp = copy_env_lst_to_arr(data->env_lst);
@@ -74,13 +75,14 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 				// 	printf("%s\n", data->envp[n]);
 				// ----------------------------
 				execve(data->cmd_path, ecmd->argv, data->envp);
-				panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
+				panic(ecmd->argv[0], data, 127);
 			}
 			else
 			{
 				pid = fork1(data);
 				if (pid == 0)
 				{
+					data->proc = CHILD_PROC;
 					data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 					// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
 					// ------ print out list ------
@@ -97,12 +99,15 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 					// 	dprintf(2 ,"%s\n", data->envp[n]);
 					// ----------------------------
 					execve(data->cmd_path, ecmd->argv, data->envp);
-					panic(ecmd->argv[0], data, EXIT_CMD_NOT_FOUND);
+					panic(ecmd->argv[0], data, 127);
 				}
 				dup2(data->fd_stdin, 0);
 				dup2(data->fd_stdout, 1);
 				if (waitpid(pid, &status, 0) == -1)
-					panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, to return, no exit
+				{
+					panic(ERR_WAITPID, data, 1);
+					return ;
+				}
 				if (WIFEXITED(status))
 					data->status = WEXITSTATUS(status);
 			}
@@ -114,16 +119,39 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		// dprintf(2, "redir\n");
 		// -------------------
 		rcmd = (t_redircmd *)cmd;
-		fd = open(rcmd->file, rcmd->mode, 0644);
+		process = data->proc;
+		if (rcmd->mode == -1) // define a macro?
+		{
+			get_input(data, rcmd->file); // rcmd->file: delimiter
+			if (data->status == 1)
+			{
+				if (process == CHILD_PROC)
+					free_n_exit(data, 1);
+				return ;
+			}
+			fd = open(".heredoc", O_RDONLY);
+		}
+		else
+			fd = open(rcmd->file, rcmd->mode, 0644);
 		if (fd == -1)
-			panic(ERR_OPEN, data, EXIT_FAILURE);
+		{
+			panic(ERR_OPEN, data, 1); // closing all pipe fds
+			return ;
+		}
 		if (dup2(fd, rcmd->fd) == -1)
-			panic(ERR_DUP2, data, EXIT_FAILURE);
+		{
+			panic(ERR_DUP2, data, 1);
+			return ;
+		}
 		if (close(fd) == -1)
-			panic(ERR_CLOSE, data, EXIT_FAILURE);
-		runcmd(rcmd->cmd, data, PARENT_PROC);
+		{
+			panic(ERR_CLOSE, data, 1);
+			return ;
+		}
+		data->proc = PARENT_PROC;
+		runcmd(rcmd->cmd, data);
 		if (process == CHILD_PROC)
-			exit(data->status);
+			free_n_exit(data, data->status);
 	}
 	else if (cmd->type == AND_CMD)
 	{
@@ -131,9 +159,13 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		// dprintf(2, "&& operator\n");
 		// -------------------
 		lcmd = (t_listcmd *)cmd;
-		runcmd(lcmd->left, data, PARENT_PROC);
+		data->proc = PARENT_PROC;
+		runcmd(lcmd->left, data);
 		if (data->status == 0)
-			runcmd(lcmd->right, data, PARENT_PROC);
+		{
+			data->proc = PARENT_PROC;
+			runcmd(lcmd->right, data);
+		}
 	}
 	else if (cmd->type == OR_CMD)
 	{
@@ -141,9 +173,13 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		// dprintf(2, "|| operator\n");
 		// -------------------
 		lcmd = (t_listcmd *)cmd;
-		runcmd(lcmd->left, data, PARENT_PROC);
+		data->proc = PARENT_PROC;
+		runcmd(lcmd->left, data);
 		if (data->status != 0)
-			runcmd(lcmd->right, data, PARENT_PROC);
+		{
+			data->proc = PARENT_PROC;
+			runcmd(lcmd->right, data);
+		}	
 	}
 	else if (cmd->type == PIPE)
 	{
@@ -151,40 +187,60 @@ void	runcmd(t_cmd *cmd, t_data *data, int process)
 		// dprintf(2, "pipe\n");
 		// -------------------
 		pcmd = (t_pipecmd *)cmd;
+		process = data->proc;
 		if (pipe(pipe_fd) == -1)
-			panic(ERR_PIPE, data, EXIT_FAILURE); // fix this, exit/return depends on process!
+		{
+			panic(ERR_PIPE, data, 1);
+			return ;
+		}
 		pid1 = fork1(data);
 		if (pid1 == 0)
 		{
+			data->proc = CHILD_PROC;
 			if (close(pipe_fd[0]) == -1)
-				panic(ERR_CLOSE, data, EXIT_FAILURE);
+				panic(ERR_CLOSE, data, 1);
 			if (dup2(pipe_fd[1], 1) == -1)
-				panic(ERR_DUP2, data, EXIT_FAILURE);
+				panic(ERR_DUP2, data, 1);
 			if (close(pipe_fd[1]) == -1)
-				panic(ERR_CLOSE, data, EXIT_FAILURE);
-			runcmd(pcmd->left, data, CHILD_PROC);
+				panic(ERR_CLOSE, data, 1);
+			runcmd(pcmd->left, data);
 		}
 		pid2 = fork1(data);
 		if (pid2 == 0)
 		{
-			if (close(pipe_fd[1]) ==  -1)
-				panic(ERR_CLOSE, data, EXIT_FAILURE);
+			data->proc = CHILD_PROC;
+			if (close(pipe_fd[1]) == -1)
+				panic(ERR_CLOSE, data, 1);
 			if (dup2(pipe_fd[0], 0) == -1)
-				panic(ERR_DUP2, data, EXIT_FAILURE);
+				panic(ERR_DUP2, data, 1);
 			if (close(pipe_fd[0]) == -1)
-				panic(ERR_CLOSE, data, EXIT_FAILURE);
-			runcmd(pcmd->right, data, CHILD_PROC);
+				panic(ERR_CLOSE, data, 1);
+			runcmd(pcmd->right, data);
 		}
-		close(pipe_fd[0]); // fix this, exit/return depends on process!
-		close(pipe_fd[1]); // fix this, exit/return depends on process!
+		if (close(pipe_fd[0]) == -1)
+		{
+			panic(ERR_CLOSE, data, 1);
+			return ;
+		}
+		if (close(pipe_fd[1]) == -1)
+		{
+			panic(ERR_CLOSE, data, 1);
+			return ;
+		}
 		if (waitpid(pid1, NULL, 0) == -1)
-			panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, exit/return depends on process!
+		{
+			panic(ERR_WAITPID, data, 1);
+			return ;
+		}
 		if (waitpid(pid2, &status, 0) == -1)
-			panic(ERR_WAITPID, data, EXIT_FAILURE); // fix this, exit/return depends on process!
+		{
+			panic(ERR_WAITPID, data, 1);
+			return ;
+		}
 		if (WIFEXITED(status) && process == PARENT_PROC)
 			data->status = WEXITSTATUS(status);
 		if (WIFEXITED(status) && process == CHILD_PROC)
-			exit(WEXITSTATUS(status)); // free all heap allocated memory
+			free_n_exit(data, WEXITSTATUS(status));
 	}
 }
 

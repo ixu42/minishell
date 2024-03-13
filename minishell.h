@@ -3,13 +3,14 @@
 
 # include "libft/include/libft.h"
 # include "libft/include/ft_dprintf.h"
+# include "libft/include/get_next_line.h"
 
 // readline
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
-// write, close, dup2, fork, pipe, access, execve, unlink
+// write, close, dup, dup2, fork, pipe, access, execve, unlink
 # include <unistd.h>
 
 //FILE CONTROL
@@ -36,6 +37,8 @@
 # define ERR_OPEN "open error"
 # define ERR_CLOSE "close error"
 # define ERR_DUP2 "dup2 error"
+# define ERR_DUP "dup error"
+# define ERR_HEREDOC "heredoc error"
 # define ERR_ID "not a valid identifier"
 # define PMT "\033[0;31mLiteShell: \033[0m"
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
@@ -132,6 +135,7 @@ typedef struct s_data
 	char		**env_paths;
 	char		*cmd_path;
 	t_builtin	builtin;
+	int			proc;
 	int			status;
 	int			fd_stdin;
 	int			fd_stdout;
@@ -214,7 +218,8 @@ typedef struct s_listcmd
 }	t_listcmd;
 
 int		fork1(t_data *data);
-void	runcmd(t_cmd *cmd, t_data *data, int child_proc);
+void	runcmd(t_cmd *cmd, t_data *data);
+void	get_input(t_data *data, char *delimiter);
 // to be removed at some point
 void	runcmd_test(t_cmd *cmd, t_data *data);
 //void	runcmd_old(t_cmd *cmd, t_data *data);
@@ -292,7 +297,7 @@ void	free_data(t_data *data);
 void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
 t_env	*error_handler(char *err_msg, int *err_flag);
-void	panic(char *err_msg, t_data *data, int exit_code);
+void	panic(char *err_msg, t_data *data, int status_code);
 
 // readline
 void	rl_clear_history(void);
