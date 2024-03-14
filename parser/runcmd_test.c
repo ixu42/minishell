@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   runcmd_test.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/06 12:55:27 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/12 17:42:55 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void	printargs(t_argcmd *args, t_data *data)
 		printstr(args->left, data);
 		ft_dprintf(2, "   |\n");
 		if (args->right == args)
-			break;
+			break ;
 		args = args->right;
 		i++;
 	}
@@ -123,6 +123,7 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	{
 		ecmd = (t_execcmd*)cmd;
 		make_argv(ecmd, data);
+//		make_argv_expanded(ecmd, data);
 		if(ecmd->argv[0] == 0)
 		{
 			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");
@@ -145,7 +146,10 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	{
 		lcmd = (t_listcmd*)cmd;
 		if(fork1_test() == 0)
+		{
 			runcmd_test(lcmd->left, data);
+			exit (0);
+		}
 		wait(NULL);
 		runcmd_test(lcmd->right, data);
 	}
@@ -153,7 +157,10 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	{
 		lcmd = (t_listcmd*)cmd;
 		if(fork1_test() == 0)
+		{
 			runcmd_test(lcmd->left, data);
+			exit (0);
+		}
 		wait(NULL);
 		printf("&& flag=%d\n", lcmd->flag);
 		runcmd_test(lcmd->right, data);
@@ -162,7 +169,10 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	{
 		lcmd = (t_listcmd*)cmd;
 		if(fork1_test() == 0)
+		{
 			runcmd_test(lcmd->left, data);
+			exit (0);
+		}
 		wait(NULL);
 		printf("|| flag=%d\n", lcmd->flag);
 		runcmd_test(lcmd->right, data);
@@ -173,10 +183,12 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 		printf("make pipe,  flag=%d\n", cmd->flag);
 		if (fork1_test() == 0){
 			runcmd_test(pcmd->left, data);
+			exit (0);
 		}
 		wait(NULL);
 		if (fork1_test() == 0){
 			runcmd_test(pcmd->right, data);
+			exit (0);
 		}
 		wait(NULL);
 	}

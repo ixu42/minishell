@@ -1,7 +1,7 @@
 #include "../minishell.h"
 
 // parsing_utils.c
-void increase_s_quotes(char **pnt_s, int *p_quotes)
+void	increase_s_quotes(char **pnt_s, int *p_quotes)
 {
 //	printf("%c\n",**pnt_s);
 //	printf("q0=%d\n",p_quotes[0]);
@@ -16,11 +16,11 @@ void increase_s_quotes(char **pnt_s, int *p_quotes)
 int	set_token(char **pnt, int tok_size, int tok_code)
 {
 	if (pnt)
-		*pnt +=tok_size;
+		*pnt += tok_size;
 	return (tok_code);
 }
 
-int not_ft_strchr(char *symb, char c)
+int	not_ft_strchr(char *symb, char c)
 {
 //	return (!ft_strchr(symb, c) || !c);	
 //	return (!ft_strchr(symb, c) || !c);	
@@ -45,11 +45,11 @@ int	select_token(char **pnt)
 		ret = set_token(&s, 1, RED_OUT);
 	else if (s[0] == '<' && not_ft_strchr(SYMBOLS, s[1]))
 		ret = set_token(&s, 1, RED_IN);
-	else if (s[0] == '|' && not_ft_strchr("|&",s[1]))
+	else if (s[0] == '|' && not_ft_strchr("|&", s[1]))
 		ret = set_token(&s, 1, PIPE_TOK);
 	else if (s[0] == '\0')
 		ret = NEWLINE_TOK;
-	else 
+	else
 		ret = UNDEFINED_TOK;
 	*pnt = s;
 	return (ret);
@@ -60,42 +60,42 @@ const char	*token_type_to_str(t_token_type token)
 	if (token == UNDEFINED_TOK)
 		return ("UNDEF");
 	else if (token == NEWLINE_TOK)
-		return "newline";
+		return ("newline");
 	else if (token == STR_TOK)
-		return "a";
+		return ("a");
 	else if (token == RED_IN)
-		return "<";
+		return ("<");
 	else if (token == RED_OUT)
-		return ">";
+		return (">");
 	else if (token == HEREDOC)
-		return "<<";
+		return ("<<");
 	else if (token == RED_OUT_APP)
-		return ">>";
+		return (">>");
 	else if (token == PIPE_TOK)
-		return "|";
+		return ("|");
 	else if (token == OR_TOK)
-		return "||";
+		return ("||");
 	else if (token == AND_TOK)
-		return "&&";
+		return ("&&");
 	else if (token == LPAR)
-		return "(";
+		return ("(");
 	else if (token == RPAR)
-		return ")";
-	return "UNKNOWN";
+		return (")");
+	return ("UNKNOWN");
 }
 
 int	gettoken(char **ps, char *es, char **q, char **eq)
 {
-	char *s;
-	int ret;
-	int quotes[2]; //used as counters
+	char	*s;
+	int		ret;
+	int		quotes[2];
 
 	quotes[0] = 0;
 	quotes[1] = 0;
 	s = *ps;
 	while (s < es && ft_strchr(WHITESPACE, *s))
 		s++;
-	if(q)
+	if (q)
 		*q = s;
 	ret = UNDEFINED_TOK;
 	if (ft_strchr(SYMBOLS, *s) || *s == '\0')
@@ -103,7 +103,7 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 	else
 	{
 		ret = STR_TOK;
-		while (s < es && ( (quotes[0] || quotes[1]) || \
+		while (s < es && ((quotes[0] || quotes[1]) || \
 					(!ft_strchr(WHITESPACE, *s) && !ft_strchr(SYMBOLS, *s))))
 			increase_s_quotes(&s, quotes);
 	}
@@ -119,10 +119,10 @@ int	gettoken(char **ps, char *es, char **q, char **eq)
 
 int	peek(char **ps, char *es, char *toks)
 {
-	char *s;
+	char	*s;
 
 	s = *ps;
-	while(s < es && ft_strchr(WHITESPACE, *s))
+	while (s < es && ft_strchr(WHITESPACE, *s))
 		s++;
 	*ps = s;
 	return (*s && ft_strchr(toks, *s));
@@ -131,36 +131,36 @@ int	peek(char **ps, char *es, char *toks)
 // NUL-terminate all the counted strings.
 t_cmd	*nulterminate(t_cmd *cmd)
 {
-	int i;
-	t_execcmd *ecmd;
-	t_listcmd *lcmd;
-	t_pipecmd *pcmd;
-	t_redircmd *rcmd;
+	int			i;
+	t_execcmd	*ecmd;
+	t_listcmd	*lcmd;
+	t_pipecmd	*pcmd;
+	t_redircmd	*rcmd;
 
-	if(cmd == 0)
+	if (cmd == 0)
 		return (NULL);
 	else if (cmd->type == EXEC)
 	{
-		ecmd = (t_execcmd*)cmd;
+		ecmd = (t_execcmd *)cmd;
 		i = 0;
 		while (ecmd->sargv[i])
 			*ecmd->eargv[i++] = 0;
 	}
 	else if (cmd->type == REDIR)
 	{
-		rcmd = (t_redircmd*)cmd;
+		rcmd = (t_redircmd *)cmd;
 		nulterminate(rcmd->cmd);
 		*rcmd->efile = 0;
 	}
 	else if (cmd->type == PIPE)
 	{
-		pcmd = (t_pipecmd*)cmd;
+		pcmd = (t_pipecmd *)cmd;
 		nulterminate(pcmd->left);
 		nulterminate(pcmd->right);
 	}
 	else if (cmd->type == LIST || cmd->type == AND_CMD || cmd->type == OR_CMD)
 	{
-		lcmd = (t_listcmd*)cmd;
+		lcmd = (t_listcmd *)cmd;
 		nulterminate(lcmd->left);
 		nulterminate(lcmd->right);
 	}

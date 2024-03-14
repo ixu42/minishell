@@ -5,6 +5,10 @@ is executed in child process or in parent process
 in child process -> exit with status code; 
 in parent process -> status code stored in data and return */
 
+/*
+make_argv(ecmd, data); //if make_argv returns 1 we have memory problem
+		//make_argv_expanded(ecmd, data); //if make_argv returns 1 we have memory problem
+*/
 void	runcmd(t_cmd *cmd, t_data *data)
 {
 	if (cmd->type == EXEC)

@@ -35,7 +35,9 @@ PARSER_FILES = constructors.c \
 				parsecmd.c \
 				parsing_utils.c \
 				runcmd_test.c
-STRINGS_FILES = str_list_utils.c
+STRINGS_FILES = str_list_utils.c \
+				match.c \
+				arraylist.c
 EXEC_FILES = runcmd.c \
 				runcmd_utils.c \
 				get_cmd_path.c \
@@ -66,7 +68,7 @@ OBJS = $(addprefix $(OBJS_DIR), $(SRC_FILES:.c=.o))
 
 LIBFT = $(addprefix $(LIBFT_DIR), libft.a)
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 # Color scheme
 COLOR_GREEN = \033[0;32m

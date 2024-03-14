@@ -4,10 +4,10 @@
 t_strcmd	*parsestr(t_strstate *state);
 
 // parseredirs.c
-t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
+t_cmd	*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 {
-	t_cmd *tail;
-	t_redircmd *last;
+	t_cmd		*tail;
+	t_redircmd	*last;
 
 	if (!head)
 		return (NULL);
@@ -24,7 +24,7 @@ t_cmd *combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 		last->cmd = extra;
 	}
 	else if (extra->type == REDIR)
-		return(extra); 
+		return (extra); 
 	return (head);
 }
 
@@ -33,22 +33,22 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 	t_strstate	*state_str;
 	t_redircmd	*rcmd;
 
-
-	if (cmd->type != REDIR || cmd->flag)
-		return ;
+//	if (cmd->type != REDIR || cmd->flag)
+//		return ;
 	rcmd = (t_redircmd *)cmd;
 	state_str = make_strstate(state->beg, state->end);
 	if (!state_str)
-	{	
+	{
 		rcmd->flag |= MALLOC_ERROR;
 		return ;
 	}
 	rcmd->str = parsestr(state_str);
-	if (rcmd->str != NULL)
+	if (!rcmd->str)
 	{
-		rcmd->flag |= rcmd->str->flag;
+		rcmd->flag |= MALLOC_ERROR;
 		return ;
 	}
+	rcmd->flag |= rcmd->str->flag;
 	return ;
 }
 
@@ -61,19 +61,18 @@ t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok)
 	else if (tok == RED_OUT)
 		cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_TRUNC, 1);
 	else if (tok == RED_OUT_APP)
-		cmd = redircmd(cmd, state, O_WRONLY| O_CREAT | O_APPEND, 1);
+		cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_APPEND, 1);
 	else if (tok == HEREDOC)
 		cmd = redircmd(cmd, state, -1, 0);
 	return (cmd);
 }
 
-t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
+t_cmd	*parse_one_redir(t_cmd *cmd, t_strstate *state)
 {
 	int		tok;
 
-	if (!state || !cmd)
-		return (cmd);
-//	ft_dprintf(2,"parse_one_redir: pos=%s\n",state->pos);
+//	if (!state || !cmd)
+//		return (cmd);
 	if (peek(&(state->pos), state->finish, "<>"))
 	{
 		tok = gettoken(&(state->pos), state->finish, 0, 0);
@@ -83,35 +82,37 @@ t_cmd*	parse_one_redir(t_cmd *cmd, t_strstate *state)
 			state->flag |= cmd->flag;
 			return (cmd);
 		}
-		if (STR_TOK != \
-				gettoken(&(state->pos), state->finish, &(state->beg), &(state->end)))
+		if (STR_TOK != gettoken(&(state->pos), state->finish, &(state->beg), \
+			&(state->end)))
 		{
 			cmd->flag |= SYNTAX_ERR_UNEXPTOK;
 			state->pos = state->beg;
 		}
 		cmd = make_redir_node(cmd, state, tok);
 	}
-//	ft_dprintf(2,"parse_one_redir: pos=%s\n",state->pos);
-	if (cmd && cmd->type == REDIR)
+	if (cmd && cmd->type == REDIR && cmd->flag == 0)
 		make_redir_str(cmd, state);
 	return (cmd);
 }
 
 t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 {
-	t_cmd *node;
-	t_redircmd *rcmd;
+	t_cmd		*node;
+	t_redircmd	*rcmd;
 	t_strstate	*state;
-	
+
 	state = make_strstate(*ps, es);
 	if (!state)
-		return (NULL);
+	{
+		cmd->flag |= MALLOC_ERROR;
+		return (cmd);
+	}
 	node = parse_one_redir(cmd, state);
 	*ps = state->pos;
+	free(state);
 	if (node->type != REDIR)
 		return (node);
 	rcmd = (t_redircmd *)node;
-//	free(state);  ???
 	if (peek(ps, es, "<>") && node->flag == 0)
 		rcmd->cmd = parseredirs(cmd, ps, es);
 	rcmd->flag |= rcmd->cmd->flag;
@@ -122,8 +123,8 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 // parse_word_singl_var.c
 t_strcmd	*parse_word(t_strstate *state)
 {
-	char	*s;
-	t_strcmd *node;
+	char		*s;
+	t_strcmd	*node;
 
 	s = state->pos;
 	state->beg = s;
@@ -148,8 +149,8 @@ t_strcmd	*parse_word(t_strstate *state)
 
 t_strcmd	*parse_str_till(t_strstate *state, char *stop_toks)
 {
-	char	*s;
-	t_strcmd *node;
+	char		*s;
+	t_strcmd	*node;
 
 	s = state->pos;
 	state->beg = s;
@@ -174,8 +175,8 @@ t_strcmd	*parse_str_till(t_strstate *state, char *stop_toks)
 
 t_strcmd	*parse_single(t_strstate *state)
 {
-	char	*s;
-	t_strcmd *node;
+	char		*s;
+	t_strcmd	*node;
 
 	s = state->pos;
 	s++;
@@ -218,8 +219,8 @@ void	make_var_node(t_strcmd **p_node, t_strstate *state)
 
 t_strcmd	*parse_variable(t_strstate *state)
 {
-	char	*s;
-	t_strcmd *node;
+	char		*s;
+	t_strcmd	*node;
 
 	s = state->pos + 1;
 	state->beg = s;
@@ -232,7 +233,7 @@ t_strcmd	*parse_variable(t_strstate *state)
 	state->pos = s;
 	if (state->end == state->beg )
 	{
-		ft_dprintf(2, "%s variable name is empty or starts from digit.\n", PMT);
+		ft_dprintf(2, "%s incorrect variable name.\n", PMT);
 		state->flag |= SYNTAX_ERR_UNCLOSED;
 	}
 	make_var_node(&node, state);
@@ -243,12 +244,12 @@ t_strcmd	*parse_variable(t_strstate *state)
 //parsestr.c
 t_strcmd	*parse_double_elem(t_strstate *state)
 {
-	t_strcmd *node;
+	t_strcmd	*node;
 
 	if (*(state->pos) == '$' && *(state->pos + 1) == '?')
 	{
 		node = strcmd(STR_EXIT_CODE, state->pos + 1, state->pos + 2);
-		state->pos +=2;
+		state->pos += 2;
 	}
 	else if (*(state->pos) == '$')
 		node = parse_variable(state);
@@ -259,7 +260,7 @@ t_strcmd	*parse_double_elem(t_strstate *state)
 
 t_strcmd	*parse_double(t_strstate *state)
 {
-	t_strcmd *node;
+	t_strcmd	*node;
 
 	node = parse_double_elem(state);
 	if (node == NULL)
@@ -284,7 +285,7 @@ t_strcmd	*parse_double(t_strstate *state)
 t_strcmd	*parse_element(t_strstate *state)
 {
 	t_strcmd	*node;
-	
+
 	if (state->d_quotes == 1)
 		node = parse_double(state);
 	else if (!ft_strchr("*$\'\"", *(state->pos)))
@@ -294,9 +295,9 @@ t_strcmd	*parse_element(t_strstate *state)
 	else if (*(state->pos) == '$' && *(state->pos + 1) == '?')
 	{
 		node = strcmd(STR_EXIT_CODE, state->pos + 1, state->pos + 2);
-		state->pos +=2;
+		state->pos += 2;
 	}
-	else if (*(state->pos)== '$')
+	else if (*(state->pos) == '$')
 		node = parse_variable(state);
 	else if (*(state->pos) == '*')
 	{
@@ -333,13 +334,13 @@ t_strcmd	*parsestr(t_strstate *state)
 
 
 //parseexec.c
-int extend_arg_node(t_argcmd **arg, char *q, char *eq)
+int	extend_arg_node(t_argcmd **arg, char *q, char *eq)
 {
-	t_strcmd *str_node;
-	t_argcmd *new_node;
+	t_strcmd	*str_node;
+	t_argcmd	*new_node;
 	t_strstate	*state;
 
-	state = make_strstate(q, eq); 
+	state = make_strstate(q, eq);
 	if (!state)
 		return (1);
 	str_node = parsestr(state);
@@ -365,11 +366,11 @@ int extend_arg_node(t_argcmd **arg, char *q, char *eq)
 
 void	set_execcmd_sargv(t_execcmd *cmd, char **tok_str)
 {
-		if (cmd->argc < MAXARGS - 1)
-		{
-			cmd->sargv[cmd->argc] = tok_str[0];
-			cmd->eargv[cmd->argc] = tok_str[1];
-		}
+	if (cmd->argc < MAXARGS - 1)
+	{
+		cmd->sargv[cmd->argc] = tok_str[0];
+		cmd->eargv[cmd->argc] = tok_str[1];
+	}
 }
 
 int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
@@ -380,10 +381,10 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 	t_argcmd *new_arg;
 
 	new_arg = NULL;
-	while(!peek(ps, es, "|)&"))
+	while (!peek(ps, es, "|)&"))
 	{
 		if (*ps == es)
-			break;
+			break ;
 		tok = gettoken(ps, es, tok_str, tok_str + 1);
 		if (tok != STR_TOK)
 		{
@@ -397,7 +398,7 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 		cmd->flag |= new_arg->flag;
 		set_execcmd_sargv(cmd, tok_str);
 		cmd->argc++;
-		new_redir = parseredirs((t_cmd *)cmd,  ps, es);
+		new_redir = parseredirs((t_cmd *)cmd, ps, es);
 		*head = combine_redirs(*head, new_redir, (t_cmd *)cmd);
 		if (new_redir->flag)
 		{
@@ -408,20 +409,37 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 	return (0);
 }
 
-t_cmd*	parseexec(char **ps, char *es)
+/*
+t_cmd   *parseblock(char **ps, char *es)
 {
-	t_execcmd *cmd;
-	t_cmd *head;
-	t_cmd *extra;
+    t_cmd *cmd;
 
-	//redir
-	t_cmd *last_node;
-	t_cmd *temp;
+    (*ps)++;
+    cmd = parseline(ps, es);
+    if (peek(ps, es, ")") && cmd->flag == 0)
+        (*ps)++;
+    else
+        cmd->flag |= SYNTAX_ERROR;
+//  gettoken(ps, es, 0, 0);
+//  ft_dprintf(2, "parseblock: *ps=%s, cmd->flag=%d\n", *ps, cmd->flag);
+//  if (cmd->flag == 0)
+    //  cmd = parseredirs(cmd, ps, es);
+    return (cmd);
+}
+*/
+
+t_cmd	*parseexec(char **ps, char *es)
+{
+	t_execcmd	*cmd;
+	t_cmd		*head;
+	t_cmd		*last_node;
 
 	if (peek(ps, es, "("))
 		return (parseblock(ps, es));
 	head = execcmd();
-	cmd = (t_execcmd*)head;
+	if (!head)
+		return (NULL);
+	cmd = (t_execcmd *)head;
 	head = parseredirs((t_cmd *)cmd, ps, es);
 	if (cmd->flag || head->flag)
 		return (head);
@@ -429,6 +447,6 @@ t_cmd*	parseexec(char **ps, char *es)
 	if (cmd->args)
 		cmd->flag |= cmd->args->flag;
 	if (head == (t_cmd *)cmd && cmd->argc == 0)
-			cmd->flag |= SYNTAX_ERROR;
+		cmd->flag |= SYNTAX_ERROR;
 	return (head);
 }

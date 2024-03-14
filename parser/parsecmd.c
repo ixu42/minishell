@@ -2,11 +2,10 @@
 
 // parsecmd.c
 
-t_cmd*	parsepipe(char **ps, char *es)
+t_cmd	*parsepipe(char **ps, char *es)
 {
-	t_cmd *cmd;
+	t_cmd	*cmd;
 	int		tok;
-
 
 	cmd = parseexec(ps, es);
 	if (!cmd)
@@ -48,7 +47,7 @@ int	make_listcmd(t_cmd **p_cmd_a, char **ps, char *es)
 
 t_cmd	*parseline(char **ps, char *es)
 {
-	t_cmd *cmd_a;
+	t_cmd	*cmd_a;
 	int		cond;
 
 	cmd_a = parsepipe(ps, es);
@@ -70,18 +69,22 @@ t_cmd	*parseline(char **ps, char *es)
 	return (cmd_a);
 }
 
+// redir after block -> syntax error
 t_cmd	*parseblock(char **ps, char *es)
 {
-	t_cmd *cmd;
+	t_cmd	*cmd;
 
 	(*ps)++;
 	cmd = parseline(ps, es);
-	if (peek(ps, es, ")") && cmd->flag == 0)
+	if (!cmd)
+		return (NULL);
+	if (cmd->flag)
+		return (cmd);
+//	if (peek(ps, es, ")") && cmd->flag == 0)
+	if (peek(ps, es, ")"))
 		(*ps)++;
 	else
 		cmd->flag |= SYNTAX_ERROR;
-//	gettoken(ps, es, 0, 0);
-//	ft_dprintf(2, "parseblock: *ps=%s, cmd->flag=%d\n", *ps, cmd->flag);
 //	if (cmd->flag == 0)
 	//	cmd = parseredirs(cmd, ps, es);
 	return (cmd);
@@ -98,7 +101,7 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 		return (ENOMEM);
 	else if (cmd->flag || s != es)
 	{
-		ft_dprintf(2,"%s %s ", PMT, ERR_SYNTAX_UNEXP);
+		ft_dprintf(2, "%s %s ", PMT, ERR_SYNTAX_UNEXP);
 		tok = gettoken(&s, es, &str[0], &str[1]);
 		if (tok == UNDEFINED_TOK)
 			ft_dprintf(2, "'%c'\n", *str[0]);
@@ -108,7 +111,7 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 			ft_dprintf(2, "'%s'\n", str[0]);
 		}
 		else
-			ft_dprintf(2,"'%s'\n", token_type_to_str(tok));
+			ft_dprintf(2, "'%s'\n", token_type_to_str(tok));
 		return (ERR_CODE_SYNTAX);
 	}
 	return (0);
@@ -119,7 +122,7 @@ t_cmd	*parsecmd(char *s, int *status)
 	char	*es;
 	t_cmd	*cmd;
 	int		ret;
-	
+
 	ret = 0;
 	es = s + ft_strlen(s);
 	cmd = parseline(&s, es);
@@ -135,7 +138,7 @@ t_cmd	*parsecmd(char *s, int *status)
 int	make_ast(t_cmd **p_cmd, char *s)
 {
 	int		status;
-	
+
 	*p_cmd = parsecmd(s, &status);
 	if (!*p_cmd)
 		status = ENOMEM;
