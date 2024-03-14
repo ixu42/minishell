@@ -1,21 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "../minishell.h"
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
 
 // i is current root node, and n is total number of el in arr
 void	heapify(char **arr, int n, int i)
 {
-	int	largest;
-	int	left;
-	int	right;
+	int		largest;
+	int		left;
+	int		right;
 	char	*temp;
-	
+
 	largest = i;
-	left = 2*i + 1;
-	right = 2*i + 2;
-	if (left < n && strcmp(arr[left], arr[largest]) > 0)
+	left = 2 * i + 1;
+	right = 2 * i + 2;
+	if (left < n && ft_strcmp(arr[left], arr[largest]) > 0)
 		largest = left;
-	if (right < n && strcmp(arr[right], arr[largest]) > 0)
+	if (right < n && ft_strcmp(arr[right], arr[largest]) > 0)
 		largest = right;
 	if (largest != i)
 	{
@@ -28,8 +29,8 @@ void	heapify(char **arr, int n, int i)
 
 void	heapsort_str(char **arr, int n)
 {
-	int	i;
-	char *temp;
+	int		i;
+	char	*temp;
 
 	i = n / 2 - 1;
 	while (i >= 0)
@@ -44,6 +45,8 @@ void	heapsort_str(char **arr, int n)
 	}
 }
 
+
+/*
 // Function to print an array
 void print_array(char **arr, int n) {
 	for (int i = 0; i < n; ++i)
@@ -64,4 +67,4 @@ int main() {
 	print_array(arr, n);
 	return 0;
 }
-
+*/

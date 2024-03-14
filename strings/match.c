@@ -13,70 +13,126 @@ int	match(const char *pattern, const char *text)
 	return (0);
 }
 
-// shopt -s dotglob  // modify bash behaviour 
-int	wildcard_star(t_execcmd *cmd)
+/*
+typedef struct s_wildcard
+{
+    t_arrlist   *list;
+    t_arrlist   **pnt;
+    char        **argv;
+    int         argc;
+}   t_wildcard;
+*/
+// init dynamic arrays
+int	init_wildcard(t_wildcard *wild, t_execcmd *cmd)
+{
+	int	i;
+
+	wild->list = create_arrlist();
+	if (!wild->list)
+		return (1);
+	wild->pnt = (t_arrlist **)malloc(sizeof(t_arrlist *) * cmd->argc);
+	if (!wild->pnt)
+	{
+		free_arrlist(wild->list);
+		return (1);
+	}
+	i = -1;
+	while (++i < cmd->argc)
+		wild->pnt[i] = create_arrlist();
+	wild->argc = cmd->argc;
+	wild->argv = cmd->argv;
+	return  (0);
+}
+
+void	free_wildcard(t_wildcard *wild)
+{
+	int	i;
+
+	free_arrlist(wild->list);
+	i = -1;
+	while (++i < wild->argc)
+		free_arrlist(wild->pnt[i]);
+}
+
+int do_single_match(int	i, t_wildcard *wild, char *str, DIR *dir)
+{
+	// deal with .files and . and .. directories
+	if (match(wild->argv[i], str) && \
+				add_string_arrlist(wild->pnt[i], str))
+	{
+		closedir(dir);
+		free_wildcard(wild);
+		return (1);
+	}
+	return (0);
+}
+
+// readdir and write matchees to p_list given cmd->argv
+int	match_to_files(t_wildcard *wild)
 {
 	DIR				*directory;
 	struct dirent	*entry;
-	
-	t_arrlist	*list;
-	t_arrlist	**p_list;
-	
-	int i;
-	int j;
-	
-	char **argv_copy;
-	argv_copy = cmd->argv;
-
-	list = create_arrlist();
-	p_list = (t_arrlist **)malloc(sizeof(t_arrlist *) * cmd->argc);
-	i = -1;
-	while (++i < cmd->argc)
-		p_list[i] = create_arrlist();
-	if (!list)
-		return (1);
+	int				i;
 
 	directory = opendir(".");
 	if (!directory)
 	{
 		perror("Unable to open directory");
-		return (1);
+		return (2);
 	}
-
 	entry = readdir(directory);
 	while (entry)
 	{
 		i = -1;
-		while (++i < cmd->argc)
+		while (++i < wild->argc)
 		{
-			if (match(cmd->argv[i], entry->d_name) && \
-					add_string_arrlist(p_list[i], entry->d_name))
-			{
-				free_arrlist(list);
+			if (do_single_match(i, wild, entry->d_name, directory))
 				return (1);
-			}
 		}
 		entry = readdir(directory);
 	}
+	closedir(directory);
+	return (0);
+}
+		
+// shopt -s dotglob  // modify bash behaviour 
+int	wildcard_star(t_execcmd *cmd)
+{
+	t_wildcard	wild;
 
+	int i;
+	int j;
+	
 
+	if (init_wildcard(&wild, cmd))
+		return (1);
+	if (match_to_files(&wild))
+		return (1);
+	
+	t_arrlist	*list;
+	t_arrlist	**p_list;
+	char **argv_copy;
+	argv_copy = wild.argv;
+	list = wild.list;
+	p_list = wild.pnt;
+	
+
+// sort and fill empty
 	i = -1;
 	while (++i < cmd->argc)
 	{
 		if (p_list[i]->size == 0)
 			add_string_arrlist(p_list[i], cmd->argv[i]);
+		else
+			heapsort_str(p_list[i]->data, p_list[i]->size);
 	}
-	i = 0;
-	while (i < cmd->argc)
+//  copy to list
+	i = -1;
+	while (++i < cmd->argc)
 	{
-		j = 0;
-		while (j < p_list[i]->size)
-		{
+		j = -1;
+		while (++j < p_list[i]->size)
 			add_string_arrlist(list, p_list[i]->data[j]);
-//    	ft_dprintf(2, "->%s<-\n", p_list[i]->data[j]);
-			j++;
-		}
-		i++;
 	}
 	cmd->argv = list->data;
 //	printf("free?\n");
@@ -85,6 +141,5 @@ int	wildcard_star(t_execcmd *cmd)
 	cmd->argv = list->data;
 	free_arrlist(list);
 */
-	closedir(directory);
 	return (0);
 }
