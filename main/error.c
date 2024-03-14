@@ -53,8 +53,11 @@ void	panic(char *err_msg, t_data *data, int status_code)
 	}
 	else
 	{
-		if (ft_dprintf(2, "%s%s\n", PMT, err_msg) == -1)
+		// if (ft_dprintf(2, "%s%s\n", PMT, err_msg) == -1)
+		// 	perror(PMT_ERR_WRITE);
+		if (ft_dprintf(2, "%s", PMT) == -1)
 			perror(PMT_ERR_WRITE);
+		perror(err_msg);
 	}
 	if (data->proc == CHILD_PROC)
 	{

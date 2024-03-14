@@ -28,6 +28,7 @@ RL_HEADER_DIR = $(HOME)/.brew/opt/readline/include/readline
 MAIN_FILES = main.c \
 				data_init.c \
 				data_init_utils.c \
+				signals.c \
 				error.c \
 				free.c
 PARSER_FILES = constructors.c \

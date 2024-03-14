@@ -246,6 +246,9 @@ t_env	*get_node_in_init(char *name_value_str);
 void	lst_append_in_init(t_env **env_lst, t_env *new_node);
 void	print_error_partial_free(char *name, t_data *data);
 
+// signal handling
+void	set_signals(void);
+
 // constructors.c
 t_cmd		*execcmd(void);
 t_cmd		*redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
@@ -273,10 +276,6 @@ int peek(char **ps, char *es, char *toks);
 t_cmd   *nulterminate(t_cmd *cmd);
 const char  *token_type_to_str(t_token_type token);
 //void    panic_test(char *s);  //this is temporal function that exit(1) from parser
-
-// string operations
-char	*strlist_join(t_strcmd *str);
-int		make_argv(t_execcmd *cmd, t_data *data);
 
 // runcmd() func and its helper funcs
 void	runcmd(t_cmd *cmd, t_data *data);

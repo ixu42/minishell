@@ -118,13 +118,20 @@ void	run_redir(t_cmd *cmd, t_data *data)
 			return ;
 		}
 		fd = open(".heredoc", O_RDONLY);
+		if (fd == -1)
+		{
+			panic(".heredoc", data, 1);
+			return ;
+		}
 	}
 	else
-		fd = open(rcmd->file, rcmd->mode, 0644);
-	if (fd == -1)
 	{
-		panic(ERR_OPEN, data, 1);
-		return ;
+		fd = open(rcmd->file, rcmd->mode, 0644);
+		if (fd == -1)
+		{
+			panic(rcmd->file, data, 1);
+			return ;
+		}
 	}
 	if (dup2(fd, rcmd->fd) == -1)
 	{
