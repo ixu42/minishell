@@ -60,18 +60,6 @@ void	expand_var_in_args(t_argcmd *arg, t_data *data)
 				str->end = str->start;
 			else
 				set_variable_node(str, node);
-			/*
-			{
-				str->start = node->value;
-				str->end = node->value;
-				while (*str->end)
-					str->end++;
-				if (str->type == STR_NODE_VAR_P)
-					str->type = STR_NODE;
-				else
-					replace_space_by(str, 31);
-			}
-			*/
 		}
 		if (str->type == STR_EXIT_CODE)
 			set_exit_code_node(str, data);
@@ -184,7 +172,7 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 	cmd->argv = argv;
 	make_argv_expanded(cmd);
 	wildcard_star(cmd);
-	//data about of arraylist is losted ??? clean it arraylist aproprietry
+	//data about arraylist is losted ??? clean it arraylist aproprietry
 	return (0);
 }
 
