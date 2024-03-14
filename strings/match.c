@@ -62,16 +62,6 @@ int	wildcard_star(t_execcmd *cmd)
 			add_string_arrlist(p_list[i], cmd->argv[i]);
 	}
 	int j;
-	/*
-	i = 0;
-	while (i < cmd->argc)
-	{
-		j = 0;
-		while (j < p_list[i]->capacity)
-    	ft_dprintf(2, "->%s<-\n", p_list[i]->data[j++]);
-		i++;
-	}
-	*/
 	i = 0;
 	while (i < cmd->argc)
 	{
