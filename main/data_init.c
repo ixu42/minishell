@@ -44,6 +44,15 @@ char	**get_env_paths(char **envp, t_data *data)
 
 void	data_init(t_data *data, char **envp)
 {
+	data->builtin = 0;
+	data->proc = PARENT_PROC;
+	data->status = 0;
+	data->fd_stdin = dup(0);
+	if (data->fd_stdin == -1)
+		print_error_n_exit(ERR_DUP);
+	data->fd_stdout = dup(1);
+	if (data->fd_stdout == -1)
+		print_error_n_exit(ERR_DUP);
 	data->envp = NULL;
 	data->env_lst = copy_env_arr_to_lst(envp); // free
 	// ------ print out list ------

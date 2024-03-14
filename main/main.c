@@ -86,7 +86,6 @@ int	main(int argc, char **argv, char **envp)
 			status = make_ast(&cmd, data.buf);
 			if (status == 0)
         runcmd(cmd, &data, PARENT_PROC);
-//			else if (data.status == ENOMEM)
 			else if (status == ENOMEM)
 			{
 				dprintf(2, "%s malloc error\n", PMT);
@@ -116,6 +115,9 @@ int	main(int argc, char **argv, char **envp)
 		}
 		free(data.buf);
 	}
+	close(data.fd_stdin);
+	close(data.fd_stdout);
+	unlink(".heredoc"); // or adding a boolean in data struct and clean it when .heredoc exists? when to clean
 	free_data(&data);
 	rl_clear_history();
 	exit(EXIT_SUCCESS);

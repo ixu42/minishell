@@ -40,15 +40,36 @@ t_env	*error_handler(char *err_msg, int *err_flag)
 	return (NULL);
 }
 
-// (1) print error message, (2) free all heap allocated memory, (3) exit with status code
+/* (1) print error message, (2) if in child process, 
+free all heap allocated memory and exit with status code; 
+if in parent process, data->status is set to status code */
 
-void	panic(char *err_msg, t_data *data, int exit_code)
+void	panic(char *err_msg, t_data *data, int status_code)
 {
-	if (exit_code == EXIT_CMD_NOT_FOUND)
-		ft_dprintf(2, "%s%s: command not found\n", PMT, err_msg); // protect
+	if (status_code == 127)
+	{
+		if (ft_dprintf(2, "%s%s: command not found\n", PMT, err_msg) == -1)
+			perror(PMT_ERR_WRITE);
+	}
 	else
-		ft_dprintf(2, "%s%s\n", PMT, err_msg); // protect
+	{
+		if (ft_dprintf(2, "%s%s\n", PMT, err_msg) == -1)
+			perror(PMT_ERR_WRITE);
+	}
+	if (data->proc == CHILD_PROC)
+	{
+		free_data(data);
+		// free tree nodes?
+		exit(status_code);
+	}
+	data->status = status_code;
+}
+
+// used during the execution
+
+void	free_n_exit(t_data *data, int status_code)
+{
 	free_data(data);
-	// free tree nodes?
-	exit(exit_code);
+	// free tree nodes in child proccesses?
+	exit(status_code);
 }

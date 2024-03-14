@@ -3,25 +3,26 @@
 
 # include "libft/include/libft.h"
 # include "libft/include/ft_dprintf.h"
+# include "libft/include/get_next_line.h"
 
 // readline
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
-// write, close, dup2, fork, pipe, access, execve, unlink
+// write, close, dup, dup2, fork, pipe, access, execve, unlink
 # include <unistd.h>
 
-//FILE CONTROL
+// FILE CONTROL
 # include <fcntl.h>
 
-// EXIT_FAILURE, EXIT_SUCCESS, NULL
+// EXIT_FAILURE, EXIT_SUCCESS, NULL, malloc, free
 # include <stdlib.h>
 
-// wait
+// waitpid
 # include <sys/wait.h>
 
-// signal
+// sigaction
 #include <signal.h>
 
 //directory  entity
@@ -39,6 +40,8 @@
 # define ERR_OPEN "open error"
 # define ERR_CLOSE "close error"
 # define ERR_DUP2 "dup2 error"
+# define ERR_DUP "dup error"
+# define ERR_HEREDOC "heredoc error"
 # define ERR_ID "not a valid identifier"
 # define PMT "\033[0;31mLiteShell: \033[0m"
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
@@ -146,8 +149,11 @@ typedef struct s_data
 	char		**env_paths;
 	char		*cmd_path;
 	t_builtin	builtin;
+	int			proc;
 	int			status;
 	char		*stat_str;
+	int			fd_stdin;
+	int			fd_stdout;
 }	t_data;
 
 typedef struct s_strstate
@@ -226,11 +232,19 @@ typedef struct s_listcmd
 	t_cmd	*right;
 }	t_listcmd;
 
-int		fork1(t_data *data);
-void	runcmd(t_cmd *cmd, t_data *data, int child_proc);
-// to be removed at some point
-void	runcmd_test(t_cmd *cmd, t_data *data);
-//void	runcmd_old(t_cmd *cmd, t_data *data);
+// readline
+void	rl_clear_history(void);
+void	rl_replace_line(const char *text, int clear_undo);
+
+// data init
+t_env	*copy_env_arr_to_lst(char **envp);
+char	**get_env_paths(char **envp, t_data *data);
+void	data_init(t_data *data, char **envp);
+
+// data init utils
+t_env	*get_node_in_init(char *name_value_str);
+void	lst_append_in_init(t_env **env_lst, t_env *new_node);
+void	print_error_partial_free(char *name, t_data *data);
 
 // constructors.c
 t_cmd		*execcmd(void);
@@ -260,15 +274,24 @@ t_cmd   *nulterminate(t_cmd *cmd);
 const char  *token_type_to_str(t_token_type token);
 //void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
-// data init
-t_env	*copy_env_arr_to_lst(char **envp);
-char	**get_env_paths(char **envp, t_data *data);
-void	data_init(t_data *data, char **envp);
+// string operations
+char	*strlist_join(t_strcmd *str);
+int		make_argv(t_execcmd *cmd, t_data *data);
 
-// data init utils
-t_env	*get_node_in_init(char *name_value_str);
-void	lst_append_in_init(t_env **env_lst, t_env *new_node);
-void	print_error_partial_free(char *name, t_data *data);
+// runcmd() func and its helper funcs
+void	runcmd(t_cmd *cmd, t_data *data);
+int		fork1(t_data *data);
+void	run_exec(t_cmd *cmd, t_data *data);
+void	run_redir(t_cmd *cmd, t_data *data);
+void	get_input(t_data *data, char *delimiter);
+void	run_and(t_cmd *cmd, t_data *data);
+void	run_or(t_cmd *cmd, t_data *data);
+void	run_pipe(t_cmd *cmd, t_data *data);
+// to be removed at some point
+void	runcmd_test(t_cmd *cmd, t_data *data);
+
+// parsing cmd path
+char	*get_cmd_path(char **argv, t_data *data);
 
 // handling builtins
 int		exec_echo(char **argv);
@@ -287,15 +310,9 @@ int		run_builtin(char **argv, t_data *data);
 
 // handling env
 char	**copy_env(char **envp);
-// char	*get_value(char *name_value_str, t_env *new_node, int *status);
-// t_env	*get_node(char *name_value_str, int *status);
-// void	lst_append(t_env **env_lst, t_env *new_node);
 t_env	*copy_env_arr_to_lst(char **envp);
 char	**copy_env_lst_to_arr(t_env *env_lst);
 char	**get_env_paths(char **envp, t_data *data);
-
-// parsing cmd path
-char	*get_cmd_path(char **argv, t_data *data);
 
 // freeing
 void	free_arr(char **arr);
@@ -305,7 +322,8 @@ void	free_data(t_data *data);
 void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
 t_env	*error_handler(char *err_msg, int *err_flag);
-void	panic(char *err_msg, t_data *data, int exit_code);
+void	panic(char *err_msg, t_data *data, int status_code);
+void	free_n_exit(t_data *data, int status_code);
 
 // readline
 void	rl_clear_history(void);
@@ -324,6 +342,5 @@ t_arrlist	*create_arrlist(void);
 int				add_string_arrlist(t_arrlist *list, const char* str);
 void			free_arrlist(t_arrlist *list);
 int	wildcard_star(t_execcmd *cmd);
-
 
 #endif
