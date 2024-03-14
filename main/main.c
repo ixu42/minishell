@@ -47,9 +47,8 @@ int	main(int argc, char **argv, char **envp)
 	data_init(&data, envp);
 	while (data.status >= 0)
 	{
-		set_signals();
-		// data.buf = readline("\033[0;32mLiteShell$ \033[0m"); // free
-		data.buf = readline("LiteShell$ "); // free. discuss if all color formatting should be removed
+		// set_signals();
+		data.buf = readline("LiteShell$ ");
 		if (data.buf == NULL) // Check for EOF (Ctrl+D)
 		{
 			printf("\033[A\033[11Cexit\n");
