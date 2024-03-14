@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/12 17:52:54 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/14 09:49:36 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,10 +178,10 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 
 char *join_all_arguments(char **pnt)
 {
-	char		*str;
+	char	*str;
 	size_t	size;
-	int			i;
-	int			j;
+	size_t	i;
+	size_t	j;
 
 	size = 0;
 	j = 0; 
@@ -196,7 +196,7 @@ char *join_all_arguments(char **pnt)
   while (++i < size && pnt[j]) 
 	{
 		ft_strlcpy(str + i, pnt[j], ft_strlen(pnt[j]) + 1);
-		i += strlen(pnt[j++]);
+		i += (size_t)ft_strlen(pnt[j++]);
     str[i] = 31;
   }
   str[size] = '\0';

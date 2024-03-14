@@ -41,15 +41,11 @@ int	wildcard_star(t_execcmd *cmd)
 	argv_copy = cmd->argv;
 	i = -1;
 	entry = readdir(directory);
-//	printf("argc=%d\n", cmd->argc);
 	while (entry)
 	{
-//		printf("file=%s, type=%d\n", entry->d_name, entry->d_type);
 		i = -1;
 		while (++i < cmd->argc)
 		{
-//			printf("arg-%d\n", i);
-			//if (entry->d_type == DT_REG && match(cmd->argv[i], entry->d_name) && 
 			if (match(cmd->argv[i], entry->d_name) && \
 					add_string_arrlist(p_list[i], entry->d_name))
 			{

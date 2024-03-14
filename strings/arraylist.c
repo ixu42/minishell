@@ -63,7 +63,7 @@ int	add_string_arrlist(t_arrlist *list, const char* str)
 		if (list->data == NULL)
 			return (1);
 	}
-	list->data[list->size] = strdup(str); // duplicate the string
+	list->data[list->size] = ft_strdup(str); // duplicate the string
 	if (list->data[list->size] == NULL)
 		return (1);
 	list->size++;
