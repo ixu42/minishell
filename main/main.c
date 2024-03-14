@@ -85,7 +85,7 @@ int	main(int argc, char **argv, char **envp)
 			}
 			status = make_ast(&cmd, data.buf);
 			if (status == 0)
-        runcmd(cmd, &data, PARENT_PROC);
+		        runcmd(cmd, &data);
 			else if (status == ENOMEM)
 			{
 				dprintf(2, "%s malloc error\n", PMT);
