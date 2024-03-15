@@ -60,7 +60,7 @@
 #define GROWTH_FACTOR 2
 
 // macros for parsing 
-#define TESTMODE 0 
+#define TESTMODE 1 
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&()"

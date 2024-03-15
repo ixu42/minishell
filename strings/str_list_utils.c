@@ -145,36 +145,6 @@ int	get_argc(t_execcmd *cmd)
 	return (argc);
 }
 
-int	make_argv_expanded(t_execcmd *cmd);
-
-int	make_argv(t_execcmd *cmd, t_data *data)
-{
-	t_argcmd	*args;
-	char		**argv;
-	int			argc;
-	int			i;
-
-	args = cmd->args;
-	argc = get_argc(cmd);
-	argv = (char **)malloc(sizeof(*argv) * (argc + 1));
-	if (!argv)
-		return (1);
-	ft_memset(argv, 0, sizeof(*argv) * (argc + 1));
-	i = 0;
-	while (i <= argc && args != NULL)
-	{
-		expand_var_in_args(args, data);
-		argv[i] = strlist_join(args->left);
-		if (!argv[i++])
-			return (ft_free_char2d_return(argv, 1));
-		args = args->right;
-	}
-	cmd->argv = argv;
-	make_argv_expanded(cmd);
-	wildcard_star(cmd);
-	//data about arraylist is losted ??? clean it arraylist aproprietry
-	return (0);
-}
 
 char *join_all_arguments(char **pnt)
 {
@@ -222,5 +192,34 @@ int	make_argv_expanded(t_execcmd *cmd)
 	while (cmd->argv[i])
 		i++;
 	cmd->argc = i;
+	return (0);
+}
+
+int	make_argv(t_execcmd *cmd, t_data *data)
+{
+	t_argcmd	*args;
+	char		**argv;
+	int			argc;
+	int			i;
+
+	args = cmd->args;
+	argc = get_argc(cmd);
+	argv = (char **)malloc(sizeof(*argv) * (argc + 1));
+	if (!argv)
+		return (1);
+	ft_memset(argv, 0, sizeof(*argv) * (argc + 1));
+	i = 0;
+	while (i <= argc && args != NULL)
+	{
+		expand_var_in_args(args, data);
+		argv[i] = strlist_join(args->left);
+		if (!argv[i++])
+			return (ft_free_char2d_return(argv, 1));
+		args = args->right;
+	}
+	cmd->argv = argv;
+	make_argv_expanded(cmd);
+	wildcard_star(cmd);
+	//data about arraylist is losted ??? clean it arraylist aproprietry
 	return (0);
 }

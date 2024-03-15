@@ -22,7 +22,7 @@ typedef struct s_wildcard
     int         argc;
 }   t_wildcard;
 */
-// init dynamic arrays
+
 int	init_wildcard(t_wildcard *wild, t_execcmd *cmd)
 {
 	int	i;
@@ -44,30 +44,53 @@ int	init_wildcard(t_wildcard *wild, t_execcmd *cmd)
 	return  (0);
 }
 
-void	free_wildcard(t_wildcard *wild)
+int	free_wildcard(t_wildcard *wild, int clean_list, int error)
 {
 	int	i;
 
-	free_arrlist(wild->list);
+	if (!wild)
+		return (error);
+	if (clean_list && wild->list)
+	{
+		free_arrlist(wild->list);
+		wild->list = NULL;
+	}
 	i = -1;
+	if (!wild->pnt)
+		return (error);
 	while (++i < wild->argc)
-		free_arrlist(wild->pnt[i]);
+	{
+		if (wild->pnt[i])
+		{
+			free_arrlist(wild->pnt[i]);
+			wild->pnt[i] = NULL;
+		}
+	}
+	free(wild->pnt);
+	return (error);
 }
 
 int do_single_match(int	i, t_wildcard *wild, char *str, DIR *dir)
 {
-	// deal with .files and . and .. directories
-	if (match(wild->argv[i], str) && \
-				add_string_arrlist(wild->pnt[i], str))
+	char	*pat;
+	int		err;
+	
+	err = 0;
+	pat = wild->argv[i];
+	if (pat[0] == '.')
+		err = match(pat, str) && add_string_arrlist(wild->pnt[i], str);
+	else if (str[0] != '.') 
+		err = match(pat, str) && add_string_arrlist(wild->pnt[i], str);
+	if (err)
 	{
 		closedir(dir);
-		free_wildcard(wild);
+		free_wildcard(wild, 1, 1);
 		return (1);
 	}
 	return (0);
 }
 
-// readdir and write matchees to p_list given cmd->argv
+// readdir and write matches to p_list given cmd->argv
 int	match_to_files(t_wildcard *wild)
 {
 	DIR				*directory;
@@ -94,52 +117,64 @@ int	match_to_files(t_wildcard *wild)
 	closedir(directory);
 	return (0);
 }
-		
+
+int	make_sorted_argv(t_wildcard *wild)
+{
+	int				i;
+	int				j;
+	t_arrlist	*arr;
+
+	i = -1;
+	while (++i < wild->argc)
+	{
+		arr = wild->pnt[i];
+		if (arr->size == 0)
+		{
+			if (add_string_arrlist(arr, wild->argv[i]))
+				return (free_wildcard(wild, 1, 1));
+		}
+		else
+			heapsort_str(arr->data, arr->size);
+	}
+	return (0);
+}
+
+int	copy_sorted_argv(t_wildcard *wild)
+{
+	int				i;
+	int				j;
+	t_arrlist	*arr;
+
+	i = -1;
+	while (++i < wild->argc)
+	{
+		arr = wild->pnt[i];
+		j = -1;
+		while (++j < arr->size)
+		{
+			if (add_string_arrlist(wild->list, arr->data[j]))
+				return (free_wildcard(wild, 1, 1));
+		}
+	}
+	return (0);
+}
+
 // shopt -s dotglob  // modify bash behaviour 
 int	wildcard_star(t_execcmd *cmd)
 {
 	t_wildcard	wild;
 
-	int i;
-	int j;
-	
-
 	if (init_wildcard(&wild, cmd))
 		return (1);
 	if (match_to_files(&wild))
-		return (1);
-	
-	t_arrlist	*list;
-	t_arrlist	**p_list;
-	char **argv_copy;
-	argv_copy = wild.argv;
-	list = wild.list;
-	p_list = wild.pnt;
-	
-
-// sort and fill empty
-	i = -1;
-	while (++i < cmd->argc)
-	{
-		if (p_list[i]->size == 0)
-			add_string_arrlist(p_list[i], cmd->argv[i]);
-		else
-			heapsort_str(p_list[i]->data, p_list[i]->size);
-	}
-//  copy to list
-	i = -1;
-	while (++i < cmd->argc)
-	{
-		j = -1;
-		while (++j < p_list[i]->size)
-			add_string_arrlist(list, p_list[i]->data[j]);
-	}
-	cmd->argv = list->data;
-//	printf("free?\n");
-	//ft_free_char2d(argv_copy);
-	/*
-	cmd->argv = list->data;
-	free_arrlist(list);
-*/
+		return (2);
+	if (make_sorted_argv(&wild))
+		return (3);
+	if (copy_sorted_argv(&wild))
+		return (4);
+	cmd->argv = wild.list->data;
+	cmd->argc = wild.argc;
+//	free_wildcard(&wild, 0, 0);
+	//ft_free_char2d(wild.argv);
 	return (0);
 }
