@@ -44,11 +44,11 @@ char	**get_env_paths(char **envp, t_data *data)
 
 void	data_init(t_data *data, char **envp)
 {
-	// struct termios	info;
+	struct termios	info;
 
-	// tcgetattr(0, &info);
-	// info.c_lflag &= ~ECHOCTL;
-	// tcsetattr(0, TCSANOW, &info);
+	tcgetattr(0, &info);
+	info.c_lflag &= ~ECHOCTL;
+	tcsetattr(0, TCSANOW, &info);
 	data->builtin = 0;
 	data->proc = PARENT_PROC;
 	data->status = 0;

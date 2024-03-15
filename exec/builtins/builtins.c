@@ -23,7 +23,7 @@ int	is_builtin(char **argv, t_data **data)
 
 int	run_builtin(char **argv, t_data *data)
 {
-	if (data->builtin == ECHO)
+	if (data->builtin == ECHO_CMD)
 		return (exec_echo(argv));
 	else if (data->builtin == CD_CMD)
 		return (exec_cd(argv, data->env_lst));

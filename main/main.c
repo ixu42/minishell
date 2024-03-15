@@ -30,8 +30,6 @@ int	is_valid_buf(char *buf)
 	return (0);	
 }
 
-// sig_t	signal(int sig, sig_t func)
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
@@ -47,8 +45,8 @@ int	main(int argc, char **argv, char **envp)
 	data_init(&data, envp);
 	while (data.status >= 0)
 	{
-		// if (set_signals() == 1)
-			// break ;
+		if (set_signals() == 1)
+			break ;
 		data.buf = readline("LiteShell$ ");
 		if (data.buf == NULL) // Check for EOF (Ctrl+D)
 		{
@@ -94,11 +92,9 @@ int	main(int argc, char **argv, char **envp)
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);
 			// ----------------------------
-		//	printf("\033[0;35m[status: %d]\033[0m\n", data.status);
+			printf("\033[0;35m[status: %d]\033[0m\n", data.status);
 			// ------
 		}
-		// if (last_sig == SIGINT)
-		// 	data.status = 1;
 		free(data.buf);
 	}
 	close(data.fd_stdin);
