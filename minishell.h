@@ -156,6 +156,14 @@ typedef struct s_data
 	int			fd_stdout;
 }	t_data;
 
+typedef struct s_wildcard
+{
+	t_arrlist	*list;
+	t_arrlist	**pnt;
+	char		**argv;
+	int			argc;
+}	t_wildcard;
+
 typedef struct s_strstate
 {
 	char	*start;
@@ -335,6 +343,7 @@ int		make_argv(t_execcmd *cmd, t_data *data);
 //int	make_argv_expanded(t_execcmd *cmd, t_data *data);
 int	match(const char *pattern, const char *text);
 void	ft_free_char2d(char **split);
+void    heapsort_str(char **arr, int n);
 
 
 // arraylist
