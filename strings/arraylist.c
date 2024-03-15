@@ -15,6 +15,7 @@ void	*ft_realloc(void *ptr, size_t old_size, size_t new_size)
 	new_ptr = malloc(new_size);
 	if (!new_ptr)
 		return (NULL);
+	ft_memset(new_ptr, 0, new_size);
 	if (old_size < new_size)
 		copy_size = old_size;
 	else
@@ -45,7 +46,7 @@ t_arrlist	*create_arrlist(void)
 		free(list);
 		return (NULL);
 	}
-	ft_memset(list->data, 0, INITIAL_CAPACITY);
+	ft_memset(list->data, 0, INITIAL_CAPACITY * sizeof(char*));
 	list->size = 0;
 	list->capacity = INITIAL_CAPACITY;
 	return list;
@@ -54,6 +55,7 @@ t_arrlist	*create_arrlist(void)
 int	add_string_arrlist(t_arrlist *list, const char* str)
 {
 	size_t	capacity;
+
 	if (list->size >= list->capacity - 1)
 	{
 		capacity = list->capacity * GROWTH_FACTOR;

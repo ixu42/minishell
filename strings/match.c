@@ -28,9 +28,15 @@ int	init_wildcard(t_wildcard *wild, t_execcmd *cmd)
 	int	i;
 
 	wild->list = create_arrlist();
+
+	int temp;
+	temp = -1;
+	while (++temp < wild->list->capacity)
+//		printf("i = %d, list->data = %p\n", (int)temp, wild->list->data[temp]);
 	if (!wild->list)
 		return (1);
 	wild->pnt = (t_arrlist **)malloc(sizeof(t_arrlist *) * cmd->argc);
+	ft_memset(wild->pnt, 0, sizeof(t_arrlist *) * cmd->argc);
 	if (!wild->pnt)
 	{
 		free_arrlist(wild->list);
@@ -41,7 +47,7 @@ int	init_wildcard(t_wildcard *wild, t_execcmd *cmd)
 		wild->pnt[i] = create_arrlist();
 	wild->argc = cmd->argc;
 	wild->argv = cmd->argv;
-	return  (0);
+	return (0);
 }
 
 int	free_wildcard(t_wildcard *wild, int clean_list, int error)
@@ -130,11 +136,15 @@ int	make_sorted_argv(t_wildcard *wild)
 		arr = wild->pnt[i];
 		if (arr->size == 0)
 		{
+	//		printf("0) i=%d\n", i);
 			if (add_string_arrlist(arr, wild->argv[i]))
 				return (free_wildcard(wild, 1, 1));
 		}
 		else
+		{
+//			printf("i=%d\n", i);
 			heapsort_str(arr->data, arr->size);
+		}
 	}
 	return (0);
 }
@@ -150,11 +160,14 @@ int	copy_sorted_argv(t_wildcard *wild)
 	{
 		arr = wild->pnt[i];
 		j = -1;
+	//	printf("i = %d, arr size =%d\n",i, (int)arr->size);
 		while (++j < arr->size)
 		{
+//			printf("arg=%s\n",arr->data[j]);
 			if (add_string_arrlist(wild->list, arr->data[j]))
 				return (free_wildcard(wild, 1, 1));
 		}
+		//printf("arg=%s\n",arr->data[j]);
 	}
 	return (0);
 }
@@ -168,13 +181,16 @@ int	wildcard_star(t_execcmd *cmd)
 		return (1);
 	if (match_to_files(&wild))
 		return (2);
+//	printf("hi\n");
 	if (make_sorted_argv(&wild))
 		return (3);
+//	printf("hi\n");
 	if (copy_sorted_argv(&wild))
 		return (4);
+//	printf("hi\n");
 	cmd->argv = wild.list->data;
 	cmd->argc = wild.argc;
-//	free_wildcard(&wild, 0, 0);
-	//ft_free_char2d(wild.argv);
+	free_wildcard(&wild, 0, 0);
+	ft_free_char2d(wild.argv);
 	return (0);
 }
