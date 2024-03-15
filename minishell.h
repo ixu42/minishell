@@ -25,6 +25,9 @@
 // sigaction
 #include <signal.h>
 
+// tcgetattr, tcsetattr
+# include <termios.h>
+
 //directory  entity
 # include <dirent.h>
 
@@ -42,6 +45,7 @@
 # define ERR_DUP2 "dup2 error"
 # define ERR_DUP "dup error"
 # define ERR_HEREDOC "heredoc error"
+# define ERR_SIGACTION "sigaction error"
 # define ERR_ID "not a valid identifier"
 # define PMT "\033[0;31mLiteShell: \033[0m"
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
@@ -68,8 +72,7 @@
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12
 
-
-typedef void (*sig_t) (int);
+int	last_sig;
 
 typedef struct s_arrlist
 {
@@ -125,13 +128,13 @@ typedef enum e_parse_error
 
 typedef enum e_builtin
 {
-	ECHO = 1,
-	CD,
-	PWD,
-	EXPORT,
-	UNSET,
-	ENV,
-	EXIT,
+	ECHO_CMD = 1,
+	CD_CMD,
+	PWD_CMD,
+	EXPORT_CMD,
+	UNSET_CMD,
+	ENV_CMD,
+	EXIT_CMD,
 }   t_builtin;
 
 typedef struct s_env
@@ -255,7 +258,7 @@ void	lst_append_in_init(t_env **env_lst, t_env *new_node);
 void	print_error_partial_free(char *name, t_data *data);
 
 // signal handling
-void	set_signals(void);
+int		set_signals(void);
 
 // constructors.c
 t_cmd		*execcmd(void);
