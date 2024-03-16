@@ -38,8 +38,16 @@ void	run_exec(t_cmd *cmd, t_data *data)
 		// dprintf(2, "builtin\n");
 		// -------------------
 		data->status = run_builtin(ecmd->argv, data);
-		dup2(data->fd_stdin, 0);
-		dup2(data->fd_stdout, 1);
+		if (dup2(data->fd_stdin, 0) == -1)
+		{
+			panic(ERR_DUP2, data, 1);
+			return ;
+		}
+		if (dup2(data->fd_stdout, 1) == -1)
+		{
+			panic(ERR_DUP2, data, 1);
+			return ;
+		}
 		if (data->proc == CHILD_PROC)
 			free_n_exit(data, data->status);
 		// else
@@ -52,6 +60,7 @@ void	run_exec(t_cmd *cmd, t_data *data)
 		// -------------------
 		if (data->proc == CHILD_PROC)
 		{
+			// dprintf(2, "in child process\n");
 			data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 			data->envp = copy_env_lst_to_arr(data->env_lst);
 			// ------ print out arr ------
@@ -64,7 +73,7 @@ void	run_exec(t_cmd *cmd, t_data *data)
 		else
 		{
 			pid = fork1(data);
-			if (data->status == 1)
+			if (pid == -1)
 				return ;
 			if (pid == 0)
 			{
@@ -87,8 +96,16 @@ void	run_exec(t_cmd *cmd, t_data *data)
 				execve(data->cmd_path, ecmd->argv, data->envp);
 				panic(ecmd->argv[0], data, 127);
 			}
-			dup2(data->fd_stdin, 0);
-			dup2(data->fd_stdout, 1);
+			if (dup2(data->fd_stdin, 0) == -1)
+			{
+				panic(ERR_DUP2, data, 1);
+				return ;
+			}
+			if (dup2(data->fd_stdout, 1) == -1)
+			{
+				panic(ERR_DUP2, data, 1);
+				return ;
+			}
 			if (waitpid(pid, &status, 0) == -1)
 			{
 				panic(ERR_WAITPID, data, 1);
@@ -187,7 +204,7 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 		return ;
 	}
 	pid1 = fork1(data);
-	if (data->status == 1)
+	if (pid1 == -1)
 		return ;
 	if (pid1 == 0)
 	{
@@ -201,7 +218,7 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 		runcmd(pcmd->left, data);
 	}
 	pid2 = fork1(data);
-	if (data->status == 1)
+	if (pid2 == -1)
 		return ;
 	if (pid2 == 0)
 	{
