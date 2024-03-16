@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/12 17:42:55 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/16 12:27:05 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	{
 		ecmd = (t_execcmd*)cmd;
 		make_argv(ecmd, data);
-//		make_argv_expanded(ecmd, data);
 		if(ecmd->argv[0] == 0)
 		{
 			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");

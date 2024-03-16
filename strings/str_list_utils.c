@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/16 11:29:21 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/16 15:34:09 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,16 @@ void	replace_space_by(t_strcmd *str, int c)
 	}
 }
 
+/*
+void	duplicate_str(t_strcmd *str)
+{
+	char	*copy;
+	
+	copy = ft_strdub(str->start);
+	str->
+}
+*/
+
 void	set_variable_node(t_strcmd *str, t_env *node)
 {
 	str->start = node->value;
@@ -42,8 +52,11 @@ void	set_variable_node(t_strcmd *str, t_env *node)
 		str->end++;
 	if (str->type == STR_NODE_VAR_P)
 		str->type = STR_NODE;
-	else
+	else if (str->type == STR_NODE_VAR)
+	{
+		//duplicate env string stored in str
 		replace_space_by(str, ASCII_SEPARATOR);
+	}
 }
 
 void	expand_var_in_args(t_argcmd *arg, t_data *data)
@@ -159,10 +172,12 @@ char *join_all_arguments(char **pnt)
 	j = 0; 
 	while (pnt[j])
 		size += ft_strlen(pnt[j++]) + 1;
-	str = (char *)malloc(sizeof(str) * (size + 1));
+	//str = (char *)malloc(sizeof(str) * (size + 1));
+	str = (char *)malloc(sizeof(str) * size);
 	if (!str)
 		return (NULL);
-	ft_memset(str, 0, sizeof(str) * (size + 1));
+	//ft_memset(str, 0, sizeof(str) * (size + 1));
+	ft_memset(str, 0, sizeof(str) * size);
 	i = -1;
 	j = 0;
 	while (++i < size && pnt[j]) 
@@ -171,7 +186,8 @@ char *join_all_arguments(char **pnt)
 		i += (size_t)ft_strlen(pnt[j++]);
 	    str[i] = ASCII_SEPARATOR;
 	}
-	str[size] = '\0';
+//	str[size] = '\0';
+	str[size - 1] = '\0';
 	return (str);
 }
 
@@ -181,11 +197,12 @@ int	make_argv_expanded(t_execcmd *cmd)
 	int			argc_exp;
 	size_t	i;
 
+	//???should we copy cmd->argv for latter freeing
 	joined_arg = join_all_arguments(cmd->argv);
-//	printf("joined str=%s\n",joined_arg);
 	ft_free_char2d(cmd->argv);
 	if (!joined_arg)
 		return (1);
+	printf("len =%d\n",(int)ft_strlen(joined_arg));
 	cmd->argv = ft_split(joined_arg, ASCII_SEPARATOR);
 	free(joined_arg);
 	if (!cmd->argv)
@@ -194,6 +211,17 @@ int	make_argv_expanded(t_execcmd *cmd)
 	while (cmd->argv[i])
 		i++;
 	cmd->argc = i;
+	if (wildcard_star(cmd))
+		return (1);
+/*
+	if (cmd->argv && cmd->argv[0] == NULL)
+	{
+		cmd->argv[0] = (char *)malloc(sizeof(char));
+		cmd->argv[0][0] = '\0';
+		printf("replace NULL argv[0]\n");
+	}
+
+*/
 	return (0);
 }
 
@@ -219,9 +247,10 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 			return (ft_free_char2d_return(argv, 1));
 		args = args->right;
 	}
+	// ??? do we need to clean old value of cmd->argv?
 	cmd->argv = argv;
-	make_argv_expanded(cmd);
-	wildcard_star(cmd);
+	if (make_argv_expanded(cmd))
+		return (1);
 	//data about arraylist is losted ??? clean it arraylist aproprietry
 	return (0);
 }

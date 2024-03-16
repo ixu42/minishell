@@ -200,7 +200,6 @@ t_strcmd	*parse_single(t_strstate *state)
 	return (node);
 }
 
-
 void	make_var_node(t_strcmd **p_node, t_strstate *state)
 {
 	t_strcmd	*node;

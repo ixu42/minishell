@@ -181,14 +181,15 @@ int	wildcard_star(t_execcmd *cmd)
 		return (1);
 	if (match_to_files(&wild))
 		return (2);
-//	printf("hi\n");
 	if (make_sorted_argv(&wild))
 		return (3);
-//	printf("hi\n");
 	if (copy_sorted_argv(&wild))
 		return (4);
-//	printf("hi\n");
 	cmd->argv = wild.list->data;
+//	if (cmd->argv && cmd->argv[0] == NULL)
+//	{
+//		printf("NULL argv[0]\n");
+//	}
 	cmd->argc = wild.argc;
 	free_wildcard(&wild, 0, 0);
 	ft_free_char2d(wild.argv);
