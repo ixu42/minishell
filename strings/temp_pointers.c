@@ -30,7 +30,8 @@ int main()
 	t_num *pnt;
 	t_num pnt2;
 
-	pnt->num = 10;
+//	pnt->num = 10;
+/*
 	pnt2.num = 0;
 	x = 1;
 	printf("x=%d\n",x);
@@ -46,5 +47,11 @@ int main()
 	printf("num= %d\n", pnt2.num);
 	modify_struct(pnt2);
 	printf("num= %d\n", pnt2.num);
+*/
+	printf("-----  non printable test----\n");
+	char s[10] = "abcdfg";
+
+	s[2] = 32;
+	printf("s=%s\n",s);
 	return (0);
 }

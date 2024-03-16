@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/16 15:34:09 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/16 16:11:53 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,14 @@ void	replace_space_by(t_strcmd *str, int c)
 	}
 }
 
-/*
-void	duplicate_str(t_strcmd *str)
+void	duplicate_data_in_str(t_strcmd *str)
 {
 	char	*copy;
 	
-	copy = ft_strdub(str->start);
-	str->
+	copy = ft_strdup(str->start);
+	str->start  = copy;
+	str->end = copy + ft_strlen(copy);
 }
-*/
 
 void	set_variable_node(t_strcmd *str, t_env *node)
 {
@@ -54,7 +53,7 @@ void	set_variable_node(t_strcmd *str, t_env *node)
 		str->type = STR_NODE;
 	else if (str->type == STR_NODE_VAR)
 	{
-		//duplicate env string stored in str
+		duplicate_data_in_str(str);
 		replace_space_by(str, ASCII_SEPARATOR);
 	}
 }
@@ -202,7 +201,7 @@ int	make_argv_expanded(t_execcmd *cmd)
 	ft_free_char2d(cmd->argv);
 	if (!joined_arg)
 		return (1);
-	printf("len =%d\n",(int)ft_strlen(joined_arg));
+//	printf("len =%d\n",(int)ft_strlen(joined_arg));
 	cmd->argv = ft_split(joined_arg, ASCII_SEPARATOR);
 	free(joined_arg);
 	if (!cmd->argv)
