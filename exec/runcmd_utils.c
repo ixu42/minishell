@@ -50,8 +50,6 @@ void	run_exec(t_cmd *cmd, t_data *data)
 		}
 		if (data->proc == CHILD_PROC)
 			free_n_exit(data, data->status);
-		// else
-		// 	return ;
 	}
 	else
 	{
@@ -60,7 +58,6 @@ void	run_exec(t_cmd *cmd, t_data *data)
 		// -------------------
 		if (data->proc == CHILD_PROC)
 		{
-			// dprintf(2, "in child process\n");
 			data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 			data->envp = copy_env_lst_to_arr(data->env_lst);
 			// ------ print out arr ------
@@ -75,8 +72,18 @@ void	run_exec(t_cmd *cmd, t_data *data)
 			pid = fork1(data);
 			if (pid == -1)
 				return ;
+			if (parent_signal_handler() == 1)
+			{
+				panic(ERR_SIGACTION, data, 1);
+				return ;
+			}
 			if (pid == 0)
 			{
+				if (child_signal_handler() == 1) // free?
+				{
+					panic(ERR_SIGACTION, data, 1);
+					return ;
+				}
 				data->proc = CHILD_PROC;
 				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 				// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
@@ -113,6 +120,8 @@ void	run_exec(t_cmd *cmd, t_data *data)
 			}
 			if (WIFEXITED(status))
 				data->status = WEXITSTATUS(status);
+			if (WIFSIGNALED(status))
+				data->status = 128 + WTERMSIG(status);
 		}
 	}
 }
@@ -213,8 +222,18 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 	pid1 = fork1(data);
 	if (pid1 == -1)
 		return ;
+	if (parent_signal_handler() == 1)
+	{
+		panic(ERR_SIGACTION, data, 1);
+		return ;
+	}
 	if (pid1 == 0)
 	{
+		if (child_signal_handler() == 1)
+		{
+			panic(ERR_SIGACTION, data, 1);
+			return ;
+		}
 		data->proc = CHILD_PROC;
 		if (close(pipe_fd[0]) == -1)
 			panic(ERR_CLOSE, data, 1);
@@ -227,8 +246,18 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 	pid2 = fork1(data);
 	if (pid2 == -1)
 		return ;
+	if (parent_signal_handler() == 1)
+	{
+		panic(ERR_SIGACTION, data, 1);
+		return ;
+	}
 	if (pid2 == 0)
 	{
+		if (child_signal_handler() == 1)
+		{
+			panic(ERR_SIGACTION, data, 1);
+			return ;
+		}
 		data->proc = CHILD_PROC;
 		if (close(pipe_fd[1]) == -1)
 			panic(ERR_CLOSE, data, 1);
@@ -260,6 +289,10 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 	}
 	if (WIFEXITED(status) && process == PARENT_PROC)
 		data->status = WEXITSTATUS(status);
+	if (WIFSIGNALED(status) && process == PARENT_PROC)
+		data->status = 128 + WTERMSIG(status);
 	if (WIFEXITED(status) && process == CHILD_PROC)
 		free_n_exit(data, WEXITSTATUS(status));
+	if (WIFSIGNALED(status) && process == CHILD_PROC)
+		free_n_exit(data, 128 + WTERMSIG(status));
 }

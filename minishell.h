@@ -72,7 +72,7 @@
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12
 
-int	last_sig;
+extern int	last_sig;
 
 typedef struct s_arrlist
 {
@@ -259,6 +259,8 @@ void	print_error_partial_free(char *name, t_data *data);
 
 // signal handling
 int		set_signals(void);
+int		parent_signal_handler(void);
+int		child_signal_handler(void);
 
 // constructors.c
 t_cmd		*execcmd(void);

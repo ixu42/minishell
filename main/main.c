@@ -1,5 +1,7 @@
 #include "../minishell.h"
 
+int	last_sig;
+
 /* buf is considered valid if (1) it is not empty string,
 and (2) it contains at least one character other than white spaces */
 
@@ -92,10 +94,13 @@ int	main(int argc, char **argv, char **envp)
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);
 			// ----------------------------
-			printf("\033[0;35m[status: %d]\033[0m\n", data.status);
+			// printf("\033[0;35m[status: %d]\033[0m\n", data.status);
 			// ------
 		}
 		free(data.buf);
+		if (last_sig)
+			data.status = 1;
+		last_sig = 0;
 	}
 	close(data.fd_stdin);
 	close(data.fd_stdout);
