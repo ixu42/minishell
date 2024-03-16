@@ -60,10 +60,12 @@
 #define GROWTH_FACTOR 2
 
 // macros for parsing 
-#define TESTMODE 0 
+#define TESTMODE 1 
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&()"
+#define ASCII_SEPARATOR 31
+#define ASCII_STAR_WILD 32
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12

@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/14 09:49:36 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/16 11:29:21 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	set_variable_node(t_strcmd *str, t_env *node)
 	if (str->type == STR_NODE_VAR_P)
 		str->type = STR_NODE;
 	else
-		replace_space_by(str, 31);
+		replace_space_by(str, ASCII_SEPARATOR);
 }
 
 void	expand_var_in_args(t_argcmd *arg, t_data *data)
@@ -124,11 +124,13 @@ int	ft_free_char2d_return(char **split, int ret)
 	return (ret);
 }
 
+/*
 int	get_argc_strcmd(t_strcmd *str)
 {
 	// to be change when $VAR will be expanded
 	return (1);
 }
+*/
 
 int	get_argc(t_execcmd *cmd)
 {
@@ -139,7 +141,7 @@ int	get_argc(t_execcmd *cmd)
 	args = cmd->args;
 	while (args != NULL)
 	{
-		argc += get_argc_strcmd(args->left);
+		argc++;   //get_argc_strcmd(args->left);
 		args = args->right;
 	}
 	return (argc);
@@ -161,15 +163,15 @@ char *join_all_arguments(char **pnt)
 	if (!str)
 		return (NULL);
 	ft_memset(str, 0, sizeof(str) * (size + 1));
-  i = -1;
+	i = -1;
 	j = 0;
-  while (++i < size && pnt[j]) 
+	while (++i < size && pnt[j]) 
 	{
 		ft_strlcpy(str + i, pnt[j], ft_strlen(pnt[j]) + 1);
 		i += (size_t)ft_strlen(pnt[j++]);
-    str[i] = 31;
-  }
-  str[size] = '\0';
+	    str[i] = ASCII_SEPARATOR;
+	}
+	str[size] = '\0';
 	return (str);
 }
 
@@ -184,7 +186,7 @@ int	make_argv_expanded(t_execcmd *cmd)
 	ft_free_char2d(cmd->argv);
 	if (!joined_arg)
 		return (1);
-	cmd->argv = ft_split(joined_arg, 31);
+	cmd->argv = ft_split(joined_arg, ASCII_SEPARATOR);
 	free(joined_arg);
 	if (!cmd->argv)
 		return (1);
