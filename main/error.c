@@ -44,7 +44,7 @@ t_env	*error_handler(char *err_msg, int *err_flag)
 free all heap allocated memory and exit with status code; 
 if in parent process, data->status is set to status code */
 
-void	panic(char *err_msg, t_data *data, int status_code)
+int	panic(char *err_msg, t_data *data, int status_code)
 {
 	if (status_code == 127)
 	{
@@ -66,6 +66,7 @@ void	panic(char *err_msg, t_data *data, int status_code)
 		exit(status_code);
 	}
 	data->status = status_code;
+	return (1);
 }
 
 // used during the execution

@@ -1,5 +1,6 @@
 #include "../minishell.h"
 
+// volatile sig_atomic_t	last_sig;
 int	last_sig;
 
 /* buf is considered valid if (1) it is not empty string,
@@ -98,8 +99,13 @@ int	main(int argc, char **argv, char **envp)
 			// ------
 		}
 		free(data.buf);
+		dprintf(2, "last_sig: %d\n", last_sig);
 		if (last_sig)
 			data.status = 1;
+		if (last_sig == 130)
+			dprintf(2, "\n");
+		if (last_sig == 131)
+			dprintf(2, "Quit: 3\n");
 		last_sig = 0;
 	}
 	close(data.fd_stdin);

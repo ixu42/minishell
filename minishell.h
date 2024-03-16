@@ -73,6 +73,7 @@
 #define ENOMEM 12
 
 extern int	last_sig;
+// extern volatile sig_atomic_t	last_sig;
 
 typedef struct s_arrlist
 {
@@ -293,12 +294,12 @@ const char  *token_type_to_str(t_token_type token);
 // runcmd() func and its helper funcs
 void	runcmd(t_cmd *cmd, t_data *data);
 int		fork1(t_data *data);
-void	run_exec(t_cmd *cmd, t_data *data);
-void	run_redir(t_cmd *cmd, t_data *data);
+int		run_exec(t_cmd *cmd, t_data *data);
+int		run_redir(t_cmd *cmd, t_data *data);
 void	get_input(t_data *data, char *delimiter);
 void	run_and(t_cmd *cmd, t_data *data);
 void	run_or(t_cmd *cmd, t_data *data);
-void	run_pipe(t_cmd *cmd, t_data *data);
+int		run_pipe(t_cmd *cmd, t_data *data);
 // to be removed at some point
 void	runcmd_test(t_cmd *cmd, t_data *data);
 
@@ -334,7 +335,7 @@ void	free_data(t_data *data);
 void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
 t_env	*error_handler(char *err_msg, int *err_flag);
-void	panic(char *err_msg, t_data *data, int status_code);
+int		panic(char *err_msg, t_data *data, int status_code);
 void	free_n_exit(t_data *data, int status_code);
 
 // readline

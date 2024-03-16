@@ -10,7 +10,7 @@ int	fork1(t_data *data)
 	return (pid);
 }
 
-void	run_exec(t_cmd *cmd, t_data *data)
+int	run_exec(t_cmd *cmd, t_data *data)
 {
 	t_execcmd	*ecmd;
 	int			pid;
@@ -18,36 +18,31 @@ void	run_exec(t_cmd *cmd, t_data *data)
 
 	ecmd = (t_execcmd *)cmd;
 	make_argv(ecmd, data);
-	if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
-	{
-		if (data->proc == CHILD_PROC)
-			free_n_exit(data, 0);
-		else
-		{
-			data->status = 0;
-			return ;
-		}
-	}
+	// if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
+	// {
+	// 	dprintf(2, "debug\n");
+	// 	if (data->proc == CHILD_PROC)
+	// 		free_n_exit(data, 0);
+	// 	else
+	// 	{
+	// 		data->status = 0;
+	// 		return (0);
+	// 	}
+	// }
 	// ------ print out args ------
 	//for (int i = 0; ecmd->argv[i] != NULL; i++)
 	// 	dprintf(2, "ecmd->argv[%d]: %s\n", i, ecmd->argv[i]);
 	// ----------------------------
-	if (is_builtin(ecmd->argv, &data))
+	if (ecmd->argv != NULL && ecmd->argv[0] != NULL && is_builtin(ecmd->argv, &data))
 	{
 		// ------ debug ------
 		// dprintf(2, "builtin\n");
 		// -------------------
 		data->status = run_builtin(ecmd->argv, data);
 		if (dup2(data->fd_stdin, 0) == -1)
-		{
-			panic(ERR_DUP2, data, 1);
-			return ;
-		}
+			return (panic(ERR_DUP2, data, 1));
 		if (dup2(data->fd_stdout, 1) == -1)
-		{
-			panic(ERR_DUP2, data, 1);
-			return ;
-		}
+			return (panic(ERR_DUP2, data, 1));
 		if (data->proc == CHILD_PROC)
 			free_n_exit(data, data->status);
 	}
@@ -65,26 +60,22 @@ void	run_exec(t_cmd *cmd, t_data *data)
 			// 	printf("%s\n", data->envp[n]);
 			// ----------------------------
 			execve(data->cmd_path, ecmd->argv, data->envp);
+			if (ecmd->argv[0] == NULL)
+				panic("", data, 127);
 			panic(ecmd->argv[0], data, 127);
 		}
 		else
 		{
 			pid = fork1(data);
 			if (pid == -1)
-				return ;
+				return (1);
 			if (parent_signal_handler() == 1)
-			{
-				panic(ERR_SIGACTION, data, 1);
-				return ;
-			}
+				return (panic(ERR_SIGACTION, data, 1));
 			if (pid == 0)
 			{
-				if (child_signal_handler() == 1) // free?
-				{
-					panic(ERR_SIGACTION, data, 1);
-					return ;
-				}
 				data->proc = CHILD_PROC;
+				if (child_signal_handler() == 1) // free?
+					panic(ERR_SIGACTION, data, 1);
 				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 				// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
 				// ------ print out list ------
@@ -101,32 +92,26 @@ void	run_exec(t_cmd *cmd, t_data *data)
 				// 	dprintf(2 ,"%s\n", data->envp[n]);
 				// ----------------------------
 				execve(data->cmd_path, ecmd->argv, data->envp);
+				if (ecmd->argv[0] == NULL)
+					panic("", data, 127);
 				panic(ecmd->argv[0], data, 127);
 			}
 			if (dup2(data->fd_stdin, 0) == -1)
-			{
-				panic(ERR_DUP2, data, 1);
-				return ;
-			}
+				return (panic(ERR_DUP2, data, 1));
 			if (dup2(data->fd_stdout, 1) == -1)
-			{
-				panic(ERR_DUP2, data, 1);
-				return ;
-			}
+				return (panic(ERR_DUP2, data, 1));
 			if (waitpid(pid, &status, 0) == -1)
-			{
-				panic(ERR_WAITPID, data, 1);
-				return ;
-			}
+				return (panic(ERR_WAITPID, data, 1));
 			if (WIFEXITED(status))
 				data->status = WEXITSTATUS(status);
 			if (WIFSIGNALED(status))
 				data->status = 128 + WTERMSIG(status);
 		}
 	}
+	return (0);
 }
 
-void	run_redir(t_cmd *cmd, t_data *data)
+int	run_redir(t_cmd *cmd, t_data *data)
 {
 	t_redircmd	*rcmd;
 	int			process;
@@ -141,38 +126,27 @@ void	run_redir(t_cmd *cmd, t_data *data)
 		{
 			if (process == CHILD_PROC)
 				free_n_exit(data, 1);
-			return ;
+			return (1);
 		}
 		fd = open(".heredoc", O_RDONLY);
 		if (fd == -1)
-		{
-			panic(".heredoc", data, 1);
-			return ;
-		}
+			return (panic(".heredoc", data, 1));
 	}
 	else
 	{
 		fd = open(rcmd->file, rcmd->mode, 0644);
 		if (fd == -1)
-		{
-			panic(rcmd->file, data, 1);
-			return ;
-		}
+			return (panic(rcmd->file, data, 1));
 	}
 	if (dup2(fd, rcmd->fd) == -1)
-	{
-		panic(ERR_DUP2, data, 1);
-		return ;
-	}
+		return (panic(ERR_DUP2, data, 1));
 	if (close(fd) == -1)
-	{
-		panic(ERR_CLOSE, data, 1);
-		return ;
-	}
+		return (panic(ERR_CLOSE, data, 1));
 	data->proc = PARENT_PROC;
 	runcmd(rcmd->cmd, data);
 	if (process == CHILD_PROC)
 		free_n_exit(data, data->status);
+	return (0);
 }
 
 void	run_and(t_cmd *cmd, t_data *data)
@@ -200,10 +174,10 @@ void	run_or(t_cmd *cmd, t_data *data)
 	{
 		data->proc = PARENT_PROC;
 		runcmd(lcmd->right, data);
-	}	
+	}
 }
 
-void	run_pipe(t_cmd *cmd, t_data *data)
+int	run_pipe(t_cmd *cmd, t_data *data)
 {
 	t_pipecmd	*pcmd;
 	int			process;
@@ -215,26 +189,17 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 	pcmd = (t_pipecmd *)cmd;
 	process = data->proc;
 	if (pipe(pipe_fd) == -1)
-	{
-		panic(ERR_PIPE, data, 1);
-		return ;
-	}
+		return (panic(ERR_PIPE, data, 1));
 	pid1 = fork1(data);
 	if (pid1 == -1)
-		return ;
+		return (1);
 	if (parent_signal_handler() == 1)
-	{
-		panic(ERR_SIGACTION, data, 1);
-		return ;
-	}
+		return (panic(ERR_SIGACTION, data, 1));
 	if (pid1 == 0)
 	{
-		if (child_signal_handler() == 1)
-		{
-			panic(ERR_SIGACTION, data, 1);
-			return ;
-		}
 		data->proc = CHILD_PROC;
+		if (child_signal_handler() == 1)
+			panic(ERR_SIGACTION, data, 1);	
 		if (close(pipe_fd[0]) == -1)
 			panic(ERR_CLOSE, data, 1);
 		if (dup2(pipe_fd[1], 1) == -1)
@@ -245,20 +210,13 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 	}
 	pid2 = fork1(data);
 	if (pid2 == -1)
-		return ;
+		return (1);
 	if (parent_signal_handler() == 1)
-	{
-		panic(ERR_SIGACTION, data, 1);
-		return ;
-	}
+		return (panic(ERR_SIGACTION, data, 1));
 	if (pid2 == 0)
-	{
+	{	data->proc = CHILD_PROC;
 		if (child_signal_handler() == 1)
-		{
 			panic(ERR_SIGACTION, data, 1);
-			return ;
-		}
-		data->proc = CHILD_PROC;
 		if (close(pipe_fd[1]) == -1)
 			panic(ERR_CLOSE, data, 1);
 		if (dup2(pipe_fd[0], 0) == -1)
@@ -268,25 +226,13 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 		runcmd(pcmd->right, data);
 	}
 	if (close(pipe_fd[0]) == -1)
-	{
-		panic(ERR_CLOSE, data, 1);
-		return ;
-	}
+		return (panic(ERR_CLOSE, data, 1));
 	if (close(pipe_fd[1]) == -1)
-	{
-		panic(ERR_CLOSE, data, 1);
-		return ;
-	}
+		return (panic(ERR_CLOSE, data, 1));
 	if (waitpid(pid1, NULL, 0) == -1)
-	{
-		panic(ERR_WAITPID, data, 1);
-		return ;
-	}
+		return (panic(ERR_WAITPID, data, 1));
 	if (waitpid(pid2, &status, 0) == -1)
-	{
-		panic(ERR_WAITPID, data, 1);
-		return ;
-	}
+		return (panic(ERR_WAITPID, data, 1));
 	if (WIFEXITED(status) && process == PARENT_PROC)
 		data->status = WEXITSTATUS(status);
 	if (WIFSIGNALED(status) && process == PARENT_PROC)
@@ -295,4 +241,5 @@ void	run_pipe(t_cmd *cmd, t_data *data)
 		free_n_exit(data, WEXITSTATUS(status));
 	if (WIFSIGNALED(status) && process == CHILD_PROC)
 		free_n_exit(data, 128 + WTERMSIG(status));
+	return (0);
 }

@@ -22,6 +22,8 @@ char	*get_cmd_path(char **argv, t_data *data)
 	char	*tmp;
 	int		i;
 
+	if (argv == NULL || argv[0] == NULL)
+		return (NULL);
 	cmd_path = verify_path(argv[0], data);
 	if (cmd_path != NULL)
 		return (cmd_path);
