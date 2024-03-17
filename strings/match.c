@@ -30,9 +30,9 @@ int	init_wildcard(t_wildcard *wild, t_execcmd *cmd)
 
 	wild->list = create_arrlist();
 
-	int temp;
-	temp = -1;
-	while (++temp < wild->list->capacity)
+//	int temp;
+//	temp = -1;
+//	while (++temp < wild->list->capacity)
 //		printf("i = %d, list->data = %p\n", (int)temp, wild->list->data[temp]);
 	if (!wild->list)
 		return (1);

@@ -21,6 +21,8 @@ void	set_exit_code_node(t_strcmd *str, t_data *data)
 	str->end = str->start + ft_strlen(str->start);
 }
 
+
+
 void	replace_space_by(t_strcmd *str, int c)
 {
 	char	*s;
@@ -58,6 +60,7 @@ void	set_variable_node(t_strcmd *str, t_env *node)
 	}
 }
 
+/*
 void	expand_var_in_args(t_argcmd *arg, t_data *data)
 {
 	t_strcmd	*str;
@@ -78,6 +81,28 @@ void	expand_var_in_args(t_argcmd *arg, t_data *data)
 		str = str->next;
 	}
 }
+*/
+
+void	expand_var_in_strlist(t_strcmd *str, t_data *data)
+{
+	t_env		*node;
+
+	while (str != NULL)
+	{
+		if (str->type == STR_NODE_VAR || str->type == STR_NODE_VAR_P)
+		{
+			if (!name_in_env_lst(data->env_lst, str->start, str->end - str->start, &node))
+				str->end = str->start;
+			else
+				set_variable_node(str, node);
+		}
+		if (str->type == STR_EXIT_CODE)
+			set_exit_code_node(str, data);
+		str = str->next;
+	}
+}
+
+
 
 int	strlist_len(t_strcmd *str)
 {
@@ -115,6 +140,8 @@ char	*strlist_join(t_strcmd *str)
 	return (res);
 }
 
+
+
 void	ft_free_char2d(char **split)
 {
 	size_t	i;
@@ -144,6 +171,8 @@ int	get_argc_strcmd(t_strcmd *str)
 }
 */
 
+
+
 int	get_argc(t_execcmd *cmd)
 {
 	t_argcmd	*args;
@@ -159,7 +188,6 @@ int	get_argc(t_execcmd *cmd)
 	return (argc);
 }
 
-
 char *join_all_arguments(char **pnt)
 {
 	char	*str;
@@ -172,6 +200,8 @@ char *join_all_arguments(char **pnt)
 	while (pnt[j])
 		size += ft_strlen(pnt[j++]) + 1;
 	//str = (char *)malloc(sizeof(str) * (size + 1));
+	if (size == 0)
+		size = 1;
 	str = (char *)malloc(sizeof(str) * size);
 	if (!str)
 		return (NULL);
@@ -187,6 +217,8 @@ char *join_all_arguments(char **pnt)
 	}
 //	str[size] = '\0';
 	str[size - 1] = '\0';
+//	ft_dprintf(2,"pnt[0]=->%s<-\n",pnt[0]);
+	//ft_dprintf(2,"s=->%s<-\n",str);
 	return (str);
 }
 
@@ -197,11 +229,11 @@ int	make_argv_expanded(t_execcmd *cmd)
 	size_t	i;
 
 	//???should we copy cmd->argv for latter freeing
+//	printf("argc=%d\n", cmd->argc);
 	joined_arg = join_all_arguments(cmd->argv);
 	ft_free_char2d(cmd->argv);
 	if (!joined_arg)
 		return (1);
-//	printf("len =%d\n",(int)ft_strlen(joined_arg));
 	cmd->argv = ft_split(joined_arg, ASCII_SEPARATOR);
 	free(joined_arg);
 	if (!cmd->argv)
@@ -210,21 +242,10 @@ int	make_argv_expanded(t_execcmd *cmd)
 	while (cmd->argv[i])
 		i++;
 	cmd->argc = i;
-	if (wildcard_star(cmd))
-		return (1);
-/*
-	if (cmd->argv && cmd->argv[0] == NULL)
-	{
-		cmd->argv[0] = (char *)malloc(sizeof(char));
-		cmd->argv[0][0] = '\0';
-		printf("replace NULL argv[0]\n");
-	}
-
-*/
 	return (0);
 }
 
-int	make_argv(t_execcmd *cmd, t_data *data)
+int	init_argv(t_execcmd *cmd, t_data *data)
 {
 	t_argcmd	*args;
 	char		**argv;
@@ -240,7 +261,8 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 	i = 0;
 	while (i <= argc && args != NULL)
 	{
-		expand_var_in_args(args, data);
+//		expand_var_in_args(args, data);
+		expand_var_in_strlist(args->left, data);
 		argv[i] = strlist_join(args->left);
 		if (!argv[i++])
 			return (ft_free_char2d_return(argv, 1));
@@ -248,8 +270,41 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 	}
 	// ??? do we need to clean old value of cmd->argv?
 	cmd->argv = argv;
+	//data about arraylist is losted ??? clean it arraylist aproprietry
+	return (0);
+}
+
+
+int	make_filename(t_redircmd *rcmd, t_data *data)
+{
+	char	*file;
+	int		i;
+
+	if (rcmd->mode == -1)
+		return (0);
+	expand_var_in_strlist(rcmd->str, data);
+	rcmd->file = strlist_join(rcmd->str);
+	if (!rcmd->file)
+		return (MALLOC_ERROR);
+	i = ft_strlen(rcmd->file);
+	while (i-- > 0)
+	{
+		if (rcmd->file[i] == ASCII_SEPARATOR)
+		{
+			ft_dprintf(2, "%s %s %s\n", PMT, rcmd->sfile, "ambiguous redirect");
+			return (1);
+		}
+	}
+	return (0);
+}
+
+int	make_argv(t_execcmd *cmd, t_data *data)
+{
+	if (init_argv(cmd, data))
+		return (1);
 	if (make_argv_expanded(cmd))
 		return (1);
-	//data about arraylist is losted ??? clean it arraylist aproprietry
+	if (wildcard_star(cmd))
+		return (1);
 	return (0);
 }

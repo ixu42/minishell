@@ -128,7 +128,7 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");
 //			exit (1);
 		}
-		ft_dprintf(2, "EXEC:   flag=%d\n", ecmd->flag);
+		ft_dprintf(2, "EXEC:   flag=%d, argc=%d\n", ecmd->flag, ecmd->argc);
 		ft_dprintf(2, "    argv=\n");
 		ft_print_char2d(ecmd->argv);
 		printargs(ecmd->args, data);
@@ -137,6 +137,7 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	else if (cmd->type == REDIR)
 	{
 		rcmd = (t_redircmd*)cmd;
+		make_filename(rcmd, data);
 		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d, flag=%d);\n", rcmd->file, rcmd->mode,rcmd->fd, rcmd->flag);
 		printstr(rcmd->str, data);
 		runcmd_test(rcmd->cmd, data);
