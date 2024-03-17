@@ -1,7 +1,6 @@
 #include "../minishell.h"
 
-// volatile sig_atomic_t	last_sig;
-int	last_sig;
+volatile sig_atomic_t	last_sig;
 
 /* buf is considered valid if (1) it is not empty string,
 and (2) it contains at least one character other than white spaces */
@@ -51,6 +50,8 @@ int	main(int argc, char **argv, char **envp)
 		if (set_signals(&data) == 1)
 			break ;
 		data.buf = readline("LiteShell$ ");
+		if (last_sig)
+			data.status = 1;
 		if (data.buf == NULL) // Check for EOF (Ctrl+D)
 		{
 			printf("\033[A\033[11Cexit\n");
@@ -99,10 +100,6 @@ int	main(int argc, char **argv, char **envp)
 			// ------
 		}
 		free(data.buf);
-		// dprintf(2, "last_sig: %d\n", last_sig);
-		if (last_sig)
-			data.status = 1;
-		// printf("\033[0;35m[status: %d]\033[0m\n", data.status);
 		if (data.status == 130)
 			dprintf(2, "\n");
 		if (data.status == 131)
@@ -111,7 +108,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	close(data.fd_stdin);
 	close(data.fd_stdout);
-	unlink(".heredoc"); // or adding a boolean in data struct and clean it when .heredoc exists? when to clean
+	unlink(".heredoc");
 	free_data(&data);
 	rl_clear_history();
 	exit(EXIT_SUCCESS);

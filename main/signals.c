@@ -1,11 +1,31 @@
 #include "../minishell.h"
 
+void	update_termios(int set_echoctl)
+{
+	struct termios	info;
+
+	if (set_echoctl == SET_ECHOCTL)
+	{
+		tcgetattr(0, &info);
+		info.c_lflag |= ECHOCTL;
+		tcsetattr(0, TCSANOW, &info);
+	}
+	else
+	{
+		tcgetattr(0, &info);
+		info.c_lflag &= ~ECHOCTL;
+		tcsetattr(0, TCSANOW, &info);
+	}
+}
+
 int	set_signals(t_data *data)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
 
-	sa_int.sa_handler = &set_sigint;
+	update_termios(UNSET_ECHOCTL);
+	last_sig = 0;
+	sa_int.sa_handler = &display_pmt_on_nl;
 	// sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
@@ -32,7 +52,7 @@ int	set_signals(t_data *data)
 // 		last_sig = SIGQUIT;
 // }
 
-int	parent_signal_handler(t_data *data)
+int	parent_signal_handler(void)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
@@ -55,12 +75,12 @@ int	parent_signal_handler(t_data *data)
 	return (0);
 }
 
-int	child_signal_handler(t_data * data)
+int	child_signal_handler(void)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
-	struct termios		info;
 
+	update_termios(SET_ECHOCTL);
 	// data->act_int.sa_handler = &handle_sigint;
 	sa_int.sa_handler = SIG_DFL;
 	// sigemptyset(&sa_int.sa_mask);
@@ -81,8 +101,24 @@ int	child_signal_handler(t_data * data)
 		perror(ERR_SIGACTION);
 		return (1);
 	}
-	tcgetattr(0, &info);
-	info.c_lflag |= ECHOCTL;
-	tcsetattr(0, TCSANOW, &info);
+	return (0);
+}
+
+int	heredoc_signal_handler(void)
+{
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
+
+	// dprintf(2, "d0\n");
+	update_termios(UNSET_ECHOCTL);
+	sa_int.sa_handler = &move_to_nl;
+	// dprintf(2, "d1\n");
+	sa_int.sa_flags = 0;
+	if (sigaction(SIGINT, &sa_int, NULL) == -1)
+	{
+		perror(ERR_SIGACTION);
+		return (1);
+	}
+	// dprintf(2, "d2\n");
 	return (0);
 }

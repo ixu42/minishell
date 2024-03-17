@@ -72,8 +72,11 @@
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12
 
-extern int	last_sig;
-// extern volatile sig_atomic_t	last_sig;
+// macros for termios
+# define SET_ECHOCTL 1
+# define UNSET_ECHOCTL 0
+
+extern volatile sig_atomic_t	last_sig;
 
 typedef struct s_arrlist
 {
@@ -248,6 +251,9 @@ typedef struct s_listcmd
 void	rl_clear_history(void);
 void	rl_replace_line(const char *text, int clear_undo);
 
+// termios
+void	update_termios(int set_echoctl);
+
 // data init
 t_env	*copy_env_arr_to_lst(char **envp);
 char	**get_env_paths(char **envp, t_data *data);
@@ -259,9 +265,12 @@ void	lst_append_in_init(t_env **env_lst, t_env *new_node);
 void	print_error_partial_free(char *name, t_data *data);
 
 // signal handling
-void	set_sigint(int signum);
-int		parent_signal_handler(t_data *data);
-int		child_signal_handler(t_data *data);
+int		set_signals(t_data *data);
+int		parent_signal_handler(void);
+int		child_signal_handler(void);
+int		heredoc_signal_handler(void);
+void	display_pmt_on_nl(int signum);
+void	move_to_nl(int signum);
 // void	signal_handler(int signum);
 // void	handle_sigint(int signum);
 

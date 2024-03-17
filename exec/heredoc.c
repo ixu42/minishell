@@ -8,6 +8,13 @@ static void	convert_input(t_data *data, int fd_heredoc, char *delimiter)
 	char	*delim;
 
 	line = get_next_line(0);
+	if (heredoc_signal_handler() == 1)
+		panic(ERR_SIGACTION, data, 1);
+	if (last_sig)
+	{
+		data->status = 1;
+		return ;
+	}
 	delim = ft_strjoin(delimiter, "\n");
 	while (ft_strcmp(line, delim) != 0)
 	{
@@ -21,6 +28,11 @@ static void	convert_input(t_data *data, int fd_heredoc, char *delimiter)
 		}
 		free(line);
 		line = get_next_line(0);
+		if (last_sig)
+		{
+			data->status = 1;
+			return ;
+		}
 	}
 	free(delim);
 	free(line);
@@ -32,6 +44,8 @@ void	get_input(t_data *data, char *delimiter)
 {
 	int		fd_heredoc;
 
+	if (heredoc_signal_handler() == 1)
+		panic(ERR_SIGACTION, data, 1);
 	unlink(".heredoc");
 	fd_heredoc = open(".heredoc", O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd_heredoc == -1)
@@ -40,6 +54,8 @@ void	get_input(t_data *data, char *delimiter)
 		return ;
 	}
 	convert_input(data, fd_heredoc, delimiter);
+	if (last_sig)
+		return ;
 	if (close(fd_heredoc) == -1)
 	{
 		panic("error closing .heredoc", data, 1);
