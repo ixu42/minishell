@@ -111,7 +111,8 @@ int	heredoc_signal_handler(void)
 
 	// dprintf(2, "d0\n");
 	update_termios(UNSET_ECHOCTL);
-	sa_int.sa_handler = &move_to_nl;
+	sa_int.sa_handler = &display_pmt_on_nl;
+	// sa_int.sa_handler = &move_to_nl;
 	// dprintf(2, "d1\n");
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
