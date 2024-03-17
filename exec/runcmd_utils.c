@@ -13,7 +13,7 @@ int	fork1(t_data *data)
 int	run_exec(t_cmd *cmd, t_data *data)
 {
 	t_execcmd	*ecmd;
-	int			pid;
+	pid_t		pid;
 	int			status;
 
 	ecmd = (t_execcmd *)cmd;
@@ -66,15 +66,14 @@ int	run_exec(t_cmd *cmd, t_data *data)
 		}
 		else
 		{
+			// signal(SIGINT, SIG_DFL);
 			pid = fork1(data);
 			if (pid == -1)
 				return (1);
-			if (parent_signal_handler() == 1)
-				return (panic(ERR_SIGACTION, data, 1));
 			if (pid == 0)
 			{
 				data->proc = CHILD_PROC;
-				if (child_signal_handler() == 1) // free?
+				if (child_signal_handler(data) == 1) // free?
 					panic(ERR_SIGACTION, data, 1);
 				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 				// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
@@ -96,6 +95,8 @@ int	run_exec(t_cmd *cmd, t_data *data)
 					panic("", data, 127);
 				panic(ecmd->argv[0], data, 127);
 			}
+			if (parent_signal_handler(data) == 1)
+				return (panic(ERR_SIGACTION, data, 1));
 			if (dup2(data->fd_stdin, 0) == -1)
 				return (panic(ERR_DUP2, data, 1));
 			if (dup2(data->fd_stdout, 1) == -1)
@@ -182,8 +183,8 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 	t_pipecmd	*pcmd;
 	int			process;
 	int			pipe_fd[2];
-	int			pid1;
-	int			pid2;
+	pid_t		pid1;
+	pid_t		pid2;
 	int			status;
 
 	pcmd = (t_pipecmd *)cmd;
@@ -193,12 +194,12 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 	pid1 = fork1(data);
 	if (pid1 == -1)
 		return (1);
-	if (parent_signal_handler() == 1)
+	if (parent_signal_handler(data) == 1)
 		return (panic(ERR_SIGACTION, data, 1));
 	if (pid1 == 0)
 	{
 		data->proc = CHILD_PROC;
-		if (child_signal_handler() == 1)
+		if (child_signal_handler(data) == 1)
 			panic(ERR_SIGACTION, data, 1);	
 		if (close(pipe_fd[0]) == -1)
 			panic(ERR_CLOSE, data, 1);
@@ -211,11 +212,11 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 	pid2 = fork1(data);
 	if (pid2 == -1)
 		return (1);
-	if (parent_signal_handler() == 1)
+	if (parent_signal_handler(data) == 1)
 		return (panic(ERR_SIGACTION, data, 1));
 	if (pid2 == 0)
 	{	data->proc = CHILD_PROC;
-		if (child_signal_handler() == 1)
+		if (child_signal_handler(data) == 1)
 			panic(ERR_SIGACTION, data, 1);
 		if (close(pipe_fd[1]) == -1)
 			panic(ERR_CLOSE, data, 1);

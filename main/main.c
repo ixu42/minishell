@@ -48,7 +48,7 @@ int	main(int argc, char **argv, char **envp)
 	data_init(&data, envp);
 	while (data.status >= 0)
 	{
-		if (set_signals() == 1)
+		if (set_signals(&data) == 1)
 			break ;
 		data.buf = readline("LiteShell$ ");
 		if (data.buf == NULL) // Check for EOF (Ctrl+D)
@@ -99,12 +99,13 @@ int	main(int argc, char **argv, char **envp)
 			// ------
 		}
 		free(data.buf);
-		dprintf(2, "last_sig: %d\n", last_sig);
+		// dprintf(2, "last_sig: %d\n", last_sig);
 		if (last_sig)
 			data.status = 1;
-		if (last_sig == 130)
+		// printf("\033[0;35m[status: %d]\033[0m\n", data.status);
+		if (data.status == 130)
 			dprintf(2, "\n");
-		if (last_sig == 131)
+		if (data.status == 131)
 			dprintf(2, "Quit: 3\n");
 		last_sig = 0;
 	}

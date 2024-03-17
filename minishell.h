@@ -259,9 +259,11 @@ void	lst_append_in_init(t_env **env_lst, t_env *new_node);
 void	print_error_partial_free(char *name, t_data *data);
 
 // signal handling
-int		set_signals(void);
-int		parent_signal_handler(void);
-int		child_signal_handler(void);
+void	set_sigint(int signum);
+int		parent_signal_handler(t_data *data);
+int		child_signal_handler(t_data *data);
+// void	signal_handler(int signum);
+// void	handle_sigint(int signum);
 
 // constructors.c
 t_cmd		*execcmd(void);

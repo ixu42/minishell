@@ -1,32 +1,20 @@
 #include "../minishell.h"
 
-static void	signal_handler(int signum)
+int	set_signals(t_data *data)
 {
-	// printf("Received signal %d\n", signum);
-	if (signum == SIGINT)
-	{
-		last_sig = SIGINT;
-		printf("\n");
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-}
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
 
-int	set_signals(void)
-{
-	struct sigaction	sigact;
-
-	sigact.sa_handler = &signal_handler;
-	// sigemptyset(&sigact.sa_mask);
-	sigact.sa_flags = 0;
-	if (sigaction(SIGINT, &sigact, NULL) == -1)
+	sa_int.sa_handler = &set_sigint;
+	// sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = 0;
+	if (sigaction(SIGINT, &sa_int, NULL) == -1)
 	{
 		perror(ERR_SIGACTION);
 		return (1);
 	}
-	sigact.sa_handler = SIG_IGN;
-	if (sigaction(SIGQUIT, &sigact, NULL) == -1) 
+	sa_quit.sa_handler = SIG_IGN;
+	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) 
 	{
 		perror(ERR_SIGACTION);
 		return (1);
@@ -34,19 +22,32 @@ int	set_signals(void)
 	return (0);
 }
 
-int	parent_signal_handler(void)
-{
-	struct sigaction	sigact;
+// static void	set_last_sig(int signum)
+// {
+// 	dprintf(2, "in parent: %d\n", signum);
+// 	write(2, "debug3\n", 7);
+// 	if (signum == SIGINT)
+// 		last_sig = SIGINT;
+// 	else if (signum == SIGQUIT)
+// 		last_sig = SIGQUIT;
+// }
 
-	sigact.sa_handler = SIG_IGN;
+int	parent_signal_handler(t_data *data)
+{
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
+
+	// data->act_int.sa_handler = &set_last_sig;
+	sa_int.sa_handler = SIG_IGN;
 	// sigemptyset(&sigact.sa_mask);
-	sigact.sa_flags = 0;
-	if (sigaction(SIGINT, &sigact, NULL) == -1) 
+	sa_int.sa_flags = 0;
+	if (sigaction(SIGINT, &sa_int, NULL) == -1) 
 	{
 		perror(ERR_SIGACTION);
 		return (1);
 	}
-	if (sigaction(SIGQUIT, &sigact, NULL) == -1) 
+	sa_quit.sa_handler = SIG_IGN;
+	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) 
 	{
 		perror(ERR_SIGACTION);
 		return (1);
@@ -54,35 +55,34 @@ int	parent_signal_handler(void)
 	return (0);
 }
 
-static void	exit_child(int signum)
+int	child_signal_handler(t_data * data)
 {
-	printf("received sig: %d\n", signum);
-	if (signum == SIGINT)
-	{
-		write(2, "debug2\n", 7);
-		last_sig = SIGINT;
-		exit(signum);
-	}
-}
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
+	struct termios		info;
 
-int	child_signal_handler(void)
-{
-	struct sigaction	sigact;
-
-	sigact.sa_handler = &exit_child;
-	// sigemptyset(&sigact.sa_mask);
-	dprintf(2, "debug\n");
-	sigact.sa_flags = 0;
-	if (sigaction(SIGINT, &sigact, NULL) == -1)
+	// data->act_int.sa_handler = &handle_sigint;
+	sa_int.sa_handler = SIG_DFL;
+	// sigemptyset(&sa_int.sa_mask);
+	// dprintf(2, "debug\n");
+	sa_int.sa_flags = 0;
+	if (sigaction(SIGINT, &sa_int, NULL) == -1)
 	{
 		perror(ERR_SIGACTION);
 		return (1);
 	}
-	dprintf(2, "debug1\n");
-	if (sigaction(SIGQUIT, &sigact, NULL) == -1) 
+	// dprintf(2, "debug1\n");
+	sa_quit.sa_handler = SIG_DFL;
+	// sa_quit.sa_handler = &handle_sigquit;
+	// sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = 0;
+	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
 	{
 		perror(ERR_SIGACTION);
 		return (1);
 	}
+	tcgetattr(0, &info);
+	info.c_lflag |= ECHOCTL;
+	tcsetattr(0, TCSANOW, &info);
 	return (0);
 }
