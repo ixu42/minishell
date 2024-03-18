@@ -19,15 +19,10 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	ecmd = (t_execcmd *)cmd;
 	if (ecmd->argc == 0)
 	{
-		ft_dprintf(2, "run_exec: nothing to execute here: argc = 0!, status = 0\n");
-	//	data->status = 0;
+	 	dprintf(2, "debug\n");
+	 	return (0);
 	}
 	make_argv(ecmd, data);
-	// if (ecmd->argc == 0)
-	// {
-	// 	dprintf(2, "debug\n");
-	// 	return (0);
-	// }
 	// if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
 	// {
 	// 	dprintf(2, "debug\n");
