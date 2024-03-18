@@ -24,6 +24,26 @@ typedef struct s_wildcard
 }   t_wildcard;
 */
 
+int	init_wildcard_redir(t_wildcard *wild, t_redircmd *cmd)
+{
+	int	i;
+
+	wild->list = create_arrlist();
+	if (!wild->list)
+		return (1);
+	wild->pnt = (t_arrlist **)malloc(sizeof(t_arrlist *) * 1);
+	ft_memset(wild->pnt, 0, sizeof(t_arrlist *) * 1);
+	if (!wild->pnt)
+	{
+		free_arrlist(wild->list);
+		return (1);
+	}
+	wild->pnt[0] = create_arrlist();
+	wild->argc = 1;
+	wild->argv = NULL;
+	return (0);
+}
+
 int	init_wildcard(t_wildcard *wild, t_execcmd *cmd)
 {
 	int	i;
@@ -84,13 +104,16 @@ int do_single_match(int	i, t_wildcard *wild, char *str, DIR *dir)
 	
 	err = 0;
 	pat = wild->argv[i];
+	if (!ft_strchr(pat, ASCII_WILD))
+		return (0);
 	if (pat[0] == '.')
 		err = match(pat, str) && add_string_arrlist(wild->pnt[i], str);
 	else if (str[0] != '.') 
 		err = match(pat, str) && add_string_arrlist(wild->pnt[i], str);
 	if (err)
 	{
-		closedir(dir);
+		if (closedir(dir) == -1)
+			return (1);
 		free_wildcard(wild, 1, 1);
 		return (1);
 	}
@@ -192,7 +215,29 @@ int	wildcard_star(t_execcmd *cmd)
 //		printf("NULL argv[0]\n");
 //	}
 	cmd->argc = wild.argc;
+	cmd->list = wild.list;
 	free_wildcard(&wild, 0, 0);
 	ft_free_char2d(wild.argv);
+	return (0);
+}
+
+int	wildcard_star_redir(t_redircmd *cmd)
+{
+	t_wildcard	wild;
+
+	if (init_wildcard_redir(&wild, cmd))
+		return (1);
+	if (match_to_files(&wild))
+		return (2);
+	if (copy_sorted_argv(&wild))
+		return (3);
+	if (wild.pnt[0]->size > 1)
+	{
+		ft_dprintf(2, "%s %s %s", PMT, cmd->sfile, ERR_REDIR_AMBIG);
+		return (4);
+	}
+	cmd->list = wild.list;
+	cmd->file = wild.list->data[0];
+	free_wildcard(&wild, 0, 0);
 	return (0);
 }

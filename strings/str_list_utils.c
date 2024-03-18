@@ -291,7 +291,7 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 	{
 		if (rcmd->file[i] == ASCII_SEPARATOR)
 		{
-			ft_dprintf(2, "%s %s %s\n", PMT, rcmd->sfile, "ambiguous redirect");
+			ft_dprintf(2, "%s %s %s\n", PMT, rcmd->sfile, ERR_REDIR_AMBIG);
 			return (1);
 		}
 	}

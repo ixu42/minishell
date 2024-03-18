@@ -67,6 +67,7 @@
 #define ASCII_SEPARATOR 31
 #define ASCII_WILD 32
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
+#define ERR_REDIR_AMBIG  "ambiguous redirect"
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12
 
@@ -213,6 +214,7 @@ typedef struct s_execcmd
 	char	**argv;
 	int		argc;
 	t_argcmd	*args;
+	t_arrlist	*list;
 }	t_execcmd;
 
 typedef struct s_redircmd
@@ -226,6 +228,7 @@ typedef struct s_redircmd
 	int		mode;
 	int		fd;
 	t_strcmd	*str;
+	t_arrlist	*list;
 }	t_redircmd;
 
 typedef struct s_pipecmd
