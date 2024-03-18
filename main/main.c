@@ -47,11 +47,13 @@ int	main(int argc, char **argv, char **envp)
 	data_init(&data, envp);
 	while (data.status >= 0)
 	{
-		if (set_signals(&data) == 1)
+		if (set_signals_interactive(&data) == 1)
 			break ;
 		data.buf = readline("LiteShell$ ");
 		if (last_sig)
 			data.status = 1;
+		if (set_default_signals(&data) == 1)
+			break ;
 		if (data.buf == NULL) // Check for EOF (Ctrl+D)
 		{
 			printf("\033[A\033[11Cexit\n");
