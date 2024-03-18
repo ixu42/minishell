@@ -18,6 +18,11 @@ int	run_exec(t_cmd *cmd, t_data *data)
 
 	ecmd = (t_execcmd *)cmd;
 	make_argv(ecmd, data);
+	// if (ecmd->argc == 0)
+	// {
+	// 	dprintf(2, "debug\n");
+	// 	return (0);
+	// }
 	// if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
 	// {
 	// 	dprintf(2, "debug\n");

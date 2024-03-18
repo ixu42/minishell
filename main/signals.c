@@ -57,6 +57,7 @@ int	parent_signal_handler(void)
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
 
+	update_termios(SET_ECHOCTL);
 	// data->act_int.sa_handler = &set_last_sig;
 	sa_int.sa_handler = SIG_IGN;
 	// sigemptyset(&sigact.sa_mask);
