@@ -19,7 +19,10 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	ecmd = (t_execcmd *)cmd;
 	if (ecmd->argc == 0)
 	{
-	 	dprintf(2, "debug\n");
+		if (dup2(data->fd_stdin, 0) == -1)
+			return (panic(ERR_DUP2, data, 1));
+		if (dup2(data->fd_stdout, 1) == -1)
+			return (panic(ERR_DUP2, data, 1));
 	 	return (0);
 	}
 	make_argv(ecmd, data);
@@ -127,10 +130,14 @@ int	run_redir(t_cmd *cmd, t_data *data)
 	rcmd = (t_redircmd *)cmd;
 	if (make_filename(rcmd, data))
 	{
-		// error case malloc. let us put status = 1 at this moment.
-		// number of files > 1  -> status = 1 (bash at alex's PC)
-		ft_dprintf(2, "run_redir: malloc or multiple filename. add error hadling\n");
+		ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
+		if (dup2(data->fd_stdin, 0) == -1)
+			return (panic(ERR_DUP2, data, 1));
+		if (dup2(data->fd_stdout, 1) == -1)
+			return (panic(ERR_DUP2, data, 1));
+	 	return (1);
 	}
+//	printf("run_redir: file=->%s<-\n", rcmd->file);
 	process = data->proc;
 	if (rcmd->mode == -1) // define a macro?
 	{

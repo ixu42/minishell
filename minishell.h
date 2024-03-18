@@ -371,8 +371,9 @@ void	heapsort_str(char **arr, int n);
 
 // arraylist
 t_arrlist	*create_arrlist(void);
-int				add_string_arrlist(t_arrlist *list, const char* str);
-void			free_arrlist(t_arrlist *list);
-int	wildcard_star(t_execcmd *cmd);
+int			add_string_arrlist(t_arrlist *list, const char* str);
+void		free_arrlist(t_arrlist *list);
+int			wildcard_star(t_execcmd *cmd);
+int			wildcard_star_redir(t_redircmd *cmd);
 
 #endif

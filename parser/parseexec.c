@@ -63,7 +63,12 @@ t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok)
 	else if (tok == RED_OUT_APP)
 		cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_APPEND, 1);
 	else if (tok == HEREDOC)
+	{
+//		*(state->end) = '\0';
+//		get_input(t_data *data, state->beg);
+//		cmd = redircmd(cmd, state, O_RDONLY, 0);
 		cmd = redircmd(cmd, state, -1, 0);
+	}
 	return (cmd);
 }
 
@@ -415,25 +420,6 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 	}
 	return (0);
 }
-
-/*
-t_cmd   *parseblock(char **ps, char *es)
-{
-    t_cmd *cmd;
-
-    (*ps)++;
-    cmd = parseline(ps, es);
-    if (peek(ps, es, ")") && cmd->flag == 0)
-        (*ps)++;
-    else
-        cmd->flag |= SYNTAX_ERROR;
-//  gettoken(ps, es, 0, 0);
-//  ft_dprintf(2, "parseblock: *ps=%s, cmd->flag=%d\n", *ps, cmd->flag);
-//  if (cmd->flag == 0)
-    //  cmd = parseredirs(cmd, ps, es);
-    return (cmd);
-}
-*/
 
 t_cmd	*parseexec(char **ps, char *es)
 {

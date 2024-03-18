@@ -11,6 +11,7 @@ t_cmd	*execcmd(void)
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = EXEC;
 	cmd->argc = 0;
+	cmd->list = NULL;
 	return ((t_cmd *)cmd);
 }
 
@@ -69,6 +70,7 @@ t_cmd	*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 	cmd->mode = mode;
 	cmd->fd = fd;
 	cmd->str = NULL;
+	cmd->list = NULL;
 	return ((t_cmd *)cmd);
 }
 
