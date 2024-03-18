@@ -128,5 +128,6 @@ t_strstate	*make_strstate(char *start, char *finish)
 	state->d_quotes = 0;
 //	state->s_quotes = 0; //unused sofar
 	state->flag = 0;
+	state->heredoc = 0;
 	return (state);
 }

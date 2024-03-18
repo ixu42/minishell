@@ -186,6 +186,7 @@ typedef struct s_strstate
 	int		d_quotes;
 	int		s_quotes;
 	int		flag;
+	int		heredoc;
 } t_strstate;
 
 typedef struct s_cmd
