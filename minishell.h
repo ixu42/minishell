@@ -68,7 +68,10 @@
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&()"
+#define ASCII_SEPARATOR 31
+#define ASCII_WILD 32
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
+#define ERR_REDIR_AMBIG  "ambiguous redirect"
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12
 
@@ -127,7 +130,8 @@ typedef enum e_parse_error
 	SYNTAX_ERR_UNEXPTOK = 0x02,
 	SYNTAX_ERR_UNCLOSED = 0x04,
 	SYNTAX_ERROR = 0x08,
-	MALLOC_ERROR = 0x10
+	MALLOC_ERROR = 0x10,
+	DIR_OPEN_ERR = 0x20
 }	t_parse_error;
 
 typedef enum e_builtin
@@ -217,6 +221,7 @@ typedef struct s_execcmd
 	char	**argv;
 	int		argc;
 	t_argcmd	*args;
+	t_arrlist	*list;
 }	t_execcmd;
 
 typedef struct s_redircmd
@@ -225,10 +230,12 @@ typedef struct s_redircmd
 	int		flag;
 	t_cmd	*cmd;
 	char	*file;
+	char	*sfile;
 	char	*efile;
 	int		mode;
 	int		fd;
 	t_strcmd	*str;
+	t_arrlist	*list;
 }	t_redircmd;
 
 typedef struct s_pipecmd
@@ -356,10 +363,10 @@ void	rl_replace_line (const char *text, int clear_undo);
 // string operations
 char	*strlist_join(t_strcmd *str);
 int		make_argv(t_execcmd *cmd, t_data *data);
-//int	make_argv_expanded(t_execcmd *cmd, t_data *data);
-int	match(const char *pattern, const char *text);
+int		make_filename(t_redircmd *rcmd, t_data *data);
+int		match(const char *pattern, const char *text);
 void	ft_free_char2d(char **split);
-void    heapsort_str(char **arr, int n);
+void	heapsort_str(char **arr, int n);
 
 
 // arraylist

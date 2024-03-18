@@ -17,6 +17,11 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	int			status;
 
 	ecmd = (t_execcmd *)cmd;
+	if (ecmd->argc == 0)
+	{
+		ft_dprintf(2, "run_exec: nothing to execute here: argc = 0!, status = 0\n");
+	//	data->status = 0;
+	}
 	make_argv(ecmd, data);
 	// if (ecmd->argc == 0)
 	// {
@@ -58,6 +63,7 @@ int	run_exec(t_cmd *cmd, t_data *data)
 		// -------------------
 		if (data->proc == CHILD_PROC)
 		{
+			// dprintf(2, "in child process\n");
 			data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 			data->envp = copy_env_lst_to_arr(data->env_lst);
 			// ------ print out arr ------
@@ -124,6 +130,12 @@ int	run_redir(t_cmd *cmd, t_data *data)
 	int			fd;
 
 	rcmd = (t_redircmd *)cmd;
+	if (make_filename(rcmd, data))
+	{
+		// error case malloc. let us put status = 1 at this moment.
+		// number of files > 1  -> status = 1 (bash at alex's PC)
+		ft_dprintf(2, "run_redir: malloc or multiple filename. add error hadling\n");
+	}
 	process = data->proc;
 	if (rcmd->mode == -1) // define a macro?
 	{

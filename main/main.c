@@ -60,16 +60,16 @@ int	main(int argc, char **argv, char **envp)
 		if (is_valid_buf(data.buf))
 		{
 			add_history(data.buf);
+			status = make_ast(&cmd, data.buf);
 			if (TESTMODE)
 			{
 				ft_dprintf(2,"------------->TESTMODE<----------\n");
-				cmd = parsecmd(data.buf, NULL);
+			//	cmd = parsecmd(data.buf, NULL);
 				if (cmd)
 					runcmd_test(cmd, &data);
 				// clean cmd
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
-			status = make_ast(&cmd, data.buf);
 			if (status == 0)
 		        runcmd(cmd, &data);
 			else if (status == ENOMEM)

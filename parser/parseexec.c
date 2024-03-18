@@ -200,7 +200,6 @@ t_strcmd	*parse_single(t_strstate *state)
 	return (node);
 }
 
-
 void	make_var_node(t_strcmd **p_node, t_strstate *state)
 {
 	t_strcmd	*node;
@@ -231,11 +230,18 @@ t_strcmd	*parse_variable(t_strstate *state)
 	}
 	state->end = s;
 	state->pos = s;
-	if (state->end == state->beg )
+	if (state->end == state->beg)
+	{
+		state->beg--;
+		node = strcmd(STR_NODE, state->beg, state->end);
+		return (node);
+	}
+/*	if (state->end == state->beg )
 	{
 		ft_dprintf(2, "%s incorrect variable name.\n", PMT);
 		state->flag |= SYNTAX_ERR_UNCLOSED;
 	}
+*/
 	make_var_node(&node, state);
 	return (node);
 }
@@ -302,6 +308,7 @@ t_strcmd	*parse_element(t_strstate *state)
 	else if (*(state->pos) == '*')
 	{
 		node = strcmd(STR_STAR, state->pos, state->pos + 1);
+		state->pos[0] = ASCII_WILD;
 		state->pos++;
 	}
 	return (node);
