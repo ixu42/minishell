@@ -71,7 +71,9 @@ int	main(int argc, char **argv, char **envp)
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
 			if (status == 0)
+			{
 		        runcmd(cmd, &data);
+			}
 			else if (status == ENOMEM)
 			{
 				dprintf(2, "%s malloc error\n", PMT);
@@ -96,7 +98,7 @@ int	main(int argc, char **argv, char **envp)
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);
 			// ----------------------------
-			// printf("\033[0;35m[status: %d]\033[0m\n", data.status);
+			// dprintf(2, "\033[0;35m[status: %d]\033[0m\n", data.status);
 			// ------
 		}
 		free(data.buf);

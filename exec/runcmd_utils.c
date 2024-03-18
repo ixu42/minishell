@@ -19,7 +19,10 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	ecmd = (t_execcmd *)cmd;
 	if (ecmd->argc == 0)
 	{
-	 	dprintf(2, "debug\n");
+		if (dup2(data->fd_stdin, 0) == -1)
+			return (panic(ERR_DUP2, data, 1));
+		if (dup2(data->fd_stdout, 1) == -1)
+			return (panic(ERR_DUP2, data, 1));
 	 	return (0);
 	}
 	make_argv(ecmd, data);
