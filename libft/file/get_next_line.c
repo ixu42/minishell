@@ -24,7 +24,7 @@ static int	create_list(t_lst **list, int fd)
 		if (buf == NULL)
 			return (-2);
 		chars_read = read(fd, buf, BUFFER_SIZE);
-		if (chars_read <= 0)
+		if (chars_read < 0 || (chars_read == 0 && list[fd] == NULL))
 		{
 			free(buf);
 			return (chars_read);
