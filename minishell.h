@@ -25,6 +25,9 @@
 // sigaction
 #include <signal.h>
 
+// tcgetattr, tcsetattr
+# include <termios.h>
+
 //directory  entity
 # include <dirent.h>
 
@@ -42,6 +45,7 @@
 # define ERR_DUP2 "dup2 error"
 # define ERR_DUP "dup error"
 # define ERR_HEREDOC "heredoc error"
+# define ERR_SIGACTION "sigaction error"
 # define ERR_ID "not a valid identifier"
 # define PMT "\033[0;31mLiteShell: \033[0m"
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
@@ -60,7 +64,7 @@
 #define GROWTH_FACTOR 2
 
 // macros for parsing 
-#define TESTMODE 0 
+#define TESTMODE 0
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&()"
@@ -71,8 +75,11 @@
 #define ERR_CODE_SYNTAX 258
 #define ENOMEM 12
 
+// macros for termios
+# define SET_ECHOCTL 1
+# define UNSET_ECHOCTL 0
 
-typedef void (*sig_t) (int);
+extern volatile sig_atomic_t	last_sig;
 
 typedef struct s_arrlist
 {
@@ -129,13 +136,13 @@ typedef enum e_parse_error
 
 typedef enum e_builtin
 {
-	ECHO = 1,
-	CD,
-	PWD,
-	EXPORT,
-	UNSET,
-	ENV,
-	EXIT,
+	ECHO_CMD = 1,
+	CD_CMD,
+	PWD_CMD,
+	EXPORT_CMD,
+	UNSET_CMD,
+	ENV_CMD,
+	EXIT_CMD,
 }   t_builtin;
 
 typedef struct s_env
@@ -251,6 +258,9 @@ typedef struct s_listcmd
 void	rl_clear_history(void);
 void	rl_replace_line(const char *text, int clear_undo);
 
+// termios
+void	update_termios(int set_echoctl);
+
 // data init
 t_env	*copy_env_arr_to_lst(char **envp);
 char	**get_env_paths(char **envp, t_data *data);
@@ -260,6 +270,16 @@ void	data_init(t_data *data, char **envp);
 t_env	*get_node_in_init(char *name_value_str);
 void	lst_append_in_init(t_env **env_lst, t_env *new_node);
 void	print_error_partial_free(char *name, t_data *data);
+
+// signal handling
+int		set_signals(t_data *data);
+int		parent_signal_handler(void);
+int		child_signal_handler(void);
+int		heredoc_signal_handler(void);
+void	display_pmt_on_nl(int signum);
+void	move_to_nl(int signum);
+// void	signal_handler(int signum);
+// void	handle_sigint(int signum);
 
 // constructors.c
 t_cmd		*execcmd(void);
@@ -289,19 +309,15 @@ t_cmd   *nulterminate(t_cmd *cmd);
 const char  *token_type_to_str(t_token_type token);
 //void    panic_test(char *s);  //this is temporal function that exit(1) from parser
 
-// string operations
-char	*strlist_join(t_strcmd *str);
-int		make_argv(t_execcmd *cmd, t_data *data);
-
 // runcmd() func and its helper funcs
 void	runcmd(t_cmd *cmd, t_data *data);
 int		fork1(t_data *data);
-void	run_exec(t_cmd *cmd, t_data *data);
-void	run_redir(t_cmd *cmd, t_data *data);
+int		run_exec(t_cmd *cmd, t_data *data);
+int		run_redir(t_cmd *cmd, t_data *data);
 void	get_input(t_data *data, char *delimiter);
 void	run_and(t_cmd *cmd, t_data *data);
 void	run_or(t_cmd *cmd, t_data *data);
-void	run_pipe(t_cmd *cmd, t_data *data);
+int		run_pipe(t_cmd *cmd, t_data *data);
 // to be removed at some point
 void	runcmd_test(t_cmd *cmd, t_data *data);
 
@@ -337,7 +353,7 @@ void	free_data(t_data *data);
 void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
 t_env	*error_handler(char *err_msg, int *err_flag);
-void	panic(char *err_msg, t_data *data, int status_code);
+int		panic(char *err_msg, t_data *data, int status_code);
 void	free_n_exit(t_data *data, int status_code);
 
 // readline

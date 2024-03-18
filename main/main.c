@@ -1,5 +1,7 @@
 #include "../minishell.h"
 
+volatile sig_atomic_t	last_sig;
+
 /* buf is considered valid if (1) it is not empty string,
 and (2) it contains at least one character other than white spaces */
 
@@ -30,20 +32,6 @@ int	is_valid_buf(char *buf)
 	return (0);	
 }
 
-void	signal_handler(int signum)
-{
-	// printf("Received signal %d\n", signum);
-	if (signum == SIGINT)
-	{
-		printf("\n");
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-}
-
-// sig_t	signal(int sig, sig_t func)
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
@@ -59,13 +47,11 @@ int	main(int argc, char **argv, char **envp)
 	data_init(&data, envp);
 	while (data.status >= 0)
 	{
-		struct sigaction	sa;
-		sa.sa_handler = &signal_handler;
-		// sa.sa_flags = SA_RESTART;
-		sigaction(SIGINT, &sa, NULL);
-		// signal(SIGINT, signal_handler);
-		// data.buf = readline("\001\033[0;32mLiteShell$ \033[0m\002"); // free
-		data.buf = readline("LiteShell$ "); // free. discuss if all color formatting should be removed
+		if (set_signals(&data) == 1)
+			break ;
+		data.buf = readline("LiteShell$ ");
+		if (last_sig)
+			data.status = 1;
 		if (data.buf == NULL) // Check for EOF (Ctrl+D)
 		{
 			printf("\033[A\033[11Cexit\n");
@@ -110,14 +96,19 @@ int	main(int argc, char **argv, char **envp)
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);
 			// ----------------------------
-		//	printf("\033[0;35m[status: %d]\033[0m\n", data.status);
+			// printf("\033[0;35m[status: %d]\033[0m\n", data.status);
 			// ------
 		}
 		free(data.buf);
+		if (data.status == 130)
+			dprintf(2, "\n");
+		if (data.status == 131)
+			dprintf(2, "Quit: 3\n");
+		last_sig = 0;
 	}
 	close(data.fd_stdin);
 	close(data.fd_stdout);
-	unlink(".heredoc"); // or adding a boolean in data struct and clean it when .heredoc exists? when to clean
+	unlink(".heredoc");
 	free_data(&data);
 	rl_clear_history();
 	exit(EXIT_SUCCESS);
