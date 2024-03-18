@@ -131,7 +131,8 @@ typedef enum e_parse_error
 	SYNTAX_ERR_UNCLOSED = 0x04,
 	SYNTAX_ERROR = 0x08,
 	MALLOC_ERROR = 0x10,
-	DIR_OPEN_ERR = 0x20
+	DIR_OPEN_ERR = 0x20,
+	HEREDOC_OPEN_ERR = 0x40
 }	t_parse_error;
 
 typedef enum e_builtin
