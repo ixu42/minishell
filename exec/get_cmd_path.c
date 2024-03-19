@@ -5,12 +5,21 @@ if the provided name is already with a path */
 
 static char	*verify_path(char *cmd, t_data *data)
 {
+	struct stat	path_stat;
+
 	if (ft_strchr(cmd, '/') != NULL)
 	{
 		if (access(cmd, F_OK) != 0)
-			panic(cmd, data, EXIT_CMD_NOT_FOUND);
+			panic(cmd, data, 127);
 		if (access(cmd, X_OK) != 0)
-			panic(cmd, data, EXIT_CMD_PERM_ERR);
+			panic(cmd, data, 126);
+		if (stat(cmd, &path_stat) == 0) 
+		{
+			if (S_ISDIR(path_stat.st_mode))
+				panic_is_a_dir(cmd, data);
+		}
+		else
+			panic("stat error", data, 1);
 		return (ft_strdup(cmd));
 	}
 	return (NULL);
@@ -21,6 +30,7 @@ char	*get_cmd_path(char **argv, t_data *data)
 	char	*cmd_path;
 	char	*tmp;
 	int		i;
+	int		status;
 
 	if (argv == NULL || argv[0] == NULL)
 		return (NULL);

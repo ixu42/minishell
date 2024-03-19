@@ -69,8 +69,8 @@ int	run_exec(t_cmd *cmd, t_data *data)
 			// ----------------------------
 			execve(data->cmd_path, ecmd->argv, data->envp);
 			if (ecmd->argv[0] == NULL)
-				panic("", data, 127);
-			panic(ecmd->argv[0], data, 127);
+				panic_cmd_not_found("", data);
+			panic_cmd_not_found(ecmd->argv[0], data);
 		}
 		else
 		{
@@ -97,8 +97,8 @@ int	run_exec(t_cmd *cmd, t_data *data)
 				// ----------------------------
 				execve(data->cmd_path, ecmd->argv, data->envp);
 				if (ecmd->argv[0] == NULL)
-					panic("", data, 127);
-				panic(ecmd->argv[0], data, 127);
+					panic_cmd_not_found("", data);
+				panic_cmd_not_found(ecmd->argv[0], data);
 			}
 			if (ignore_signals() == 1)
 				return (panic(ERR_SIGACTION, data, 1));

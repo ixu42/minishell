@@ -16,6 +16,9 @@
 // FILE CONTROL
 # include <fcntl.h>
 
+// stat
+# include <sys/stat.h>
+
 // EXIT_FAILURE, EXIT_SUCCESS, NULL, malloc, free
 # include <stdlib.h>
 
@@ -51,8 +54,8 @@
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
 # define PMT_ERR_PRINTF "\033[0;31mLiteShell: \033[0mprintf error"
 # define PMT_ERR_GETCWD "\033[0;31mLiteShell: \033[0mgetcwd error"
-# define EXIT_CMD_PERM_ERR 126
-# define EXIT_CMD_NOT_FOUND 127
+// # define EXIT_CMD_PERM_ERR 126
+// # define EXIT_CMD_NOT_FOUND 127
 # define PMT "\033[0;31mLiteShell: \033[0m"
 
 // macros for processes
@@ -348,7 +351,10 @@ void	free_data(t_data *data);
 void	validate_args(int argc);
 void	print_error_n_exit(char *err_msg);
 t_env	*error_handler(char *err_msg, int *err_flag);
-int		panic(char *err_msg, t_data *data, int status_code);
+int		panic(char *msg, t_data *data, int status_code);
+int		panic_is_a_dir(char *msg, t_data *data);
+int		panic_cmd_not_found(char *msg, t_data *data);
+
 void	free_n_exit(t_data *data, int status_code);
 
 // readline
