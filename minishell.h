@@ -69,7 +69,7 @@
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&()"
 #define ASCII_SEPARATOR 31
-#define ASCII_WILD 32
+#define ASCII_WILD 30
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_REDIR_AMBIG  "ambiguous redirect"
 #define ERR_CODE_SYNTAX 258
@@ -81,12 +81,6 @@
 
 extern volatile sig_atomic_t	last_sig;
 
-typedef struct s_arrlist
-{
-	 char		**data;
-	 size_t	size;
-	 size_t	capacity;
-} t_arrlist;
 
 // AST's node types
 typedef enum e_node_type
@@ -131,7 +125,8 @@ typedef enum e_parse_error
 	SYNTAX_ERR_UNCLOSED = 0x04,
 	SYNTAX_ERROR = 0x08,
 	MALLOC_ERROR = 0x10,
-	DIR_OPEN_ERR = 0x20
+	DIR_OPEN_ERR = 0x20,
+	HEREDOC_OPEN_ERR = 0x40
 }	t_parse_error;
 
 typedef enum e_builtin
@@ -167,6 +162,13 @@ typedef struct s_data
 	int			fd_stdout;
 }	t_data;
 
+typedef struct s_arrlist
+{
+	 char		**data;
+	 size_t	size;
+	 size_t	capacity;
+} t_arrlist;
+
 typedef struct s_wildcard
 {
 	t_arrlist	*list;
@@ -185,7 +187,17 @@ typedef struct s_strstate
 	int		d_quotes;
 	int		s_quotes;
 	int		flag;
+	char	*heredoc;
 } t_strstate;
+
+typedef struct s_aststate
+{
+	char	*start;
+	char	*ps;
+	char	*es;
+	int		flag;
+	int		heredoc;
+} t_aststate;
 
 typedef struct s_cmd
 {
@@ -234,6 +246,7 @@ typedef struct s_redircmd
 	char	*efile;
 	int		mode;
 	int		fd;
+	char	*heredoc;
 	t_strcmd	*str;
 	t_arrlist	*list;
 }	t_redircmd;
@@ -285,24 +298,29 @@ t_cmd		*list_cmd(t_cmd *left, t_cmd *right, int type);
 t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
 t_strcmd	*strcmd(int type, char *start, char *end);
 t_strstate	*make_strstate(char *pos, char *finish);
+t_aststate	*make_aststate(char *pos, char *finish);
 
 // parseexec.c
-t_cmd	*parseexec(char**, char*);
-t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es);
+t_cmd	*parseexec(char **ps, char *es, t_aststate *ast);
+t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast);
+int		get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter);
 
 // parsecmd.c
 int			make_ast(t_cmd **p_cmd, char *s);
 t_cmd   *parsecmd(char *buf, int *status);
-t_cmd   *parseblock(char **ps, char *es);
+t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
 //t_cmd   *parseline(char**, char*);
 //t_cmd   *parsepipe(char**, char*);
+
+// freecmd.c
+int	freecmd(t_cmd *cmd);
 
 //parsing_utils.c
 int gettoken(char **ps, char *es, char **q, char **eq);
 int peek(char **ps, char *es, char *toks);
 t_cmd   *nulterminate(t_cmd *cmd);
 const char  *token_type_to_str(t_token_type token);
-//void    panic_test(char *s);  //this is temporal function that exit(1) from parser
+int	panic_parser(char *s, int err);
 
 // runcmd() func and its helper funcs
 void	runcmd(t_cmd *cmd, t_data *data);
@@ -366,8 +384,9 @@ void	heapsort_str(char **arr, int n);
 
 // arraylist
 t_arrlist	*create_arrlist(void);
-int				add_string_arrlist(t_arrlist *list, const char* str);
-void			free_arrlist(t_arrlist *list);
-int	wildcard_star(t_execcmd *cmd);
+int			add_string_arrlist(t_arrlist *list, const char* str);
+void		free_arrlist(t_arrlist *list);
+int			wildcard_star(t_execcmd *cmd);
+int			wildcard_star_redir(t_redircmd *cmd);
 
 #endif

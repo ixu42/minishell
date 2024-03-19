@@ -52,7 +52,7 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 	return ;
 }
 
-t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok)
+t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok, t_aststate *ast)
 {
 	if (cmd->flag)
 		return (cmd);
@@ -63,11 +63,18 @@ t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok)
 	else if (tok == RED_OUT_APP)
 		cmd = redircmd(cmd, state, O_WRONLY | O_CREAT | O_APPEND, 1);
 	else if (tok == HEREDOC)
-		cmd = redircmd(cmd, state, -1, 0);
+	{
+		*state->end = '\0';
+		get_input_heredoc(state, ast, state->beg);
+		cmd = redircmd(cmd, state, O_RDONLY, 0);
+		//cmd = redircmd(cmd, state, -1, 0);
+	//	ft_dprintf(2, "i=%d, eof=->%s<-, heredoc=->%s<-\n", ast->heredoc, state->beg, state->heredoc);
+		ast->heredoc++;
+	}
 	return (cmd);
 }
 
-t_cmd	*parse_one_redir(t_cmd *cmd, t_strstate *state)
+t_cmd	*parse_one_redir(t_cmd *cmd, t_strstate *state, t_aststate *ast)
 {
 	int		tok;
 
@@ -88,14 +95,14 @@ t_cmd	*parse_one_redir(t_cmd *cmd, t_strstate *state)
 			cmd->flag |= SYNTAX_ERR_UNEXPTOK;
 			state->pos = state->beg;
 		}
-		cmd = make_redir_node(cmd, state, tok);
+		cmd = make_redir_node(cmd, state, tok, ast);
 	}
 	if (cmd && cmd->type == REDIR && cmd->flag == 0)
 		make_redir_str(cmd, state);
 	return (cmd);
 }
 
-t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
+t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast)
 {
 	t_cmd		*node;
 	t_redircmd	*rcmd;
@@ -107,14 +114,14 @@ t_cmd *parseredirs(t_cmd *cmd, char **ps, char *es)
 		cmd->flag |= MALLOC_ERROR;
 		return (cmd);
 	}
-	node = parse_one_redir(cmd, state);
+	node = parse_one_redir(cmd, state, ast);
 	*ps = state->pos;
 	free(state);
 	if (node->type != REDIR)
 		return (node);
 	rcmd = (t_redircmd *)node;
 	if (peek(ps, es, "<>") && node->flag == 0)
-		rcmd->cmd = parseredirs(cmd, ps, es);
+		rcmd->cmd = parseredirs(cmd, ps, es, ast);
 	rcmd->flag |= rcmd->cmd->flag;
 	return (node);
 }
@@ -363,10 +370,6 @@ int	extend_arg_node(t_argcmd **arg, char *q, char *eq)
 	}
 	if (*arg)
 		(*arg)->right = new_node;
-//	{
-	//	(*arg)->right = new_node;
-		//(*arg)->flag |= new_node->flag;
-//	}
 	*arg = new_node;
 	return (0);
 }
@@ -380,19 +383,40 @@ void	set_execcmd_sargv(t_execcmd *cmd, char **tok_str)
 	}
 }
 
-int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
+
+
+int	add_redirections(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
+{
+		t_cmd *new_redir;
+
+		new_redir = parseredirs((t_cmd *)cmd, ps, ast->es, ast);
+		if (!new_redir)
+		{
+			(*head)->flag |= MALLOC_ERROR;
+			return (1);
+		}
+		*head = combine_redirs(*head, new_redir, (t_cmd *)cmd);
+		if (new_redir->flag)
+		{
+			(*head)->flag |= new_redir->flag;
+			return (1);
+		}
+		return (0);
+}
+
+int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 {
 	char	*tok_str[2];
 	int		tok;
-	t_cmd *new_redir;
 	t_argcmd *new_arg;
+	t_cmd *new_redir;
 
 	new_arg = NULL;
-	while (!peek(ps, es, "|)&"))
+	while (!peek(ps, ast->es, "|)&"))
 	{
-		if (*ps == es)
+		if (*ps == ast->es)
 			break ;
-		tok = gettoken(ps, es, tok_str, tok_str + 1);
+		tok = gettoken(ps, ast->es, tok_str, tok_str + 1);
 		if (tok != STR_TOK)
 		{
 			if (*head)
@@ -405,52 +429,47 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, char *es)
 		cmd->flag |= new_arg->flag;
 		set_execcmd_sargv(cmd, tok_str);
 		cmd->argc++;
-		new_redir = parseredirs((t_cmd *)cmd, ps, es);
+
+		if (add_redirections(head, cmd, ps, ast))
+			return (1);
+/*
+// void  fun(head, cmd, ps, ast)
+//		t_cmd *new_redir;
+		new_redir = parseredirs((t_cmd *)cmd, ps, ast->es, ast);
+		//??? if (!new_redir)
+		if (!new_redir)
+		{
+			(*head)->flag |= MALLOC_ERROR;
+			return (1);
+		}
 		*head = combine_redirs(*head, new_redir, (t_cmd *)cmd);
 		if (new_redir->flag)
 		{
 			(*head)->flag |= new_redir->flag;
 			return (1);
 		}
+*/
 	}
 	return (0);
 }
 
-/*
-t_cmd   *parseblock(char **ps, char *es)
-{
-    t_cmd *cmd;
-
-    (*ps)++;
-    cmd = parseline(ps, es);
-    if (peek(ps, es, ")") && cmd->flag == 0)
-        (*ps)++;
-    else
-        cmd->flag |= SYNTAX_ERROR;
-//  gettoken(ps, es, 0, 0);
-//  ft_dprintf(2, "parseblock: *ps=%s, cmd->flag=%d\n", *ps, cmd->flag);
-//  if (cmd->flag == 0)
-    //  cmd = parseredirs(cmd, ps, es);
-    return (cmd);
-}
-*/
-
-t_cmd	*parseexec(char **ps, char *es)
+t_cmd	*parseexec(char **ps, char *es, t_aststate *ast)
 {
 	t_execcmd	*cmd;
 	t_cmd		*head;
 	t_cmd		*last_node;
 
 	if (peek(ps, es, "("))
-		return (parseblock(ps, es));
+		return (parseblock(ps, es, ast));
 	head = execcmd();
 	if (!head)
 		return (NULL);
 	cmd = (t_execcmd *)head;
-	head = parseredirs((t_cmd *)cmd, ps, es);
+	head = parseredirs((t_cmd *)cmd, ps, es, ast);
 	if (cmd->flag || head->flag)
 		return (head);
-	exec_redir_loop(&head, cmd, ps, es);
+	ast->es = es;
+	exec_redir_loop(&head, cmd, ps, ast);
 	if (cmd->args)
 		cmd->flag |= cmd->args->flag;
 	if (head == (t_cmd *)cmd && cmd->argc == 0)

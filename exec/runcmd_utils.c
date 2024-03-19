@@ -26,6 +26,12 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	 	return (0);
 	}
 	make_argv(ecmd, data);
+	/*
+	 if ( ecmd->argv[1] == NULL)
+		printf("NULL pointer\n");
+	if ( ecmd->argv[1][0] == '\0')
+		printf("empty str\n");
+	*/
 	// if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
 	// {
 	// 	dprintf(2, "debug\n");
@@ -126,11 +132,16 @@ int	run_redir(t_cmd *cmd, t_data *data)
 	rcmd = (t_redircmd *)cmd;
 	if (make_filename(rcmd, data))
 	{
-		// error case malloc. let us put status = 1 at this moment.
-		// number of files > 1  -> status = 1 (bash at alex's PC)
-		ft_dprintf(2, "run_redir: malloc or multiple filename. add error hadling\n");
+		ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
+		if (dup2(data->fd_stdin, 0) == -1)
+			return (panic(ERR_DUP2, data, 1));
+		if (dup2(data->fd_stdout, 1) == -1)
+			return (panic(ERR_DUP2, data, 1));
+	 	return (1);
 	}
+//	printf("run_redir: file=->%s<-\n", rcmd->file);
 	process = data->proc;
+/*
 	if (rcmd->mode == -1) // define a macro?
 	{
 		get_input(data, rcmd->file); // rcmd->file: delimiter
@@ -145,10 +156,17 @@ int	run_redir(t_cmd *cmd, t_data *data)
 			return (panic(".heredoc", data, 1));
 	}
 	else
+*/
+	if (1)
 	{
 		fd = open(rcmd->file, rcmd->mode, 0644);
 		if (fd == -1)
+		{
+			// printf("paaaniiic\n");
+			// maybe, something wrong here. check `<infile <missingfile >tempfile.txt` 
 			return (panic(rcmd->file, data, 1));
+		}
+
 	}
 	if (dup2(fd, rcmd->fd) == -1)
 		return (panic(ERR_DUP2, data, 1));

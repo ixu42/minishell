@@ -78,24 +78,14 @@ int	main(int argc, char **argv, char **envp)
 			}
 			else if (status == ENOMEM)
 			{
-				dprintf(2, "%s malloc error\n", PMT);
-				//        clean all: data and cmd
+				freecmd(cmd);
+				//        clean data
 				break ; //do we need to break?
 			}
 			else
-			{
 				data.status = status;
-				dprintf(2, "%s add code to clean cmd including argv\n", PMT);
-				// clean cmd including argv
-			}
+			freecmd(cmd);
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
-	/*
-			if (cmd)
-			{
-				if (cmd ->flag == 0) 
-					status = runcmd(cmd, &data, PARENT_PROC);
-			}
-	*/
 			// ------ print out envp ------
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);
@@ -115,5 +105,7 @@ int	main(int argc, char **argv, char **envp)
 	unlink(".heredoc");
 	free_data(&data);
 	rl_clear_history();
+//	while (1)
+//		;
 	exit(EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/16 16:11:53 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/19 12:27:27 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,10 +280,11 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 	char	*file;
 	int		i;
 
-	if (rcmd->mode == -1)
+	if (rcmd->heredoc || rcmd->mode == -1)
 		return (0);
 	expand_var_in_strlist(rcmd->str, data);
 	rcmd->file = strlist_join(rcmd->str);
+//	printf("make_filename:->%s<-\n",rcmd->file);
 	if (!rcmd->file)
 		return (MALLOC_ERROR);
 	i = ft_strlen(rcmd->file);
@@ -295,6 +296,8 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 			return (1);
 		}
 	}
+	if (wildcard_star_redir(rcmd))
+		return (1);
 	return (0);
 }
 
