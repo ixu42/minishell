@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 15:45:33 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/19 13:27:51 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/19 13:49:04 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,16 @@ static int	skip_spaces(int *is_neg, char **str)
 	return (status);
 }
 
-static int	checks_before_digits(char *str, int *err, int *is_neg)
+static int	checks_before_digits(char **str, int *err, int *is_neg)
 {
-	int		status;
+	int	status;
 
-	if (ft_strlen(str) == 0)
+	if (ft_strlen(*str) == 0)
 	{
 		*err = 1;
 		return (1);
 	}
-	status = skip_spaces(is_neg, &str);
+	status = skip_spaces(is_neg, str);
 	if (status == 1)
 	{
 		*err = 1;
@@ -83,7 +83,7 @@ long	ft_strtol(char *str, int *err)
 
 	*err = 0;
 	is_neg = 0;
-	if (checks_before_digits(str, err, &is_neg) == 1)
+	if (checks_before_digits(&str, err, &is_neg) == 1)
 		return (0);
 	result = 0;
 	while (ft_isdigit(*str))
