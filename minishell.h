@@ -70,6 +70,8 @@
 #define SYMBOLS "<>|&()"
 #define ASCII_SEPARATOR 31
 #define ASCII_WILD 30
+#define ASCII_EMPTY 29
+#define ASCII_EMPTY_X "\x1d"
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_REDIR_AMBIG  "ambiguous redirect"
 #define ERR_CODE_SYNTAX 258

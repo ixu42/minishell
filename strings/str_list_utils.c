@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/19 12:27:27 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/19 18:06:59 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,7 @@ int	get_argc(t_execcmd *cmd)
 	return (argc);
 }
 
-char *join_all_arguments(char **pnt)
+char *join_all_arguments_old(char **pnt)
 {
 	char	*str;
 	size_t	size;
@@ -213,6 +213,56 @@ char *join_all_arguments(char **pnt)
 	{
 		ft_strlcpy(str + i, pnt[j], ft_strlen(pnt[j]) + 1);
 		i += (size_t)ft_strlen(pnt[j++]);
+	    str[i] = ASCII_SEPARATOR;
+	}
+//	str[size] = '\0';
+	str[size - 1] = '\0';
+//	ft_dprintf(2,"pnt[0]=->%s<-\n",pnt[0]);
+	//ft_dprintf(2,"s=->%s<-\n",str);
+	return (str);
+}
+
+int	ft_strlen_mod(char *str)
+{
+	int	len;
+
+	len = ft_strlen(str);
+	if (len == 0)
+		return(1);
+	return (len);
+}
+
+char *join_all_arguments(char **pnt)
+{
+	char	*str;
+	size_t	size;
+	size_t	i;
+	size_t	j;
+	size_t	len;
+
+	size = 0;
+	j = 0; 
+	while (pnt[j])
+		size += ft_strlen_mod(pnt[j++]) + 1;
+	//str = (char *)malloc(sizeof(str) * (size + 1));
+	if (size == 0)
+		size = 1;
+	str = (char *)malloc(sizeof(str) * size);
+	if (!str)
+		return (NULL);
+	//ft_memset(str, 0, sizeof(str) * (size + 1));
+	ft_memset(str, 0, sizeof(str) * size);
+	i = -1;
+	j = 0;
+	while (++i < size && pnt[j]) 
+	{
+		len = ft_strlen(pnt[j]);
+		if (len == 0)
+			ft_strlcpy(str + i, ASCII_EMPTY_X, 2);
+		else
+			ft_strlcpy(str + i, pnt[j], len + 1);
+		i += (size_t)(len + (len == 0));
+		j++;
 	    str[i] = ASCII_SEPARATOR;
 	}
 //	str[size] = '\0';
