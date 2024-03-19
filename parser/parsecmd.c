@@ -2,12 +2,12 @@
 
 // parsecmd.c
 
-t_cmd	*parsepipe(char **ps, char *es)
+t_cmd	*parsepipe(char **ps, char *es,t_aststate *ast)
 {
 	t_cmd	*cmd;
 	int		tok;
 
-	cmd = parseexec(ps, es);
+	cmd = parseexec(ps, es, ast);
 	if (!cmd)
 		return (NULL);
 	if (cmd->flag)
@@ -16,12 +16,12 @@ t_cmd	*parsepipe(char **ps, char *es)
 	if (tok && (*ps)[1] != '|')
 	{
 		tok = gettoken(ps, es, 0, 0);
-		cmd = pipecmd(cmd, parsepipe(ps, es));
+		cmd = pipecmd(cmd, parsepipe(ps, es, ast));
 	}
 	return (cmd);
 }
 
-int	make_listcmd(t_cmd **p_cmd_a, char **ps, char *es)
+int	make_listcmd(t_cmd **p_cmd_a, char **ps, char *es, t_aststate *ast)
 {
 	t_cmd	*cmd_a;
 	t_cmd	*cmd_b;
@@ -31,12 +31,12 @@ int	make_listcmd(t_cmd **p_cmd_a, char **ps, char *es)
 	tok = gettoken(ps, es, 0, 0);
 	if (tok == AND_TOK)
 	{
-		cmd_b = parsepipe(ps, es);
+		cmd_b = parsepipe(ps, es, ast);
 		cmd_a = list_cmd(cmd_a, cmd_b, AND_CMD);
 	}
 	else if (tok == OR_TOK)
 	{
-		cmd_b = parsepipe(ps, es);
+		cmd_b = parsepipe(ps, es, ast);
 		cmd_a = list_cmd(cmd_a, cmd_b, OR_CMD);
 	}
 	else
@@ -45,12 +45,12 @@ int	make_listcmd(t_cmd **p_cmd_a, char **ps, char *es)
 	return (0);
 }
 
-t_cmd	*parseline(char **ps, char *es)
+t_cmd	*parseline(char **ps, char *es, t_aststate *ast)
 {
 	t_cmd	*cmd_a;
 	int		cond;
 
-	cmd_a = parsepipe(ps, es);
+	cmd_a = parsepipe(ps, es, ast);
 	if (!cmd_a)
 		return (NULL);
 	if (cmd_a->flag)
@@ -58,7 +58,7 @@ t_cmd	*parseline(char **ps, char *es)
 	cond = peek(ps, es, "&|");
 	while (cond && (*ps)[0] == (*ps)[1])
 	{
-		if (make_listcmd(&cmd_a, ps, es))
+		if (make_listcmd(&cmd_a, ps, es, ast))
 			break ;
 		if (!cmd_a)
 			break ;
@@ -70,12 +70,12 @@ t_cmd	*parseline(char **ps, char *es)
 }
 
 // redir after block -> syntax error
-t_cmd	*parseblock(char **ps, char *es)
+t_cmd	*parseblock(char **ps, char *es, t_aststate *ast)
 {
 	t_cmd	*cmd;
 
 	(*ps)++;
-	cmd = parseline(ps, es);
+	cmd = parseline(ps, es, ast);
 	if (!cmd)
 		return (NULL);
 	if (cmd->flag)
@@ -98,6 +98,8 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 	if (cmd->flag & SYNTAX_ERR_UNCLOSED)
 		return (ERR_CODE_SYNTAX);
 	if (cmd->flag & MALLOC_ERROR)
+		return (panic_parser(ERR_MALLOC, ENOMEM));
+	else if (cmd->flag & HEREDOC_OPEN_ERR)
 		return (ENOMEM);
 	else if (cmd->flag || s != es)
 	{
@@ -122,10 +124,16 @@ t_cmd	*parsecmd(char *s, int *status)
 	char	*es;
 	t_cmd	*cmd;
 	int		ret;
+	t_aststate	*ast;
 
 	ret = 0;
 	es = s + ft_strlen(s);
-	cmd = parseline(&s, es);
+
+	ast = make_aststate(s, es);
+	if (!ast)
+		return (NULL);
+	cmd = parseline(&s, es, ast);
+	free(ast);
 	if (!cmd)
 		return (NULL);
 	ret = cmd_status(s, cmd, es);

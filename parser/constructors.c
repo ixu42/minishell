@@ -71,6 +71,9 @@ t_cmd	*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 	cmd->fd = fd;
 	cmd->str = NULL;
 	cmd->list = NULL;
+	cmd->heredoc = state->heredoc;
+	if (cmd->heredoc)
+		cmd->file = cmd->heredoc;
 	return ((t_cmd *)cmd);
 }
 
@@ -127,6 +130,22 @@ t_strstate	*make_strstate(char *start, char *finish)
 	state->end = NULL;
 	state->d_quotes = 0;
 //	state->s_quotes = 0; //unused sofar
+	state->flag = 0;
+	state->heredoc = NULL;
+	return (state);
+}
+
+t_aststate	*make_aststate(char *start, char *finish)
+{
+	t_aststate	*state;
+
+	state = (t_aststate *)malloc(sizeof(*state));
+	if (!state)
+		return (NULL);
+	ft_memset(state, 0, sizeof(*state));
+	state->start = start;
+	state->ps = start;
+	state->es = finish;
 	state->flag = 0;
 	state->heredoc = 0;
 	return (state);

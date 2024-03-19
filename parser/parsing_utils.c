@@ -167,13 +167,8 @@ t_cmd	*nulterminate(t_cmd *cmd)
 	return (cmd);
 }
 
-/*
-void	panic_test(char *s)
+int	panic_parser(char *s, int err)
 {
-//remove this function. use fd_dprintf instead and rise flags for errorcases.  
-//  printf(2, "%s\n", s);
-	ft_putstr_fd(s, 2);
-	ft_putstr_fd("\n", 2);
- //	exit(1);
+	ft_dprintf(2,"%s %s\n", PMT, s);
+	return (err);
 }
-*/

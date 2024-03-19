@@ -139,6 +139,7 @@ int	run_redir(t_cmd *cmd, t_data *data)
 	}
 //	printf("run_redir: file=->%s<-\n", rcmd->file);
 	process = data->proc;
+/*
 	if (rcmd->mode == -1) // define a macro?
 	{
 		get_input(data, rcmd->file); // rcmd->file: delimiter
@@ -153,6 +154,8 @@ int	run_redir(t_cmd *cmd, t_data *data)
 			return (panic(".heredoc", data, 1));
 	}
 	else
+*/
+	if (1)
 	{
 		fd = open(rcmd->file, rcmd->mode, 0644);
 		if (fd == -1)

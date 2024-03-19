@@ -186,8 +186,17 @@ typedef struct s_strstate
 	int		d_quotes;
 	int		s_quotes;
 	int		flag;
-	int		heredoc;
+	char	*heredoc;
 } t_strstate;
+
+typedef struct s_aststate
+{
+	char	*start;
+	char	*ps;
+	char	*es;
+	int		flag;
+	int		heredoc;
+} t_aststate;
 
 typedef struct s_cmd
 {
@@ -236,6 +245,7 @@ typedef struct s_redircmd
 	char	*efile;
 	int		mode;
 	int		fd;
+	char	*heredoc;
 	t_strcmd	*str;
 	t_arrlist	*list;
 }	t_redircmd;
@@ -292,15 +302,17 @@ t_cmd		*list_cmd(t_cmd *left, t_cmd *right, int type);
 t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
 t_strcmd	*strcmd(int type, char *start, char *end);
 t_strstate	*make_strstate(char *pos, char *finish);
+t_aststate	*make_aststate(char *pos, char *finish);
 
 // parseexec.c
-t_cmd	*parseexec(char**, char*);
-t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es);
+t_cmd	*parseexec(char **ps, char *es, t_aststate *ast);
+t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast);
+int		get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter);
 
 // parsecmd.c
 int			make_ast(t_cmd **p_cmd, char *s);
 t_cmd   *parsecmd(char *buf, int *status);
-t_cmd   *parseblock(char **ps, char *es);
+t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
 //t_cmd   *parseline(char**, char*);
 //t_cmd   *parsepipe(char**, char*);
 
@@ -309,7 +321,7 @@ int gettoken(char **ps, char *es, char **q, char **eq);
 int peek(char **ps, char *es, char *toks);
 t_cmd   *nulterminate(t_cmd *cmd);
 const char  *token_type_to_str(t_token_type token);
-//void    panic_test(char *s);  //this is temporal function that exit(1) from parser
+int	panic_parser(char *s, int err);
 
 // runcmd() func and its helper funcs
 void	runcmd(t_cmd *cmd, t_data *data);

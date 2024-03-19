@@ -35,6 +35,7 @@ MAIN_FILES = main.c \
 PARSER_FILES = constructors.c \
 				parseexec.c \
 				parsecmd.c \
+				parse_heredoc.c \
 				parsing_utils.c \
 				runcmd_test.c
 STRINGS_FILES = str_list_utils.c \

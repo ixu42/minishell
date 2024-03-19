@@ -280,7 +280,7 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 	char	*file;
 	int		i;
 
-	if (rcmd->mode == -1)
+	if (rcmd->heredoc || rcmd->mode == -1)
 		return (0);
 	expand_var_in_strlist(rcmd->str, data);
 	rcmd->file = strlist_join(rcmd->str);
