@@ -26,6 +26,12 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	 	return (0);
 	}
 	make_argv(ecmd, data);
+	/*
+	 if ( ecmd->argv[1] == NULL)
+		printf("NULL pointer\n");
+	if ( ecmd->argv[1][0] == '\0')
+		printf("empty str\n");
+	*/
 	// if (ecmd->argv == NULL || ecmd->argv[0] == NULL)
 	// {
 	// 	dprintf(2, "debug\n");
