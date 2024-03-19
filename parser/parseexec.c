@@ -370,10 +370,6 @@ int	extend_arg_node(t_argcmd **arg, char *q, char *eq)
 	}
 	if (*arg)
 		(*arg)->right = new_node;
-//	{
-	//	(*arg)->right = new_node;
-		//(*arg)->flag |= new_node->flag;
-//	}
 	*arg = new_node;
 	return (0);
 }
@@ -387,12 +383,33 @@ void	set_execcmd_sargv(t_execcmd *cmd, char **tok_str)
 	}
 }
 
+
+
+int	add_redirections(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
+{
+		t_cmd *new_redir;
+
+		new_redir = parseredirs((t_cmd *)cmd, ps, ast->es, ast);
+		if (!new_redir)
+		{
+			(*head)->flag |= MALLOC_ERROR;
+			return (1);
+		}
+		*head = combine_redirs(*head, new_redir, (t_cmd *)cmd);
+		if (new_redir->flag)
+		{
+			(*head)->flag |= new_redir->flag;
+			return (1);
+		}
+		return (0);
+}
+
 int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 {
 	char	*tok_str[2];
 	int		tok;
-	t_cmd *new_redir;
 	t_argcmd *new_arg;
+	t_cmd *new_redir;
 
 	new_arg = NULL;
 	while (!peek(ps, ast->es, "|)&"))
@@ -412,6 +429,12 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 		cmd->flag |= new_arg->flag;
 		set_execcmd_sargv(cmd, tok_str);
 		cmd->argc++;
+
+		if (add_redirections(head, cmd, ps, ast))
+			return (1);
+/*
+// void  fun(head, cmd, ps, ast)
+//		t_cmd *new_redir;
 		new_redir = parseredirs((t_cmd *)cmd, ps, ast->es, ast);
 		//??? if (!new_redir)
 		if (!new_redir)
@@ -425,6 +448,7 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 			(*head)->flag |= new_redir->flag;
 			return (1);
 		}
+*/
 	}
 	return (0);
 }

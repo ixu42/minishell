@@ -71,27 +71,17 @@ int	main(int argc, char **argv, char **envp)
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
 			if (status == 0)
-		        runcmd(cmd, &data);
+				runcmd(cmd, &data);
 			else if (status == ENOMEM)
 			{
-				dprintf(2, "%s malloc error\n", PMT);
-				//        clean all: data and cmd
+				freecmd(cmd);
+				//        clean data
 				break ; //do we need to break?
 			}
 			else
-			{
 				data.status = status;
-				dprintf(2, "%s add code to clean cmd including argv\n", PMT);
-				// clean cmd including argv
-			}
+			freecmd(cmd);
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
-	/*
-			if (cmd)
-			{
-				if (cmd ->flag == 0) 
-					status = runcmd(cmd, &data, PARENT_PROC);
-			}
-	*/
 			// ------ print out envp ------
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);

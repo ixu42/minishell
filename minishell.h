@@ -316,6 +316,9 @@ t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
 //t_cmd   *parseline(char**, char*);
 //t_cmd   *parsepipe(char**, char*);
 
+// freecmd.c
+int	freecmd(t_cmd *cmd);
+
 //parsing_utils.c
 int gettoken(char **ps, char *es, char **q, char **eq);
 int peek(char **ps, char *es, char *toks);

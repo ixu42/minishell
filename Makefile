@@ -6,7 +6,7 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/09 11:00:23 by ixu               #+#    #+#              #
-#    Updated: 2024/03/14 14:36:42 by apimikov         ###   ########.fr        #
+#    Updated: 2024/03/19 10:55:06 by apimikov         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ PARSER_FILES = constructors.c \
 				parseexec.c \
 				parsecmd.c \
 				parse_heredoc.c \
+				freecmd.c \
 				parsing_utils.c \
 				runcmd_test.c
 STRINGS_FILES = str_list_utils.c \
