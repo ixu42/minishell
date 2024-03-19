@@ -159,7 +159,12 @@ int	run_redir(t_cmd *cmd, t_data *data)
 	{
 		fd = open(rcmd->file, rcmd->mode, 0644);
 		if (fd == -1)
+		{
+			// printf("paaaniiic\n");
+			// maybe, something wrong here. check `<infile <missingfile >tempfile.txt` 
 			return (panic(rcmd->file, data, 1));
+		}
+
 	}
 	if (dup2(fd, rcmd->fd) == -1)
 		return (panic(ERR_DUP2, data, 1));

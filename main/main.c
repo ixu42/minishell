@@ -101,5 +101,7 @@ int	main(int argc, char **argv, char **envp)
 	unlink(".heredoc");
 	free_data(&data);
 	rl_clear_history();
+//	while (1)
+//		;
 	exit(EXIT_SUCCESS);
 }

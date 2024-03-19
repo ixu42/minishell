@@ -69,7 +69,7 @@
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&()"
 #define ASCII_SEPARATOR 31
-#define ASCII_WILD 32
+#define ASCII_WILD 30
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_REDIR_AMBIG  "ambiguous redirect"
 #define ERR_CODE_SYNTAX 258
@@ -81,12 +81,6 @@
 
 extern volatile sig_atomic_t	last_sig;
 
-typedef struct s_arrlist
-{
-	 char		**data;
-	 size_t	size;
-	 size_t	capacity;
-} t_arrlist;
 
 // AST's node types
 typedef enum e_node_type
@@ -167,6 +161,13 @@ typedef struct s_data
 	int			fd_stdin;
 	int			fd_stdout;
 }	t_data;
+
+typedef struct s_arrlist
+{
+	 char		**data;
+	 size_t	size;
+	 size_t	capacity;
+} t_arrlist;
 
 typedef struct s_wildcard
 {

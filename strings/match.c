@@ -151,6 +151,22 @@ int	match_to_files(t_wildcard *wild)
 	return (0);
 }
 
+void	replace_str(char *s, char from, char to)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		if (s[i] == from)
+		{
+//			printf("->%c<-, c=%d, space=%d\n", from, (int)from, (int)' ');
+			s[i] = to;
+		}
+		i++;
+	}
+}
+
 int	make_sorted_argv(t_wildcard *wild, int be_sorted)
 {
 	int				i;
@@ -163,14 +179,14 @@ int	make_sorted_argv(t_wildcard *wild, int be_sorted)
 		arr = wild->pnt[i];
 		if (arr->size == 0)
 		{
-	//		printf("0) i=%d\n", i);
+			//replace_str(arr->data[0]
+//			printf("size == 0\n");
+			replace_str(wild->argv[i], ASCII_WILD, '*');
 			if (add_string_arrlist(arr, wild->argv[i]))
 				return (free_wildcard(wild, 1, 1));
 		}
 		else
 		{
-//			printf("i=%d\n", i);
-//
 			if (be_sorted)
 				heapsort_str(arr->data, arr->size);
 		}
