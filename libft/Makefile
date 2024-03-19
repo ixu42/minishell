@@ -6,7 +6,7 @@
 #    By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/23 15:42:20 by ixu               #+#    #+#              #
-#    Updated: 2024/03/04 13:28:45 by ixu              ###   ########.fr        #
+#    Updated: 2024/03/19 11:28:59 by ixu              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ LIBFT_DIR = libft/
 
 # Source files names by folders
 NBR_FILES = ft_atoi.c \
+			ft_strtol.c \
 			ft_itoa.c
 MEM_FILES = ft_bzero.c \
 			ft_calloc.c \

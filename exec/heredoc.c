@@ -27,8 +27,8 @@ static void	convert_input(t_data *data, int fd_heredoc, char *delimiter)
 		{
 			free(line);
 			if (close(fd_heredoc) == -1)
-				panic(ERR_HEREDOC, data, EXIT_FAILURE);
-			panic(ERR_WRITE, data, EXIT_FAILURE);
+				panic(ERR_HEREDOC, data, 1);
+			panic(ERR_WRITE, data, 1);
 		}
 		free(line);
 	}

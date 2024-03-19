@@ -67,7 +67,6 @@ int	run_exec(t_cmd *cmd, t_data *data)
 		// -------------------
 		if (data->proc == CHILD_PROC)
 		{
-			// dprintf(2, "in child process\n");
 			data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 			data->envp = copy_env_lst_to_arr(data->env_lst);
 			// ------ print out arr ------
@@ -81,15 +80,12 @@ int	run_exec(t_cmd *cmd, t_data *data)
 		}
 		else
 		{
-			// signal(SIGINT, SIG_DFL);
 			pid = fork1(data);
 			if (pid == -1)
 				return (1);
 			if (pid == 0)
 			{
 				data->proc = CHILD_PROC;
-				if (child_signal_handler() == 1)
-					panic(ERR_SIGACTION, data, 1);
 				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
 				// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
 				// ------ print out list ------
@@ -110,7 +106,7 @@ int	run_exec(t_cmd *cmd, t_data *data)
 					panic("", data, 127);
 				panic(ecmd->argv[0], data, 127);
 			}
-			if (parent_signal_handler() == 1)
+			if (ignore_signals() == 1)
 				return (panic(ERR_SIGACTION, data, 1));
 			if (dup2(data->fd_stdin, 0) == -1)
 				return (panic(ERR_DUP2, data, 1));
@@ -227,13 +223,9 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 	pid1 = fork1(data);
 	if (pid1 == -1)
 		return (1);
-	if (parent_signal_handler() == 1)
-		return (panic(ERR_SIGACTION, data, 1));
 	if (pid1 == 0)
 	{
 		data->proc = CHILD_PROC;
-		if (child_signal_handler() == 1)
-			panic(ERR_SIGACTION, data, 1);	
 		if (close(pipe_fd[0]) == -1)
 			panic(ERR_CLOSE, data, 1);
 		if (dup2(pipe_fd[1], 1) == -1)
@@ -245,12 +237,8 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 	pid2 = fork1(data);
 	if (pid2 == -1)
 		return (1);
-	if (parent_signal_handler() == 1)
-		return (panic(ERR_SIGACTION, data, 1));
 	if (pid2 == 0)
 	{	data->proc = CHILD_PROC;
-		if (child_signal_handler() == 1)
-			panic(ERR_SIGACTION, data, 1);
 		if (close(pipe_fd[1]) == -1)
 			panic(ERR_CLOSE, data, 1);
 		if (dup2(pipe_fd[0], 0) == -1)
@@ -259,6 +247,8 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 			panic(ERR_CLOSE, data, 1);
 		runcmd(pcmd->right, data);
 	}
+	if (ignore_signals() == 1)
+		return (panic(ERR_SIGACTION, data, 1));
 	if (close(pipe_fd[0]) == -1)
 		return (panic(ERR_CLOSE, data, 1));
 	if (close(pipe_fd[1]) == -1)

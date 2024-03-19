@@ -47,11 +47,13 @@ int	main(int argc, char **argv, char **envp)
 	data_init(&data, envp);
 	while (data.status >= 0)
 	{
-		if (set_signals(&data) == 1)
+		if (set_signals_interactive(&data) == 1)
 			break ;
 		data.buf = readline("LiteShell$ ");
 		if (last_sig)
 			data.status = 1;
+		if (set_default_signals(&data) == 1)
+			break ;
 		if (data.buf == NULL) // Check for EOF (Ctrl+D)
 		{
 			printf("\033[A\033[11Cexit\n");
@@ -71,7 +73,9 @@ int	main(int argc, char **argv, char **envp)
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
 			if (status == 0)
-				runcmd(cmd, &data);
+			{
+		        runcmd(cmd, &data);
+			}
 			else if (status == ENOMEM)
 			{
 				freecmd(cmd);
@@ -86,7 +90,7 @@ int	main(int argc, char **argv, char **envp)
 			// for (int k = 0; envp[k] != NULL; k++)
 			// 	printf("%s\n", envp[k]);
 			// ----------------------------
-			// printf("\033[0;35m[status: %d]\033[0m\n", data.status);
+			// dprintf(2, "\033[0;35m[status: %d]\033[0m\n", data.status);
 			// ------
 		}
 		free(data.buf);
