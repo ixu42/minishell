@@ -51,7 +51,13 @@ int	run_redir(t_cmd *cmd, t_data *data)
 		{
 			// printf("paaaniiic\n");
 			// maybe, something wrong here. check `<infile <missingfile >tempfile.txt` 
+			// dprintf(2, "debug\n");
+			if (dup2(data->fd_stdin, 0) == -1)
+				return (panic(ERR_DUP2, data, 1));
+			if (dup2(data->fd_stdout, 1) == -1)
+				return (panic(ERR_DUP2, data, 1));
 			return (panic(rcmd->file, data, 1));
+			// dprintf(2, "debug1\n");
 		}
 
 	}
@@ -114,11 +120,11 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 	{
 		data->proc = CHILD_PROC;
 		if (close(pipe_fd[0]) == -1)
-			panic(ERR_CLOSE, data, 1);
+			panic("ERR_CLOSE0", data, 1);
 		if (dup2(pipe_fd[1], 1) == -1)
 			panic(ERR_DUP2, data, 1);
 		if (close(pipe_fd[1]) == -1)
-			panic(ERR_CLOSE, data, 1);
+			panic("ERR_CLOSE1", data, 1);
 		runcmd(pcmd->left, data);
 	}
 	pid2 = fork1(data);
@@ -127,19 +133,19 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 	if (pid2 == 0)
 	{	data->proc = CHILD_PROC;
 		if (close(pipe_fd[1]) == -1)
-			panic(ERR_CLOSE, data, 1);
+			panic("ERR_CLOSE2", data, 1);
 		if (dup2(pipe_fd[0], 0) == -1)
 			panic(ERR_DUP2, data, 1);
 		if (close(pipe_fd[0]) == -1)
-			panic(ERR_CLOSE, data, 1);
+			panic("ERR_CLOSE3", data, 1);
 		runcmd(pcmd->right, data);
 	}
 	if (ignore_signals() == 1)
 		return (panic(ERR_SIGACTION, data, 1));
 	if (close(pipe_fd[0]) == -1)
-		return (panic(ERR_CLOSE, data, 1));
+		return (panic("ERR_CLOSE4", data, 1));
 	if (close(pipe_fd[1]) == -1)
-		return (panic(ERR_CLOSE, data, 1));
+		return (panic("ERR_CLOSE5", data, 1));
 	if (waitpid(pid1, NULL, 0) == -1)
 		return (panic(ERR_WAITPID, data, 1));
 	if (waitpid(pid2, &status, 0) == -1)

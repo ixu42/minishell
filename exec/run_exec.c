@@ -38,15 +38,14 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	make_argv(ecmd, data);
 	if (ecmd->argc == 0)
 	{
-		// I, Alex, have add the check if proc is child 
-		// for `$A | cat` case when A is undefined. 
-		if (data->proc != CHILD_PROC && dup2(data->fd_stdin, 0) == -1)
+		if (dup2(data->fd_stdin, 0) == -1)
 			return (panic(ERR_DUP2, data, 1));
-		if (data->proc != CHILD_PROC && dup2(data->fd_stdout, 1) == -1)
+		if (dup2(data->fd_stdout, 1) == -1)
 			return (panic(ERR_DUP2, data, 1));
+		if (data->proc == CHILD_PROC)
+			free_n_exit(data, 0);
 	 	return (0);
 	}
-	make_argv(ecmd, data);
 	/*
 	 if ( ecmd->argv[1] == NULL)
 		printf("NULL pointer\n");
@@ -74,10 +73,13 @@ int	run_exec(t_cmd *cmd, t_data *data)
 		// dprintf(2, "builtin\n");
 		// -------------------
 		data->status = run_builtin(ecmd->argv, data);
+		// if (data->proc != CHILD_PROC)
+		// {
 		if (dup2(data->fd_stdin, 0) == -1)
 			return (panic(ERR_DUP2, data, 1));
 		if (dup2(data->fd_stdout, 1) == -1)
 			return (panic(ERR_DUP2, data, 1));
+		// }
 		if (data->proc == CHILD_PROC)
 			free_n_exit(data, data->status);
 	}
@@ -96,8 +98,8 @@ int	run_exec(t_cmd *cmd, t_data *data)
 			// 	printf("%s\n", data->envp[n]);
 			// ----------------------------
 			execve(data->cmd_path, ecmd->argv, data->envp);
-			if (ecmd->argv[0] == NULL)
-				panic_cmd_not_found("", data);
+			// if (ecmd->argv[0] == NULL)
+			// 	panic_cmd_not_found("", data);
 			panic_cmd_not_found(ecmd->argv[0], data);
 		}
 		else
@@ -108,7 +110,10 @@ int	run_exec(t_cmd *cmd, t_data *data)
 			if (pid == 0)
 			{
 				data->proc = CHILD_PROC;
+				// dprintf(2, "debug0\n");	
+				// dprintf(2, "ecmd->argv[0]:%s\n", ecmd->argv[0]);
 				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
+				// dprintf(2, "debug1\n");
 				// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
 				// ------ print out list ------
 				// t_env	*tmp = data->env_lst;
@@ -124,8 +129,8 @@ int	run_exec(t_cmd *cmd, t_data *data)
 				// 	dprintf(2 ,"%s\n", data->envp[n]);
 				// ----------------------------
 				execve(data->cmd_path, ecmd->argv, data->envp);
-				if (ecmd->argv[0] == NULL)
-					panic_cmd_not_found("", data);
+				// if (ecmd->argv[0] == NULL)
+				// 	panic_cmd_not_found("", data);
 				panic_cmd_not_found(ecmd->argv[0], data);
 			}
 			if (ignore_signals() == 1)

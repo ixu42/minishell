@@ -34,6 +34,7 @@ char	*get_cmd_path(char **argv, t_data *data)
 
 	if (argv == NULL || argv[0] == NULL)
 		return (NULL);
+	// dprintf(2, "debug0.1\n");
 	cmd_path = verify_path(argv[0], data);
 	if (cmd_path != NULL)
 		return (cmd_path);

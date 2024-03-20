@@ -75,6 +75,7 @@ int	main(int argc, char **argv, char **envp)
 			if (status == 0)
 			{
 		        runcmd(cmd, &data);
+				// getchar();
 			}
 			else if (status == ENOMEM)
 			{
