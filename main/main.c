@@ -42,7 +42,7 @@ int	main(int argc, char **argv, char **envp)
 	// for (int k = 0; envp[k] != NULL; k++)
 	// 	printf("%s\n", envp[k]);
 	// ----------------------------
-	(void)argv;
+	// (void)argv;
 	validate_args(argc);
 	data_init(&data, envp);
 	while (data.status >= 0)
