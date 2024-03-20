@@ -17,15 +17,17 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	int			status;
 
 	ecmd = (t_execcmd *)cmd;
+	make_argv(ecmd, data);
 	if (ecmd->argc == 0)
 	{
-		if (dup2(data->fd_stdin, 0) == -1)
+		// I, Alex, have add the check if proc is child 
+		// for `$A | cat` case when A is undefined. 
+		if (data->proc != CHILD_PROC && dup2(data->fd_stdin, 0) == -1)
 			return (panic(ERR_DUP2, data, 1));
-		if (dup2(data->fd_stdout, 1) == -1)
+		if (data->proc != CHILD_PROC && dup2(data->fd_stdout, 1) == -1)
 			return (panic(ERR_DUP2, data, 1));
 	 	return (0);
 	}
-	make_argv(ecmd, data);
 	/*
 	 if ( ecmd->argv[1] == NULL)
 		printf("NULL pointer\n");

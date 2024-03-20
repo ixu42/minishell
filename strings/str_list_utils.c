@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/19 12:27:27 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/20 10:20:22 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,8 @@ int	get_argc(t_execcmd *cmd)
 	return (argc);
 }
 
-char *join_all_arguments(char **pnt)
+/*
+char *join_all_arguments_old(char **pnt)
 {
 	char	*str;
 	size_t	size;
@@ -221,27 +222,141 @@ char *join_all_arguments(char **pnt)
 	//ft_dprintf(2,"s=->%s<-\n",str);
 	return (str);
 }
+*/
+
+int	ft_strlen_mod(char *str)
+{
+	int	len;
+
+	len = ft_strlen(str);
+	if (len == 0)
+		return(1);
+	return (len);
+}
+
+int	is_arg_with_only_var(t_execcmd *cmd, int i)
+{
+	int	j;
+	t_argcmd *args;
+	t_strcmd *str;
+
+	j = 0;
+	args = cmd->args;
+	while (args && j < i)
+	{
+		j++;
+		args = args->right;
+	}
+	str = args->left;
+	while (str)
+	{
+		if (str->type != STR_NODE_VAR)
+			return (0);
+		str = str->next;
+	}
+	return (1);
+}
+
+
+void printf_nonprintable(char *str)
+{
+    int i = 0;
+    
+	printf("String with non-printable: ->");
+    while (str[i] != '\0') 
+	{
+        if (str[i] < 32 || str[i] > 126) 
+            printf("\\x%02X", (unsigned char)str[i]);
+		else
+            printf("%c", str[i]);
+        i++;
+    }
+    printf("<-\n");
+}
+
+void	write_args_to_str(char * str, t_execcmd *cmd, size_t size)
+{
+	size_t	i;
+	size_t	j;
+	size_t	len;
+	char 	**pnt;
+
+	pnt = cmd->argv;
+	i = -1;
+	j = 0;
+	while (++i < size && pnt[j]) 
+	{
+		len = ft_strlen(pnt[j]);
+//		printf("only_var = %d\n", only_var);
+		if (is_arg_with_only_var(cmd, j) && ++j)
+			continue ;
+		if (len == 0)
+			ft_strlcpy(str + i++, ASCII_EMPTY_X, 2);
+		else
+		{
+			ft_strlcpy(str + i, pnt[j], len + 1);
+			i += (size_t)len;
+		}
+	    str[i] = ASCII_SEPARATOR;
+		j++;
+	}
+}
+
+char *join_all_arguments(char **pnt, t_execcmd *cmd)
+{
+	char	*str;
+	size_t	size;
+	size_t	j;
+
+	size = 0;
+	j = 0; 
+	while (pnt[j])
+		size += ft_strlen_mod(pnt[j++]) + 1;
+	str = (char *)malloc(sizeof(str) * size);
+	if (!str)
+		return (NULL);
+	ft_memset(str, 0, sizeof(str) * size);
+	write_args_to_str(str, cmd, size);
+//	printf("joined str=->%s<-, len=%zu\n",str, ft_strlen(str));
+//	printf_nonprintable(str);
+	return (str);
+}
+
+// do we use this function?
+/*
+void replace_empty_tocken(char *s)
+{
+	if (*s == ASCII_EMPTY)
+		*s = '\0';
+}
+*/
 
 int	make_argv_expanded(t_execcmd *cmd)
 {
 	char		*joined_arg;
 	int			argc_exp;
-	size_t	i;
 
-	//???should we copy cmd->argv for latter freeing
-//	printf("argc=%d\n", cmd->argc);
-	joined_arg = join_all_arguments(cmd->argv);
+	joined_arg = join_all_arguments(cmd->argv, cmd);
 	ft_free_char2d(cmd->argv);
+	cmd->argv = NULL;
 	if (!joined_arg)
 		return (1);
+	if (!*joined_arg)
+	{
+		cmd->argc = 0;
+		return (0);
+	}
 	cmd->argv = ft_split(joined_arg, ASCII_SEPARATOR);
 	free(joined_arg);
 	if (!cmd->argv)
 		return (1);
-	i = 0;
-	while (cmd->argv[i])
-		i++;
-	cmd->argc = i;
+	cmd->argc = 0;
+	while (cmd->argv[cmd->argc])
+	{
+		if (cmd->argv[cmd->argc][0] == ASCII_EMPTY)
+			cmd->argv[cmd->argc][0] = '\0';
+		cmd->argc++;
+	}
 	return (0);
 }
 
@@ -274,6 +389,16 @@ int	init_argv(t_execcmd *cmd, t_data *data)
 	return (0);
 }
 
+int	is_str_with_only_var(t_strcmd *str)
+{
+	while (str)
+	{
+		if (str->type != STR_NODE_VAR)
+			return (0);
+		str = str->next;
+	}
+	return (1);
+}
 
 int	make_filename(t_redircmd *rcmd, t_data *data)
 {
@@ -288,9 +413,11 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 	if (!rcmd->file)
 		return (MALLOC_ERROR);
 	i = ft_strlen(rcmd->file);
-	while (i-- > 0)
+	//printf("file = ->%s<- len=%d\n", rcmd->file, i);
+	while (i-- >= 0)
 	{
-		if (rcmd->file[i] == ASCII_SEPARATOR)
+		if (rcmd->file[i] == ASCII_SEPARATOR || \
+				(rcmd->file[0] == '\0' && is_str_with_only_var(rcmd->str)))
 		{
 			ft_dprintf(2, "%s %s %s\n", PMT, rcmd->sfile, ERR_REDIR_AMBIG);
 			return (1);
@@ -307,7 +434,7 @@ int	make_argv(t_execcmd *cmd, t_data *data)
 		return (1);
 	if (make_argv_expanded(cmd))
 		return (1);
-	if (wildcard_star(cmd))
+	if (wildcard_star(cmd) && cmd->argc)
 		return (1);
 	return (0);
 }

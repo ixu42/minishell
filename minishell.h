@@ -71,8 +71,10 @@
 #define MAXARGS 4
 #define WHITESPACE  " \t\r\n\v"
 #define SYMBOLS "<>|&()"
-#define ASCII_SEPARATOR 31
+#define ASCII_EMPTY_X "\x1d"
+#define ASCII_EMPTY 29
 #define ASCII_WILD 30
+#define ASCII_SEPARATOR 31
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_REDIR_AMBIG  "ambiguous redirect"
 #define ERR_CODE_SYNTAX 258
@@ -170,7 +172,7 @@ typedef struct s_arrlist
 	 char		**data;
 	 size_t	size;
 	 size_t	capacity;
-} t_arrlist;
+}	t_arrlist;
 
 typedef struct s_wildcard
 {
@@ -191,7 +193,7 @@ typedef struct s_strstate
 	int		s_quotes;
 	int		flag;
 	char	*heredoc;
-} t_strstate;
+}	t_strstate;
 
 typedef struct s_aststate
 {
