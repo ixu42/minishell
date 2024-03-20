@@ -188,6 +188,7 @@ int	get_argc(t_execcmd *cmd)
 	return (argc);
 }
 
+/*
 char *join_all_arguments_old(char **pnt)
 {
 	char	*str;
@@ -221,6 +222,7 @@ char *join_all_arguments_old(char **pnt)
 	//ft_dprintf(2,"s=->%s<-\n",str);
 	return (str);
 }
+*/
 
 int	ft_strlen_mod(char *str)
 {
@@ -232,43 +234,89 @@ int	ft_strlen_mod(char *str)
 	return (len);
 }
 
-char *join_all_arguments(char **pnt)
+int	is_arg_with_only_var(t_execcmd *cmd, int i)
 {
-	char	*str;
-	size_t	size;
+	int	j;
+	t_argcmd *args;
+	t_strcmd *str;
+
+	j = 0;
+	args = cmd->args;
+	while (args && j < i)
+	{
+		j++;
+		args = args->right;
+	}
+	str = args->left;
+	while (str)
+	{
+		if (str->type != STR_NODE_VAR)
+			return (0);
+		str = str->next;
+	}
+	return (1);
+}
+
+void	write_args_to_str(char * str, t_execcmd *cmd, size_t size)
+{
 	size_t	i;
 	size_t	j;
 	size_t	len;
+	char 	**pnt;
 
-	size = 0;
-	j = 0; 
-	while (pnt[j])
-		size += ft_strlen_mod(pnt[j++]) + 1;
-	//str = (char *)malloc(sizeof(str) * (size + 1));
-	if (size == 0)
-		size = 1;
-	str = (char *)malloc(sizeof(str) * size);
-	if (!str)
-		return (NULL);
-	//ft_memset(str, 0, sizeof(str) * (size + 1));
-	ft_memset(str, 0, sizeof(str) * size);
+	pnt = cmd->argv;
 	i = -1;
 	j = 0;
 	while (++i < size && pnt[j]) 
 	{
 		len = ft_strlen(pnt[j]);
-		if (len == 0)
+		if (len == 0 && !is_arg_with_only_var(cmd, j))
 			ft_strlcpy(str + i, ASCII_EMPTY_X, 2);
 		else
 			ft_strlcpy(str + i, pnt[j], len + 1);
-		i += (size_t)(len + (len == 0));
+		i += (size_t)(len + (len == 0 && !is_arg_with_only_var(cmd, j)));
 		j++;
 	    str[i] = ASCII_SEPARATOR;
 	}
-//	str[size] = '\0';
 	str[size - 1] = '\0';
-//	ft_dprintf(2,"pnt[0]=->%s<-\n",pnt[0]);
-	//ft_dprintf(2,"s=->%s<-\n",str);
+}
+
+char *join_all_arguments(char **pnt, t_execcmd *cmd)
+{
+	char	*str;
+	size_t	size;
+	//size_t	i;
+	size_t	j;
+	//size_t	len;
+
+	size = 0;
+	j = 0; 
+	while (pnt[j])
+		size += ft_strlen_mod(pnt[j++]) + 1;
+//	if (size == 0 && !is_arg_with_only_var(cmd, 0))
+	//	size = 1;
+	str = (char *)malloc(sizeof(str) * size);
+	if (!str)
+		return (NULL);
+	ft_memset(str, 0, sizeof(str) * size);
+	write_args_to_str(str, cmd, size);
+	printf("joined str=->%s<-, len=%d\n",str, ft_strlen(str));
+/*
+	i = -1;
+	j = 0;
+	while (++i < size && pnt[j]) 
+	{
+		len = ft_strlen(pnt[j]);
+		if (len == 0 && !is_arg_with_only_var(cmd, j))
+			ft_strlcpy(str + i, ASCII_EMPTY_X, 2);
+		else
+			ft_strlcpy(str + i, pnt[j], len + 1);
+		i += (size_t)(len + (len == 0 && !is_arg_with_only_var(cmd, j)));
+		j++;
+	    str[i] = ASCII_SEPARATOR;
+	}
+	str[size - 1] = '\0';
+*/
 	return (str);
 }
 
@@ -280,7 +328,8 @@ int	make_argv_expanded(t_execcmd *cmd)
 
 	//???should we copy cmd->argv for latter freeing
 //	printf("argc=%d\n", cmd->argc);
-	joined_arg = join_all_arguments(cmd->argv);
+	//joined_arg = join_all_arguments(cmd->argv);
+	joined_arg = join_all_arguments(cmd->argv, cmd);
 	ft_free_char2d(cmd->argv);
 	if (!joined_arg)
 		return (1);
