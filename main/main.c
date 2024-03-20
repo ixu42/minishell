@@ -100,6 +100,8 @@ int	main(int argc, char **argv, char **envp)
 		if (data.status == 131)
 			dprintf(2, "Quit: 3\n");
 		last_sig = 0;
+		data.under_pipe = 0;
+		data.under_redir = 0;
 	}
 	close(data.fd_stdin);
 	close(data.fd_stdout);

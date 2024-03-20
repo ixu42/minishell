@@ -73,13 +73,13 @@ int	run_exec(t_cmd *cmd, t_data *data)
 		// dprintf(2, "builtin\n");
 		// -------------------
 		data->status = run_builtin(ecmd->argv, data);
-		// if (data->proc != CHILD_PROC)
-		// {
-		if (dup2(data->fd_stdin, 0) == -1)
-			return (panic(ERR_DUP2, data, 1));
-		if (dup2(data->fd_stdout, 1) == -1)
-			return (panic(ERR_DUP2, data, 1));
-		// }
+		if (!data->under_pipe && data->under_redir)//(data->proc != CHILD_PROC)
+		{
+			if (dup2(data->fd_stdin, 0) == -1)
+				return (panic(ERR_DUP2, data, 1));
+			if (dup2(data->fd_stdout, 1) == -1)
+				return (panic(ERR_DUP2, data, 1));
+		}
 		if (data->proc == CHILD_PROC)
 			free_n_exit(data, data->status);
 	}
@@ -110,10 +110,8 @@ int	run_exec(t_cmd *cmd, t_data *data)
 			if (pid == 0)
 			{
 				data->proc = CHILD_PROC;
-				// dprintf(2, "debug0\n");	
 				// dprintf(2, "ecmd->argv[0]:%s\n", ecmd->argv[0]);
 				data->cmd_path = get_cmd_path(ecmd->argv, data); // free
-				// dprintf(2, "debug1\n");
 				// dprintf(2, "data->cmd_path: %s\n", data->cmd_path);
 				// ------ print out list ------
 				// t_env	*tmp = data->env_lst;
@@ -135,10 +133,13 @@ int	run_exec(t_cmd *cmd, t_data *data)
 			}
 			if (ignore_signals() == 1)
 				return (panic(ERR_SIGACTION, data, 1));
-			if (dup2(data->fd_stdin, 0) == -1)
-				return (panic(ERR_DUP2, data, 1));
-			if (dup2(data->fd_stdout, 1) == -1)
-				return (panic(ERR_DUP2, data, 1));
+			if (!data->under_pipe && data->under_redir)
+			{
+				if (dup2(data->fd_stdin, 0) == -1)
+					return (panic(ERR_DUP2, data, 1));
+				if (dup2(data->fd_stdout, 1) == -1)
+					return (panic(ERR_DUP2, data, 1));
+			}
 			if (waitpid(pid, &status, 0) == -1)
 				return (panic(ERR_WAITPID, data, 1));
 			if (WIFEXITED(status))
