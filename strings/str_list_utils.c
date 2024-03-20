@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/20 10:20:22 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/20 13:00:34 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,13 +282,13 @@ void	write_args_to_str(char * str, t_execcmd *cmd, size_t size)
 	char 	**pnt;
 
 	pnt = cmd->argv;
-	i = -1;
+	i = 0;
 	j = 0;
-	while (++i < size && pnt[j]) 
+	while (i < size && pnt[j]) 
 	{
 		len = ft_strlen(pnt[j]);
-//		printf("only_var = %d\n", only_var);
-		if (is_arg_with_only_var(cmd, j) && ++j)
+//		printf("arg-j=%zu, i=%zu  ->%s<-, len=%zu\n", j, i, str, len);
+		if (len == 0 && is_arg_with_only_var(cmd, j) && ++j)
 			continue ;
 		if (len == 0)
 			ft_strlcpy(str + i++, ASCII_EMPTY_X, 2);
@@ -296,9 +296,10 @@ void	write_args_to_str(char * str, t_execcmd *cmd, size_t size)
 		{
 			ft_strlcpy(str + i, pnt[j], len + 1);
 			i += (size_t)len;
+	    	str[i] = ASCII_SEPARATOR;
 		}
-	    str[i] = ASCII_SEPARATOR;
 		j++;
+		i++;
 	}
 }
 
@@ -343,6 +344,7 @@ int	make_argv_expanded(t_execcmd *cmd)
 		return (1);
 	if (!*joined_arg)
 	{
+//		printf("hi\n");
 		cmd->argc = 0;
 		return (0);
 	}
