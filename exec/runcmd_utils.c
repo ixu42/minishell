@@ -20,53 +20,61 @@ int	run_redir(t_cmd *cmd, t_data *data)
 	process = data->proc;
 	if (!data->under_pipe)
 	{
-		if (make_filename(rcmd, data))
+		while (1)
 		{
-			ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
-			if (!data->under_pipe)
+			if (make_filename(rcmd, data))
 			{
+				ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
+				if (!data->under_pipe)
+				{
+					if (dup2(data->fd_stdin, 0) == -1)
+						return (panic(ERR_DUP2, data, 1));
+					if (dup2(data->fd_stdout, 1) == -1)
+						return (panic(ERR_DUP2, data, 1));
+				}
+				return (1);
+			}
+		//	printf("run_redir: file=->%s<-\n", rcmd->file);
+		/*
+			if (rcmd->mode == -1) // define a macro?
+			{
+				get_input(data, rcmd->file); // rcmd->file: delimiter
+				if (data->status == 1)
+				{
+					if (process == CHILD_PROC)
+						free_n_exit(data, 1);
+					return (1);
+				}
+				fd = open(".heredoc", O_RDONLY);
+				if (fd == -1)
+					return (panic(".heredoc", data, 1));
+			}
+			else
+		*/
+			fd = open(rcmd->file, rcmd->mode, 0644);
+			if (fd == -1)
+			{
+				// printf("paaaniiic\n");
+				// maybe, something wrong here. check `<infile <missingfile >tempfile.txt
+				// dprintf(2, "debug\n");
 				if (dup2(data->fd_stdin, 0) == -1)
 					return (panic(ERR_DUP2, data, 1));
 				if (dup2(data->fd_stdout, 1) == -1)
 					return (panic(ERR_DUP2, data, 1));
+				return (panic(rcmd->file, data, 1));
+				// dprintf(2, "debug1\n");
 			}
-			return (1);
-		}
-	//	printf("run_redir: file=->%s<-\n", rcmd->file);
-	/*
-		if (rcmd->mode == -1) // define a macro?
-		{
-			get_input(data, rcmd->file); // rcmd->file: delimiter
-			if (data->status == 1)
-			{
-				if (process == CHILD_PROC)
-					free_n_exit(data, 1);
-				return (1);
-			}
-			fd = open(".heredoc", O_RDONLY);
-			if (fd == -1)
-				return (panic(".heredoc", data, 1));
-		}
-		else
-	*/
-		fd = open(rcmd->file, rcmd->mode, 0644);
-		if (fd == -1)
-		{
-			// printf("paaaniiic\n");
-			// maybe, something wrong here. check `<infile <missingfile >tempfile.txt
-			// dprintf(2, "debug\n");
-			if (dup2(data->fd_stdin, 0) == -1)
+			if (dup2(fd, rcmd->fd) == -1)
 				return (panic(ERR_DUP2, data, 1));
-			if (dup2(data->fd_stdout, 1) == -1)
-				return (panic(ERR_DUP2, data, 1));
-			return (panic(rcmd->file, data, 1));
-			// dprintf(2, "debug1\n");
+			data->under_redir = 1;
+			if (close(fd) == -1)
+				return (panic("ERR_CLOSE?", data, 1));
+			if (rcmd->cmd != NULL && rcmd->cmd->type == REDIR)
+				rcmd = (t_redircmd *)rcmd->cmd;
+			else
+				break ;
 		}
-		if (dup2(fd, rcmd->fd) == -1)
-			return (panic(ERR_DUP2, data, 1));
-		data->under_redir = 1;
-		if (close(fd) == -1)
-			return (panic("ERR_CLOSE?", data, 1));
+		// dprintf(2, "rcmd->file-%s\n", rcmd->file);
 	}
 	data->proc = PARENT_PROC;
 	runcmd(rcmd->cmd, data);
@@ -133,18 +141,25 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 		if (pcmd->left->type == REDIR)
 		{
 			rcmd = (t_redircmd *)pcmd->left;
-			if (make_filename(rcmd, data))
+			while (1)
 			{
-				ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
-				return (1);
+				if (make_filename(rcmd, data))
+				{
+					ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
+					return (1);
+				}
+				int	fd = open(rcmd->file, rcmd->mode, 0644);
+				if (fd == -1)
+					return (panic(rcmd->file, data, 1));
+				if (dup2(fd, rcmd->fd) == -1)
+					return (panic(ERR_DUP2, data, 1));
+				if (close(fd) == -1)
+					return (panic(ERR_CLOSE, data, 1));
+				if (rcmd->cmd != NULL && rcmd->cmd->type == REDIR)
+					rcmd = (t_redircmd *)rcmd->cmd;
+				else
+					break ;
 			}
-			int	fd = open(rcmd->file, rcmd->mode, 0644);
-			if (fd == -1)
-				return (panic(rcmd->file, data, 1));
-			if (dup2(fd, rcmd->fd) == -1)
-				return (panic(ERR_DUP2, data, 1));
-			if (close(fd) == -1)
-				return (panic(ERR_CLOSE, data, 1));
 		}
 		runcmd(pcmd->left, data);
 	}
@@ -164,18 +179,25 @@ int	run_pipe(t_cmd *cmd, t_data *data)
 		if (pcmd->right->type == REDIR)
 		{
 			rcmd = (t_redircmd *)pcmd->right;
-			if (make_filename(rcmd, data))
+			while (1)
 			{
-				ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
-				return (1);
-			}
-			int	fd = open(rcmd->file, rcmd->mode, 0644);
-			if (fd == -1)
-				return (panic(rcmd->file, data, 1));
-			if (dup2(fd, rcmd->fd) == -1)
-				return (panic(ERR_DUP2, data, 1));
-			if (close(fd) == -1)
-				return (panic(ERR_CLOSE, data, 1));
+				if (make_filename(rcmd, data))
+				{
+					ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
+					return (1);
+				}
+				int	fd = open(rcmd->file, rcmd->mode, 0644);
+				if (fd == -1)
+					return (panic(rcmd->file, data, 1));
+				if (dup2(fd, rcmd->fd) == -1)
+					return (panic(ERR_DUP2, data, 1));
+				if (close(fd) == -1)
+					return (panic(ERR_CLOSE, data, 1));
+				if (rcmd->cmd != NULL && rcmd->cmd->type == REDIR)
+					rcmd = (t_redircmd *)rcmd->cmd;
+				else
+					break ;
+			}	
 		}
 		runcmd(pcmd->right, data);
 	}
