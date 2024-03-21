@@ -2,9 +2,9 @@
 
 int	panic_heredoc(char *err_msg, t_strstate *state, int err_code)
 {
-		if (ft_dprintf(2, "%s", PMT) == -1)
-			perror(PMT_ERR_WRITE);
-		perror(err_msg);
+	if (ft_dprintf(2, "%s", PMT) == -1)
+		perror(PMT_ERR_WRITE);
+	perror(err_msg);
 	state->flag |= err_code;
 	return (1);
 }
@@ -32,7 +32,8 @@ static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimite
 		}
 		if (line == NULL)
 			return ;
-		if (ft_strncmp(line, delimiter, len) == 0 && (line[len] == '\n' || line[len] == '\0'))
+		if (ft_strncmp(line, delimiter, len) == 0 \
+			&& (line[len] == '\n' || line[len] == '\0'))
 			break ;
 		if (ft_putstr_fd(line, fd_heredoc) == -1)
 		{
@@ -51,9 +52,9 @@ static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimite
 
 char	*heredoc_filename(int n)
 {
-	char *number;
+	char	*number;
 	char	*ret;
-	
+
 	number = ft_itoa(n);
 	if (!number)
 		return (NULL);
@@ -65,7 +66,7 @@ char	*heredoc_filename(int n)
 int	get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter)
 {
 	int		fd_heredoc;
-	
+
 	state->heredoc = heredoc_filename(ast->heredoc);
 	if (!state->heredoc)
 		return (panic_heredoc(ERR_MALLOC, state, MALLOC_ERROR));
@@ -74,9 +75,9 @@ int	get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter)
 	unlink(state->heredoc);
 	fd_heredoc = open(state->heredoc, O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd_heredoc == -1)
-		return (panic_heredoc("error opening .heredoc", state, HEREDOC_OPEN_ERR));
+		return (panic_heredoc(ERR_HEREDOC, state, HEREDOC_OPEN_ERR));
 	convert_input_here(state, fd_heredoc, delimiter);
 	if (close(fd_heredoc) == -1)
-		return(panic_heredoc("error closing .heredoc", state, HEREDOC_OPEN_ERR));
+		return (panic_heredoc(ERR_HEREDOC, state, HEREDOC_OPEN_ERR));
 	return (0);
 }

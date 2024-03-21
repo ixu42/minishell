@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/20 13:14:00 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/21 08:30:00 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ void	replace_space_by(t_strcmd *str, int c)
 void	duplicate_data_in_str(t_strcmd *str)
 {
 	char	*copy;
-	
+
 	copy = ft_strdup(str->start);
-	str->start  = copy;
+	str->start = copy;
 	str->end = copy + ft_strlen(copy);
 }
 
@@ -91,7 +91,8 @@ void	expand_var_in_strlist(t_strcmd *str, t_data *data)
 	{
 		if (str->type == STR_NODE_VAR || str->type == STR_NODE_VAR_P)
 		{
-			if (!name_in_env_lst(data->env_lst, str->start, str->end - str->start, &node))
+			if (!name_in_env_lst(data->env_lst, str->start, \
+				str->end - str->start, &node))
 				str->end = str->start;
 			else
 				set_variable_node(str, node);

@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/16 12:27:05 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/21 08:52:40 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,21 @@
 
 int	fork1_test(void)	// Fork but panics on failure.
 {
-	int pid;
+	int	pid;
 
 	pid = fork();
-	if(pid == -1)
+	if (pid == -1)
 		ft_dprintf(2, "fork");
-	return pid;
+	return (pid);
 }
 
-void    ft_print_char2d(char **split)
+void	ft_print_char2d(char **split)
 {
-    size_t  i;
+	size_t	i;
 
-    i = 0;
-    while (split[i])
-        ft_dprintf(2, "\t->%s<-\n", split[i++]);
+	i = 0;
+	while (split[i])
+		ft_dprintf(2, "\t->%s<-\n", split[i++]);
 }
 
 /*
@@ -47,28 +47,20 @@ char *locate_var_env(char *start, char *end, t_env *env_list)
 void	printstr(t_strcmd *str, t_data *data)
 {
 	t_strcmd	*first;
-	char *start;
-	char *end;
-	char *joined;
-	int i;
+	char		*start;
+	char		*end;
+	char		*joined;
+	int			i;
 
 	i = 0;
 	first = str;
-	while (str !=NULL)
+	while (str != NULL)
 	{
 		start = str->start;
 		end = str->end;
 		ft_dprintf(2, "   |   |---->");
 		write(2, start, end - start);
 		ft_dprintf(2, "<-\t type=%d, flag=%d\n", str->type, str->flag);
-		/*
-		if (str->type == STR_NODE_VAR || str->type == STR_NODE_VAR_P)
-		{
-			start = locate_var_env(start, end, data->env_lst);
-			if (start)
-				printf("var=%s\n", start);
-		}
-		*/
 		str = str->next;
 		i++;
 	}
@@ -82,16 +74,16 @@ void	printstr(t_strcmd *str, t_data *data)
 
 void	printargs(t_argcmd *args, t_data *data)
 {
-	char *start;
-	char *end;
-	int i;
+	char	*start;
+	char	*end;
+	int		i;
 
 	i = 0;
 	while (args != NULL)
 	{
 		start = args->start;
 		end = args->end;
-		ft_dprintf(2,"   |--arg-%d\t->", i);
+		ft_dprintf(2, "   |--arg-%d\t->", i);
 		if (start < end)
 			write(2, start, end - start);
 		ft_dprintf(2, "<- flag=%d\n",args->flag);
@@ -108,26 +100,20 @@ void	printargs(t_argcmd *args, t_data *data)
 // test version of runcmd for testing AST
 void	runcmd_test(t_cmd *cmd, t_data *data)
 {
-	int p[2];
-	t_execcmd *ecmd;
-	t_listcmd *lcmd;
-	t_pipecmd *pcmd;
-	t_redircmd *rcmd;
+	int			p[2];
+	t_execcmd	*ecmd;
+	t_listcmd	*lcmd;
+	t_pipecmd	*pcmd;
+	t_redircmd	*rcmd;
 
-	if(cmd == NULL)
-	{
+	if (cmd == NULL)
 		printf("Error: NULL Node in AST\n");
-		//exit(1);
-	}
 	else if (cmd->type == EXEC)
 	{
-		ecmd = (t_execcmd*)cmd;
+		ecmd = (t_execcmd *)cmd;
 		make_argv(ecmd, data);
-		if(ecmd->argv[0] == 0)
-		{
+		if (ecmd->argv[0] == 0)
 			ft_dprintf(2, "runcmd_test: EXEC argv is empty\n");
-//			exit (1);
-		}
 		ft_dprintf(2, "EXEC:   flag=%d, argc=%d\n", ecmd->flag, ecmd->argc);
 		ft_dprintf(2, "    argv=\n");
 		ft_print_char2d(ecmd->argv);
@@ -136,16 +122,17 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	}
 	else if (cmd->type == REDIR)
 	{
-		rcmd = (t_redircmd*)cmd;
+		rcmd = (t_redircmd *)cmd;
 		make_filename(rcmd, data);
-		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d, flag=%d);\n", rcmd->file, rcmd->mode,rcmd->fd, rcmd->flag);
+		ft_dprintf(2, "REDIR: file=%s, mode=%d, fd=%d, flag=%d);\n", \
+			rcmd->file, rcmd->mode, rcmd->fd, rcmd->flag);
 		printstr(rcmd->str, data);
 		runcmd_test(rcmd->cmd, data);
 	}
 	else if (cmd->type == LIST)
 	{
-		lcmd = (t_listcmd*)cmd;
-		if(fork1_test() == 0)
+		lcmd = (t_listcmd *)cmd;
+		if (fork1_test() == 0)
 		{
 			runcmd_test(lcmd->left, data);
 			exit (0);
@@ -155,8 +142,8 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	}
 	else if (cmd->type == AND_CMD)
 	{
-		lcmd = (t_listcmd*)cmd;
-		if(fork1_test() == 0)
+		lcmd = (t_listcmd *)cmd;
+		if (fork1_test() == 0)
 		{
 			runcmd_test(lcmd->left, data);
 			exit (0);
@@ -167,8 +154,8 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	}
 	else if (cmd->type == OR_CMD)
 	{
-		lcmd = (t_listcmd*)cmd;
-		if(fork1_test() == 0)
+		lcmd = (t_listcmd *)cmd;
+		if (fork1_test() == 0)
 		{
 			runcmd_test(lcmd->left, data);
 			exit (0);
@@ -179,7 +166,7 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 	}
 	else if (cmd->type == PIPE)
 	{
-		pcmd = (t_pipecmd*)cmd;
+		pcmd = (t_pipecmd *)cmd;
 		printf("make pipe,  flag=%d\n", cmd->flag);
 		if (fork1_test() == 0){
 			runcmd_test(pcmd->left, data);
@@ -190,7 +177,7 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 			runcmd_test(pcmd->right, data);
 			exit (0);
 		}
-		wait(NULL);
+		wait (NULL);
 	}
 	else
 		ft_dprintf(2, "Error: undefined node of AST\n");
