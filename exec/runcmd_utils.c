@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:13:56 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 16:20:48 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/21 23:20:45 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	fork1(t_data *data)
 	return (pid);
 }
 
-/* int	recover_stdin_n_stdout(t_data *data)
+int	restore_stdin_n_stdout(t_data *data)
 {
 	if (!data->under_pipe && data->under_redir)
 	{
@@ -31,48 +31,6 @@ int	fork1(t_data *data)
 		if (dup2(data->fd_stdout, 1) == -1)
 			return (panic(ERR_DUP2, data, 1));
 	}
-} */
-
-int	run_redir(t_cmd *cmd, t_data *data)
-{
-	t_redircmd	*rcmd;
-	int			process;
-	int			fd;
-
-	rcmd = (t_redircmd *)cmd;
-	data->under_redir = 1;
-	if (make_filename(rcmd, data))
-	{
-		if (!data->under_pipe)
-		{
-			if (dup2(data->fd_stdin, 0) == -1)
-				return (panic(ERR_DUP2, data, 1));
-			if (dup2(data->fd_stdout, 1) == -1)
-				return (panic(ERR_DUP2, data, 1));
-		}
-		return (panic(NULL, data, 1));
-	}
-	fd = open(rcmd->file, rcmd->mode, 0644);
-	if (fd == -1)
-	{
-		if (!data->under_pipe)
-		{
-			if (dup2(data->fd_stdin, 0) == -1)
-				return (panic(ERR_DUP2, data, 1));
-			if (dup2(data->fd_stdout, 1) == -1)
-				return (panic(ERR_DUP2, data, 1));
-		}
-		return (panic(rcmd->file, data, 1));
-	}
-	if (dup2(fd, rcmd->fd) == -1)
-		return (panic(ERR_DUP2, data, 1));
-	if (close(fd) == -1)
-		return (panic(ERR_CLOSE, data, 1));
-	process = data->proc;
-	data->proc = PARENT_PROC;
-	runcmd(rcmd->cmd, data);
-	if (process == CHILD_PROC)
-		free_n_exit(data, data->status);
 	return (0);
 }
 

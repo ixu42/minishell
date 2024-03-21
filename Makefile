@@ -46,6 +46,7 @@ STRINGS_FILES = str_list_utils.c \
 EXEC_FILES = runcmd.c \
 				runcmd_utils.c \
 				run_exec.c \
+				run_redir.c \
 				get_cmd_path.c \
 				environment.c
 BUILTINS_FILES = builtins.c \

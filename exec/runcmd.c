@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:13:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 15:13:27 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/21 23:20:47 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		// dprintf(2, "exec\n");
 		// -------------------
 		run_exec(cmd, data);
-		if (data->status == 1)
+		if (data->status)
 			return ;
 	}
 	else if (cmd->type == REDIR)
@@ -34,7 +34,7 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		// dprintf(2, "redir\n");
 		// -------------------
 		run_redir(cmd, data);
-		if (data->status == 1)
+		if (data->status)
 			return ;
 	}
 	else if (cmd->type == AND_CMD)
@@ -57,7 +57,7 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		// dprintf(2, "pipe\n");
 		// -------------------
 		run_pipe(cmd, data);
-		if (data->status == 1)
+		if (data->status)
 			return ;
 	}
 }

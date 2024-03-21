@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:56 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 15:16:57 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/21 23:01:26 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,29 @@ static size_t	lst_len(t_env *lst)
 	return (len);
 }
 
-char	**copy_env_lst_to_arr(t_env *env_lst)
+static void	copy_to_str(char *s, t_env *node)
+{
+	int	j;
+	int	k;
+
+	j = -1;
+	while (node->name[++j] != '\0')
+		s[j] = node->name[j];
+	s[j] = '=';
+	k = -1;
+	while (node->value[++k] != '\0')
+		s[++j] = node->value[k];
+	s[++j] = '\0';
+}
+
+static void	copy_lst_to_arr(t_env *env_lst, char **env_arr, t_data *data)
 {
 	t_env	*tmp;
-	char	**env_arr;
-	size_t	arr_len;
 	size_t	str_len;
 	int		i;
-	int		j;
-	int		k;
 
-	tmp = env_lst;
-	arr_len = lst_len(tmp);
-	env_arr = (char **)malloc(sizeof(char *) * (arr_len + 1));
-	if (env_arr == NULL)
-		print_error_n_exit(ERR_MALLOC); // to be updated
 	i = 0;
+	tmp = env_lst;
 	while (tmp != NULL)
 	{
 		if (tmp->value != NULL)
@@ -52,21 +59,26 @@ char	**copy_env_lst_to_arr(t_env *env_lst)
 			env_arr[i] = (char *)malloc(sizeof(char) * str_len);
 			if (env_arr[i] == NULL)
 			{
-				free_arr(env_arr); // to be updated
-				print_error_n_exit(ERR_MALLOC); // to be updated
+				free_arr(env_arr);
+				panic(ERR_MALLOC, data, 1);
 			}
-			j = -1;
-			while (tmp->name[++j] != '\0')
-				env_arr[i][j] = tmp->name[j];
-			env_arr[i][j] = '=';
-			k = -1;
-			while (tmp->value[++k] != '\0')
-				env_arr[i][++j] = tmp->value[k];
-			env_arr[i][++j] = '\0';
+			copy_to_str(env_arr[i], tmp);
 			i++;
 		}
 		tmp = tmp->next;
 	}
 	env_arr[i] = NULL;
+}
+
+char	**copy_env_lst_to_arr(t_env *env_lst, t_data *data)
+{
+	char	**env_arr;
+	size_t	arr_len;
+
+	arr_len = lst_len(env_lst);
+	env_arr = (char **)malloc(sizeof(char *) * (arr_len + 1));
+	if (env_arr == NULL)
+		panic(ERR_MALLOC, data, 1);
+	copy_lst_to_arr(env_lst, env_arr, data);
 	return (env_arr);
 }

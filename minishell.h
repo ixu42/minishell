@@ -331,18 +331,19 @@ int	panic_parser(char *s, int err);
 
 // runcmd() func and its helper funcs
 void	runcmd(t_cmd *cmd, t_data *data);
-int		fork1(t_data *data);
-int		run_exec(t_cmd *cmd, t_data *data);
+void	run_exec(t_cmd *cmd, t_data *data);
 int		run_redir(t_cmd *cmd, t_data *data);
-void	get_input(t_data *data, char *delimiter);
+// void	get_input(t_data *data, char *delimiter);
 void	run_and(t_cmd *cmd, t_data *data);
 void	run_or(t_cmd *cmd, t_data *data);
 int		run_pipe(t_cmd *cmd, t_data *data);
+int		fork1(t_data *data);
+int		restore_stdin_n_stdout(t_data *data);
 // to be removed at some point
 void	runcmd_test(t_cmd *cmd, t_data *data);
 
-// parsing cmd path
 char	*get_cmd_path(char **argv, t_data *data);
+char	**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
 
 // handling builtins
 int		exec_echo(char **argv);
@@ -362,7 +363,6 @@ int		run_builtin(char **argv, t_data *data);
 // handling env
 char	**copy_env(char **envp);
 t_env	*copy_env_arr_to_lst(char **envp);
-char	**copy_env_lst_to_arr(t_env *env_lst);
 char	**get_env_paths(char **envp, t_data *data);
 
 // freeing
@@ -381,7 +381,7 @@ void	free_n_exit(t_data *data, int status_code);
 
 // readline
 void	rl_clear_history(void);
-void	rl_replace_line (const char *text, int clear_undo);
+void	rl_replace_line(const char *text, int clear_undo);
 
 // string operations
 char	*strlist_join(t_strcmd *str);
