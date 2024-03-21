@@ -31,7 +31,7 @@ void	ft_print_char2d(char **split)
 		ft_dprintf(2, "\t->%s<-\n", split[i++]);
 }
 
-/*
+/* 
 char *locate_var_env(char *start, char *end, t_env *env_list)
 {
 //	char	*value;

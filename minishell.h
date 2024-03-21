@@ -77,7 +77,7 @@
 #define ASCII_SEPARATOR 31
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_REDIR_AMBIG  "ambiguous redirect"
-#define ERR_CODE_SYNTAX 258
+#define ERR_CODE_SYNTAX 2
 #define ENOMEM 12
 
 // macros for termios
