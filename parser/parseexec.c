@@ -347,7 +347,7 @@ t_strcmd	*parsestr(t_strstate *state)
 }
 
 
-//parseexec.c
+// parseexec.c
 int	extend_arg_node(t_argcmd **arg, char *q, char *eq)
 {
 	t_strcmd	*str_node;
