@@ -47,6 +47,8 @@ void	data_init(t_data *data, char **envp)
 	data->builtin = 0;
 	data->proc = PARENT_PROC;
 	data->status = 0;
+	data->under_pipe = 0;
+	data->under_redir = 0;
 	data->fd_stdin = dup(0);
 	if (data->fd_stdin == -1)
 		print_error_n_exit(ERR_DUP);

@@ -165,6 +165,8 @@ typedef struct s_data
 	char		*stat_str;
 	int			fd_stdin;
 	int			fd_stdout;
+	int			under_pipe;
+	int			under_redir;
 }	t_data;
 
 typedef struct s_arrlist

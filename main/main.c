@@ -42,7 +42,7 @@ int	main(int argc, char **argv, char **envp)
 	// for (int k = 0; envp[k] != NULL; k++)
 	// 	printf("%s\n", envp[k]);
 	// ----------------------------
-	(void)argv;
+	// (void)argv;
 	validate_args(argc);
 	data_init(&data, envp);
 	while (data.status >= 0)
@@ -75,6 +75,7 @@ int	main(int argc, char **argv, char **envp)
 			if (status == 0)
 			{
 		        runcmd(cmd, &data);
+				// getchar();
 			}
 			else if (status == ENOMEM)
 			{
@@ -99,6 +100,8 @@ int	main(int argc, char **argv, char **envp)
 		if (data.status == 131)
 			dprintf(2, "Quit: 3\n");
 		last_sig = 0;
+		data.under_pipe = 0;
+		data.under_redir = 0;
 	}
 	close(data.fd_stdin);
 	close(data.fd_stdout);

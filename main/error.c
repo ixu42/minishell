@@ -94,6 +94,6 @@ int	panic_cmd_not_found(char *msg, t_data *data)
 void	free_n_exit(t_data *data, int status_code)
 {
 	free_data(data);
-	// free tree nodes in child proccesses?
+	// free AST in child proccesses?
 	exit(status_code);
 }
