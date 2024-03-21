@@ -3,8 +3,8 @@
 void	*ft_realloc(void *ptr, size_t old_size, size_t new_size)
 {
 	size_t	copy_size;
-	void		*new_ptr;
-	
+	void	*new_ptr;
+
 	if (!ptr)
 		return (malloc(new_size));
 	if (new_size == 0)
@@ -22,7 +22,7 @@ void	*ft_realloc(void *ptr, size_t old_size, size_t new_size)
 		copy_size = new_size;
 	ft_memcpy(new_ptr, ptr, copy_size);
 	free(ptr);
-	return new_ptr;
+	return (new_ptr);
 }
 
 /*
@@ -37,35 +37,36 @@ typedef struct s_arrlist
 t_arrlist	*create_arrlist(void)
 {
 	t_arrlist	*list;
+
 	list = (t_arrlist *)malloc(sizeof(*list));
 	if (!list)
 		return (NULL);
-	list->data = (char**)malloc(INITIAL_CAPACITY * sizeof(char*));
+	list->data = (char **)malloc(INITIAL_CAPACITY * sizeof(char *));
 	if (list->data == NULL)
 	{
 		free(list);
 		return (NULL);
 	}
-	ft_memset(list->data, 0, INITIAL_CAPACITY * sizeof(char*));
+	ft_memset(list->data, 0, INITIAL_CAPACITY * sizeof(char *));
 	list->size = 0;
 	list->capacity = INITIAL_CAPACITY;
-	return list;
+	return (list);
 }
 
-int	add_string_arrlist(t_arrlist *list, const char* str)
+int	add_string_arrlist(t_arrlist *list, const char *str)
 {
 	size_t	capacity;
 
 	if (list->size >= list->capacity - 1)
 	{
 		capacity = list->capacity * GROWTH_FACTOR;
-		list->data = (char**)ft_realloc(list->data, \
-			list->capacity * sizeof(char*), capacity * sizeof(char*));
+		list->data = (char **)ft_realloc(list->data, \
+			list->capacity * sizeof(char *), capacity * sizeof(char *));
 		list->capacity = capacity;
 		if (list->data == NULL)
 			return (1);
 	}
-	list->data[list->size] = ft_strdup(str); // duplicate the string
+	list->data[list->size] = ft_strdup(str);
 	if (list->data[list->size] == NULL)
 		return (1);
 	list->size++;
