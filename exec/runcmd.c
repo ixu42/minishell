@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   runcmd.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/21 15:13:23 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/21 15:13:27 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 /* the parameter process to indicate if runcmd 
@@ -21,12 +33,9 @@ void	runcmd(t_cmd *cmd, t_data *data)
 		// ------ debug ------
 		// dprintf(2, "redir\n");
 		// -------------------
-		// dprintf(2, "debug2\n");
 		run_redir(cmd, data);
-		// dprintf(2, "debug3\n");
 		if (data->status == 1)
 			return ;
-		// dprintf(2, "debug4\n");
 	}
 	else if (cmd->type == AND_CMD)
 	{

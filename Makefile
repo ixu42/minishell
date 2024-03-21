@@ -47,8 +47,7 @@ EXEC_FILES = runcmd.c \
 				runcmd_utils.c \
 				run_exec.c \
 				get_cmd_path.c \
-				environment.c \
-				heredoc.c
+				environment.c
 BUILTINS_FILES = builtins.c \
 					echo.c \
 					directory.c \

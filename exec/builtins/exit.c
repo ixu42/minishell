@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/21 15:16:12 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/21 15:16:13 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../minishell.h"
 
 static int	is_valid(char *arg)
@@ -21,7 +33,7 @@ static void	perror_n_exit(char *msg, int exit_code)
 /* Exit the shell, returning a status of n to the shell’s parent. 
 If n is omitted, the exit status is that of the last command executed */
 
-int	exec_exit(char **argv)
+int	exec_exit(char **argv) // clean everything before exit
 {
 	int	err;
 
