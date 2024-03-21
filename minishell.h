@@ -77,8 +77,8 @@
 #define ASCII_SEPARATOR 31
 #define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 #define ERR_REDIR_AMBIG  "ambiguous redirect"
-#define ERR_CODE_SYNTAX 2
-#define ENOMEM 12
+#define ERR_CODE_SYNTAX 258
+//#define ENOMEM 12
 
 // macros for termios
 # define SET_ECHOCTL 1
@@ -131,7 +131,9 @@ typedef enum e_parse_error
 	SYNTAX_ERROR = 0x08,
 	MALLOC_ERROR = 0x10,
 	DIR_OPEN_ERR = 0x20,
-	HEREDOC_OPEN_ERR = 0x40
+	HEREDOC_OPEN_ERR = 0x40,
+	SIGNAL_CNRL_C = 0x80,
+	ENOMEM_ERR = 0x100
 }	t_parse_error;
 
 typedef enum e_builtin

@@ -18,7 +18,11 @@ static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimite
 
 	len = ft_strlen(delimiter);
 	if (heredoc_signal_handler() == 1)
+	{
 		panic_heredoc(ERR_SIGACTION, state, HEREDOC_OPEN_ERR);
+		state->flag |= HEREDOC_OPEN_ERR;
+		return ;
+	}
 	// do we need to return here after signal handler?
 	// we have not the same behavior at alex's pc for `<<eof cat` when Cntl+D
 	while (1)
@@ -27,7 +31,8 @@ static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimite
 		line = get_next_line(0);
 		if (last_sig)
 		{
-			state->flag |= HEREDOC_OPEN_ERR;
+			//state->flag |= HEREDOC_OPEN_ERR;
+			state->flag |= SIGNAL_CNRL_C; 
 			break ;
 		}
 		if (line == NULL)

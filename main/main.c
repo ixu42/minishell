@@ -77,14 +77,16 @@ int	main(int argc, char **argv, char **envp)
 		        runcmd(cmd, &data);
 				// getchar();
 			}
-			else if (status == ENOMEM)
+			else if (status == ENOMEM_ERR)
 			{
+				// ?? data->cmd_path 
 				freecmd(cmd);
 				//        clean data
 				break ; //do we need to break?
 			}
 			else
 				data.status = status;
+			// ??? free(data->cmd_path);
 			freecmd(cmd);
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
 			// ------ print out envp ------
@@ -94,7 +96,7 @@ int	main(int argc, char **argv, char **envp)
 			// dprintf(2, "\033[0;35m[status: %d]\033[0m\n", data.status);
 			// ------
 		}
-		free(data.buf);
+		//free(data.buf);
 		if (data.status == 130)
 			dprintf(2, "\n");
 		if (data.status == 131)
@@ -108,7 +110,8 @@ int	main(int argc, char **argv, char **envp)
 	unlink(".heredoc");
 	free_data(&data);
 	rl_clear_history();
-//	while (1)
-//		;
+	// printf("about to exit\n");
+	//while (1)
+	//	;
 	exit(EXIT_SUCCESS);
 }

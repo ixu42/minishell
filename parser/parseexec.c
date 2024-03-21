@@ -195,7 +195,7 @@ t_strcmd	*parse_single(t_strstate *state)
 		s++;
 	else
 	{
-		ft_dprintf(2, "%s syntax error: unclosed single quote \'\n", PMT);
+		ft_dprintf(2, "%ssyntax error: unclosed single quote \'\n", PMT);
 		state->flag |= SYNTAX_ERR_UNCLOSED;
 	}
 	state->pos = s;
@@ -288,7 +288,7 @@ t_strcmd	*parse_double(t_strstate *state)
 	}
 	if (state->pos == state->finish && state->d_quotes != 0)
 	{
-		ft_dprintf(2, "%s syntax error: unclosed double quote \"\n", PMT);
+		ft_dprintf(2, "%ssyntax error: unclosed double quote \"\n", PMT);
 		state->flag |= SYNTAX_ERR_UNCLOSED;
 	}
 	node->flag |= state->flag;

@@ -98,12 +98,14 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 	if (cmd->flag & SYNTAX_ERR_UNCLOSED)
 		return (ERR_CODE_SYNTAX);
 	if (cmd->flag & MALLOC_ERROR)
-		return (panic_parser(ERR_MALLOC, ENOMEM));
+		return (panic_parser(ERR_MALLOC, ENOMEM_ERR));
 	else if (cmd->flag & HEREDOC_OPEN_ERR)
-		return (ENOMEM);
+		return (ENOMEM_ERR);
+	else if (cmd->flag & SIGNAL_CNRL_C)
+		return (SIGNAL_CNRL_C);
 	else if (cmd->flag || s != es)
 	{
-		ft_dprintf(2, "%s %s ", PMT, ERR_SYNTAX_UNEXP);
+		ft_dprintf(2, "%s%s ", PMT, ERR_SYNTAX_UNEXP);
 		tok = gettoken(&s, es, &str[0], &str[1]);
 		if (tok == UNDEFINED_TOK)
 			ft_dprintf(2, "'%c'\n", *str[0]);
@@ -122,7 +124,7 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 t_cmd	*parsecmd(char *s, int *status)
 {
 	char	*es;
-	t_cmd	*cmd;
+	t_cmd	*cmd;	
 	int		ret;
 	t_aststate	*ast;
 
@@ -149,6 +151,6 @@ int	make_ast(t_cmd **p_cmd, char *s)
 
 	*p_cmd = parsecmd(s, &status);
 	if (!*p_cmd)
-		status = ENOMEM;
+		status = ENOMEM_ERR;
 	return (status);
 }
