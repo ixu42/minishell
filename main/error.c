@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/21 15:14:24 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/22 17:15:07 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 void	validate_args(int argc)
@@ -25,11 +37,12 @@ void	print_error_n_exit(char *err_msg)
 	exit(EXIT_FAILURE);
 }
 
-// (1) print error message, (2) set error flag to 1, and (3) return NULL
+/* used in implementing env builtin. (1) print error message, 
+(2) set error flag to 1, and (3) return NULL */
 
 t_env	*error_handler(char *err_msg, int *err_flag)
 {
-	if (ft_putstr_fd("minishell: ", 2) == -1)
+	if (ft_putstr_fd(PMT, 2) == -1)
 	{
 		perror(PMT_ERR_WRITE);
 		*err_flag = 1;
@@ -40,15 +53,19 @@ t_env	*error_handler(char *err_msg, int *err_flag)
 	return (NULL);
 }
 
-/* (1) print error message, (2) if in child process, 
-free all heap allocated memory and exit with status code; 
-if in parent process, data->status is set to status code */
+/* (1) print error message (if msg is NULL, no error msg 
+will be printed), (2) if in child process, free all heap 
+allocated memory and exit with status code; if in parent 
+process, data->status is set to status code */
 
 int	panic(char *msg, t_data *data, int status_code)
 {
-	if (ft_dprintf(2, "%s", PMT) == -1)
-		perror(PMT_ERR_WRITE);
-	perror(msg);
+	if (msg != NULL)
+	{
+		if (ft_dprintf(2, "%s", PMT) == -1)
+			perror(PMT_ERR_WRITE);
+		perror(msg);
+	}
 	if (data->proc == CHILD_PROC)
 	{
 		free_data(data);
@@ -81,6 +98,7 @@ int	panic_cmd_not_found(char *msg, t_data *data)
 		perror(PMT_ERR_WRITE);
 	if (data->proc == CHILD_PROC)
 	{
+		free(data->cmd_path);
 		free_data(data);
 		// free tree nodes?
 		exit(127);

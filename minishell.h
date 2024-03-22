@@ -54,9 +54,7 @@
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
 # define PMT_ERR_PRINTF "\033[0;31mLiteShell: \033[0mprintf error"
 # define PMT_ERR_GETCWD "\033[0;31mLiteShell: \033[0mgetcwd error"
-// # define EXIT_CMD_PERM_ERR 126
-// # define EXIT_CMD_NOT_FOUND 127
-# define PMT "\033[0;31mLiteShell: \033[0m"
+# define PMT_ERR_MALLOC "\033[0;31mLiteShell: \033[0mmalloc error"
 
 // macros for processes
 # define PARENT_PROC 0
@@ -159,6 +157,7 @@ typedef struct s_data
 	t_env		*env_lst;
 	char		**env_paths;
 	char		*cmd_path;
+	char		*pwd;
 	t_builtin	builtin;
 	int			proc;
 	int			status;
@@ -331,23 +330,26 @@ int	panic_parser(char *s, int err);
 
 // runcmd() func and its helper funcs
 void	runcmd(t_cmd *cmd, t_data *data);
-int		fork1(t_data *data);
-int		run_exec(t_cmd *cmd, t_data *data);
+void	run_exec(t_cmd *cmd, t_data *data);
 int		run_redir(t_cmd *cmd, t_data *data);
-void	get_input(t_data *data, char *delimiter);
+// void	get_input(t_data *data, char *delimiter);
 void	run_and(t_cmd *cmd, t_data *data);
 void	run_or(t_cmd *cmd, t_data *data);
 int		run_pipe(t_cmd *cmd, t_data *data);
+int		fork1(t_data *data);
+int		restore_stdin_n_stdout(t_data *data);
 // to be removed at some point
 void	runcmd_test(t_cmd *cmd, t_data *data);
 
-// parsing cmd path
 char	*get_cmd_path(char **argv, t_data *data);
+char	**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
 
 // handling builtins
+int		is_builtin(char **argv, t_data **data);
+int		run_builtin(char **argv, t_data *data);
 int		exec_echo(char **argv);
-int		exec_exit(char **argv);
-int		exec_cd(char **argv, t_env *env_lst);
+int		exec_exit(char **argv, t_data *data);
+int		exec_cd(char **argv, t_data *data);
 int		exec_pwd(char **argv);
 int		exec_export(char **argv, t_env *env_lst);
 int		exec_unset(char **argv, t_env *env_lst);
@@ -356,13 +358,10 @@ int		name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
 char	*get_value(char *name_value_str, t_env *new_node, int *err_flag);
 t_env	*get_node(char *name_value_str);
 void	lst_append(t_env **env_lst, t_env *new_node);
-int		is_builtin(char **argv, t_data **data);
-int		run_builtin(char **argv, t_data *data);
 
 // handling env
 char	**copy_env(char **envp);
 t_env	*copy_env_arr_to_lst(char **envp);
-char	**copy_env_lst_to_arr(t_env *env_lst);
 char	**get_env_paths(char **envp, t_data *data);
 
 // freeing
@@ -381,7 +380,7 @@ void	free_n_exit(t_data *data, int status_code);
 
 // readline
 void	rl_clear_history(void);
-void	rl_replace_line (const char *text, int clear_undo);
+void	rl_replace_line(const char *text, int clear_undo);
 
 // string operations
 char	*strlist_join(t_strcmd *str);
