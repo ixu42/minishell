@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   data_init.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/22 20:29:16 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/22 20:45:51 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 /* copy environment variables from array(char **envp) 
@@ -49,6 +61,8 @@ void	data_init(t_data *data, char **envp)
 	data->status = 0;
 	data->under_pipe = 0;
 	data->under_redir = 0;
+	data->builtin = 0;
+	data->status = 0;
 	data->fd_stdin = dup(0);
 	if (data->fd_stdin == -1)
 		print_error_n_exit(ERR_DUP);
@@ -56,18 +70,7 @@ void	data_init(t_data *data, char **envp)
 	if (data->fd_stdout == -1)
 		print_error_n_exit(ERR_DUP);
 	data->envp = NULL;
-	data->env_lst = copy_env_arr_to_lst(envp); // free
-	// ------ print out list ------
-	// t_env	*tmp = data->env_lst;
-	// while (tmp != NULL)
-	// {
-	// 	printf("%s=%s\n", tmp->name, tmp->value);
-	// 	tmp = tmp->next;
-	// }
-	// ----------------------------
-	data->env_paths = get_env_paths(envp, data); // free
-	data->pwd = ft_strdup("/Users/ixu/42_minishell"); // protect
-	data->builtin = 0;
-	data->status = 0;
 	data->stat_str = NULL;
+	data->env_lst = copy_env_arr_to_lst(envp);
+	data->env_paths = get_env_paths(envp, data);
 }

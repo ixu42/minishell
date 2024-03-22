@@ -14,7 +14,7 @@ static void	convert_input(t_data *data, int fd_heredoc, char *delimiter)
 	{
 		write(1, "> ", 2);
 		line = get_next_line(0); // modified gnl! return only when hitting a nl char, or in case of empty string a null char
-		if (last_sig)
+		if (g_last_sig)
 		{
 			data->status = 1;
 			break ;

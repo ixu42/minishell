@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/22 20:29:39 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/22 20:50:00 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static void	update_termios(int set_echoctl)
@@ -24,7 +36,7 @@ int	set_signals_interactive(t_data *data)
 	struct sigaction	sa_quit;
 
 	update_termios(UNSET_ECHOCTL);
-	last_sig = 0;
+	g_last_sig = 0;
 	sa_int.sa_handler = &display_pmt_on_nl;
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
@@ -34,7 +46,7 @@ int	set_signals_interactive(t_data *data)
 	}
 	sa_quit.sa_handler = SIG_IGN;
 	sa_quit.sa_flags = 0;
-	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) 
+	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
 	{
 		perror(ERR_SIGACTION);
 		return (1);
@@ -48,7 +60,7 @@ int	set_default_signals(t_data *data)
 	struct sigaction	sa_quit;
 
 	update_termios(SET_ECHOCTL);
-	last_sig = 0;
+	g_last_sig = 0;
 	sa_int.sa_handler = SIG_DFL;
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
@@ -58,7 +70,7 @@ int	set_default_signals(t_data *data)
 	}
 	sa_quit.sa_handler = SIG_DFL;
 	sa_quit.sa_flags = 0;
-	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1) 
+	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
 	{
 		perror(ERR_SIGACTION);
 		return (1);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   data_init_utils.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/22 20:29:09 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/22 21:01:28 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static char	*get_value_in_init(char *name_value_str, t_env *new_node)
@@ -73,9 +85,9 @@ void	print_error_partial_free(char *name, t_data *data)
 	{
 		perror("minishell: write error");
 		free_arr(data->envp);
-		exit(EXIT_FAILURE);
+		exit(1);
 	}
 	perror(name);
 	free_arr(data->envp);
-	exit(EXIT_FAILURE);
+	exit(1);
 }
