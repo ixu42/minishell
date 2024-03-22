@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/22 21:22:40 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -19,14 +31,14 @@
 // stat
 # include <sys/stat.h>
 
-// EXIT_FAILURE, EXIT_SUCCESS, NULL, malloc, free
+// NULL, malloc, free
 # include <stdlib.h>
 
 // waitpid
 # include <sys/wait.h>
 
 // sigaction
-#include <signal.h>
+# include <signal.h>
 
 // tcgetattr, tcsetattr
 # include <termios.h>
@@ -61,29 +73,28 @@
 # define CHILD_PROC 1
 
 // macros for 2d arraylist
-#define INITIAL_CAPACITY 5
-#define GROWTH_FACTOR 2
+# define INITIAL_CAPACITY 5
+# define GROWTH_FACTOR 2
 
 // macros for parsing 
-#define TESTMODE 0
-#define MAXARGS 4
-#define WHITESPACE  " \t\r\n\v"
-#define SYMBOLS "<>|&()"
-#define ASCII_EMPTY_X "\x1d"
-#define ASCII_EMPTY 29
-#define ASCII_WILD 30
-#define ASCII_SEPARATOR 31
-#define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
-#define ERR_REDIR_AMBIG  "ambiguous redirect"
-#define ERR_CODE_SYNTAX 258
-#define ENOMEM 12
+# define TESTMODE 0
+# define MAXARGS 4
+# define WHITESPACE  " \t\r\n\v"
+# define SYMBOLS "<>|&()"
+# define ASCII_EMPTY_X "\x1d"
+# define ASCII_EMPTY 29
+# define ASCII_WILD 30
+# define ASCII_SEPARATOR 31
+# define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
+# define ERR_REDIR_AMBIG  "ambiguous redirect"
+# define ERR_CODE_SYNTAX 258
+# define ENOMEM 12
 
 // macros for termios
 # define SET_ECHOCTL 1
 # define UNSET_ECHOCTL 0
 
-extern volatile sig_atomic_t	last_sig;
-
+extern volatile sig_atomic_t	g_last_sig;
 
 // AST's node types
 typedef enum e_node_type
@@ -101,7 +112,7 @@ typedef enum e_node_type
 	STR_STAR,
 	// to be remove?
 	LIST
-}   t_node_type;
+}	t_node_type;
 
 // types of tockens
 typedef enum e_token
@@ -119,7 +130,7 @@ typedef enum e_token
 	//unused tok
 	LPAR,
 	RPAR
-}   t_token_type;
+}	t_token_type;
 
 typedef enum e_parse_error
 {
@@ -141,7 +152,7 @@ typedef enum e_builtin
 	UNSET_CMD,
 	ENV_CMD,
 	EXIT_CMD,
-}   t_builtin;
+}	t_builtin;
 
 typedef struct s_env
 {
@@ -157,7 +168,6 @@ typedef struct s_data
 	t_env		*env_lst;
 	char		**env_paths;
 	char		*cmd_path;
-	char		*pwd;
 	t_builtin	builtin;
 	int			proc;
 	int			status;
@@ -170,9 +180,9 @@ typedef struct s_data
 
 typedef struct s_arrlist
 {
-	 char		**data;
-	 size_t	size;
-	 size_t	capacity;
+	char	**data;
+	size_t	size;
+	size_t	capacity;
 }	t_arrlist;
 
 typedef struct s_wildcard
@@ -203,28 +213,28 @@ typedef struct s_aststate
 	char	*es;
 	int		flag;
 	int		heredoc;
-} t_aststate;
+}	t_aststate;
 
 typedef struct s_cmd
 {
 	int	type;
-	int		flag;
+	int	flag;
 }	t_cmd;
 
 typedef struct s_strcmd
 {
-	int		type;
-	int		flag;
-	char	*start;
-	char	*end;
+	int				type;
+	int				flag;
+	char			*start;
+	char			*end;
 	struct s_strcmd	*next;
 }	t_strcmd;
 
 typedef struct s_argcmd
 {
-	int		type;
-	int		flag;
-	t_strcmd	*left;
+	int				type;
+	int				flag;
+	t_strcmd		*left;
 	struct s_argcmd	*right;
 	char			*start;
 	char			*end;
@@ -232,27 +242,27 @@ typedef struct s_argcmd
 
 typedef struct s_execcmd
 {
-	int		type;
-	int		flag;
-	char	*sargv[MAXARGS];
-	char	*eargv[MAXARGS];
-	char	**argv;
-	int		argc;
+	int			type;
+	int			flag;
+	char		*sargv[MAXARGS];
+	char		*eargv[MAXARGS];
+	char		**argv;
+	int			argc;
 	t_argcmd	*args;
 	t_arrlist	*list;
 }	t_execcmd;
 
 typedef struct s_redircmd
 {
-	int		type;
-	int		flag;
-	t_cmd	*cmd;
-	char	*file;
-	char	*sfile;
-	char	*efile;
-	int		mode;
-	int		fd;
-	char	*heredoc;
+	int			type;
+	int			flag;
+	t_cmd		*cmd;
+	char		*file;
+	char		*sfile;
+	char		*efile;
+	int			mode;
+	int			fd;
+	char		*heredoc;
 	t_strcmd	*str;
 	t_arrlist	*list;
 }	t_redircmd;
@@ -274,26 +284,26 @@ typedef struct s_listcmd
 }	t_listcmd;
 
 // readline
-void	rl_clear_history(void);
-void	rl_replace_line(const char *text, int clear_undo);
+void		rl_clear_history(void);
+void		rl_replace_line(const char *text, int clear_undo);
 
 // data init
-t_env	*copy_env_arr_to_lst(char **envp);
-char	**get_env_paths(char **envp, t_data *data);
-void	data_init(t_data *data, char **envp);
+t_env		*copy_env_arr_to_lst(char **envp);
+char		**get_env_paths(char **envp, t_data *data);
+void		data_init(t_data *data, char **envp);
 
 // data init utils
-t_env	*get_node_in_init(char *name_value_str);
-void	lst_append_in_init(t_env **env_lst, t_env *new_node);
-void	print_error_partial_free(char *name, t_data *data);
+t_env		*get_node_in_init(char *name_value_str);
+void		lst_append_in_init(t_env **env_lst, t_env *new_node);
+void		print_error_partial_free(char *name, t_data *data);
 
 // signal handling
-int		set_signals_interactive(t_data *data);
-int		set_default_signals(t_data *data);
-int		ignore_signals(void);
-int		heredoc_signal_handler(void);
-void	display_pmt_on_nl(int signum);
-void	move_to_nl(int signum);
+int			set_signals_interactive(t_data *data);
+int			set_default_signals(t_data *data);
+int			ignore_signals(void);
+int			heredoc_signal_handler(void);
+void		display_pmt_on_nl(int signum);
+void		move_to_nl(int signum);
 
 // constructors.c
 t_cmd		*execcmd(void);
@@ -307,93 +317,86 @@ t_strstate	*make_strstate(char *pos, char *finish);
 t_aststate	*make_aststate(char *pos, char *finish);
 
 // parseexec.c
-t_cmd	*parseexec(char **ps, char *es, t_aststate *ast);
-t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast);
-int		get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter);
+t_cmd		*parseexec(char **ps, char *es, t_aststate *ast);
+t_cmd		*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast);
+int			get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter);
 
 // parsecmd.c
 int			make_ast(t_cmd **p_cmd, char *s);
-t_cmd   *parsecmd(char *buf, int *status);
-t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
+t_cmd		*parsecmd(char *buf, int *status);
+t_cmd		*parseblock(char **ps, char *es, t_aststate *ast);
 //t_cmd   *parseline(char**, char*);
 //t_cmd   *parsepipe(char**, char*);
 
 // freecmd.c
-int	freecmd(t_cmd *cmd);
+int			freecmd(t_cmd *cmd);
 
-//parsing_utils.c
-int gettoken(char **ps, char *es, char **q, char **eq);
-int peek(char **ps, char *es, char *toks);
-t_cmd   *nulterminate(t_cmd *cmd);
-const char  *token_type_to_str(t_token_type token);
-int	panic_parser(char *s, int err);
+// parsing_utils.c
+int			gettoken(char **ps, char *es, char **q, char **eq);
+int			peek(char **ps, char *es, char *toks);
+t_cmd		*nulterminate(t_cmd *cmd);
+const char	*token_type_to_str(t_token_type token);
+int			panic_parser(char *s, int err);
 
 // runcmd() func and its helper funcs
-void	runcmd(t_cmd *cmd, t_data *data);
-void	run_exec(t_cmd *cmd, t_data *data);
-int		run_redir(t_cmd *cmd, t_data *data);
-// void	get_input(t_data *data, char *delimiter);
-void	run_and(t_cmd *cmd, t_data *data);
-void	run_or(t_cmd *cmd, t_data *data);
-int		run_pipe(t_cmd *cmd, t_data *data);
-int		fork1(t_data *data);
-int		restore_stdin_n_stdout(t_data *data);
+void		runcmd(t_cmd *cmd, t_data *data);
+void		run_exec(t_cmd *cmd, t_data *data);
+int			run_redir(t_cmd *cmd, t_data *data);
+void		run_and(t_cmd *cmd, t_data *data);
+void		run_or(t_cmd *cmd, t_data *data);
+int			run_pipe(t_cmd *cmd, t_data *data);
+int			fork1(t_data *data);
+int			restore_stdin_n_stdout(t_data *data);
+char		*get_cmd_path(char **argv, t_data *data);
+char		**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
 // to be removed at some point
-void	runcmd_test(t_cmd *cmd, t_data *data);
-
-char	*get_cmd_path(char **argv, t_data *data);
-char	**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
+void		runcmd_test(t_cmd *cmd, t_data *data);
 
 // handling builtins
-int		is_builtin(char **argv, t_data **data);
-int		run_builtin(char **argv, t_data *data);
-int		exec_echo(char **argv);
-int		exec_exit(char **argv, t_data *data);
-int		exec_cd(char **argv, t_data *data);
-int		exec_pwd(char **argv);
-int		exec_export(char **argv, t_env *env_lst);
-int		exec_unset(char **argv, t_env *env_lst);
-int		exec_env(t_env *env_lst);
-int		name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
-char	*get_value(char *name_value_str, t_env *new_node, int *err_flag);
-t_env	*get_node(char *name_value_str);
-void	lst_append(t_env **env_lst, t_env *new_node);
+int			is_builtin(char **argv, t_data **data);
+int			run_builtin(char **argv, t_data *data);
+int			exec_echo(char **argv);
+int			exec_exit(char **argv, t_data *data);
+int			exec_cd(char **argv, t_data *data);
+int			exec_pwd(char **argv);
+int			exec_export(char **argv, t_env *env_lst);
+int			exec_unset(char **argv, t_env *env_lst);
+int			exec_env(t_env *env_lst);
+int			name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
+char		*get_value(char *name_value_str, t_env *new_node, int *err_flag);
+t_env		*get_node(char *name_value_str);
+void		lst_append(t_env **env_lst, t_env *new_node);
 
 // handling env
-char	**copy_env(char **envp);
-t_env	*copy_env_arr_to_lst(char **envp);
-char	**get_env_paths(char **envp, t_data *data);
+char		**copy_env(char **envp);
+t_env		*copy_env_arr_to_lst(char **envp);
+char		**get_env_paths(char **envp, t_data *data);
 
 // freeing
-void	free_arr(char **arr);
-void	free_data(t_data *data);
+void		free_arr(char **arr);
+void		free_data(t_data *data);
 
 // error handling
-void	validate_args(int argc);
-void	print_error_n_exit(char *err_msg);
-t_env	*error_handler(char *err_msg, int *err_flag);
-int		panic(char *msg, t_data *data, int status_code);
-int		panic_is_a_dir(char *msg, t_data *data);
-int		panic_cmd_not_found(char *msg, t_data *data);
-
-void	free_n_exit(t_data *data, int status_code);
-
-// readline
-void	rl_clear_history(void);
-void	rl_replace_line(const char *text, int clear_undo);
+void		validate_args(int argc);
+int			is_valid_buf(char *buf);
+void		print_error_n_exit(char *err_msg);
+t_env		*error_handler(char *err_msg, int *err_flag);
+int			panic(char *msg, t_data *data, int status_code);
+int			panic_is_a_dir(char *msg, t_data *data);
+int			panic_cmd_not_found(char *msg, t_data *data);
+void		free_n_exit(t_data *data, int status_code);
 
 // string operations
-char	*strlist_join(t_strcmd *str);
-int		make_argv(t_execcmd *cmd, t_data *data);
-int		make_filename(t_redircmd *rcmd, t_data *data);
-int		match(const char *pattern, const char *text);
-void	ft_free_char2d(char **split);
-void	heapsort_str(char **arr, int n);
-
+char		*strlist_join(t_strcmd *str);
+int			make_argv(t_execcmd *cmd, t_data *data);
+int			make_filename(t_redircmd *rcmd, t_data *data);
+int			match(const char *pattern, const char *text);
+void		ft_free_char2d(char **split);
+void		heapsort_str(char **arr, int n);
 
 // arraylist
 t_arrlist	*create_arrlist(void);
-int			add_string_arrlist(t_arrlist *list, const char* str);
+int			add_string_arrlist(t_arrlist *list, const char *str);
 void		free_arrlist(t_arrlist *list);
 int			wildcard_star(t_execcmd *cmd);
 int			wildcard_star_redir(t_redircmd *cmd);

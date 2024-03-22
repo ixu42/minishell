@@ -25,7 +25,7 @@ static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimite
 	{
 		write(1, "> ", 2);
 		line = get_next_line(0);
-		if (last_sig)
+		if (g_last_sig)
 		{
 			state->flag |= HEREDOC_OPEN_ERR;
 			break ;

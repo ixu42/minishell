@@ -48,7 +48,8 @@ EXEC_FILES = runcmd.c \
 				run_redir.c \
 				run_pipe.c \
 				get_cmd_path.c \
-				environment.c
+				environment.c \
+				exec_error.c
 BUILTINS_FILES = builtins.c \
 					exec_echo.c \
 					exec_cd.c \
