@@ -159,6 +159,7 @@ typedef struct s_data
 	t_env		*env_lst;
 	char		**env_paths;
 	char		*cmd_path;
+	char		*pwd;
 	t_builtin	builtin;
 	int			proc;
 	int			status;
@@ -348,7 +349,7 @@ char	**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
 // handling builtins
 int		exec_echo(char **argv);
 int		exec_exit(char **argv);
-int		exec_cd(char **argv, t_env *env_lst);
+int		exec_cd(char **argv, t_data *data);
 int		exec_pwd(char **argv);
 int		exec_export(char **argv, t_env *env_lst);
 int		exec_unset(char **argv, t_env *env_lst);

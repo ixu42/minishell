@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:36 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 23:15:55 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/22 14:05:37 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	run_builtin(char **argv, t_data *data)
 	if (data->builtin == ECHO_CMD)
 		return (exec_echo(argv));
 	else if (data->builtin == CD_CMD)
-		return (exec_cd(argv, data->env_lst));
+		return (exec_cd(argv, data));
 	else if (data->builtin == PWD_CMD)
 		return (exec_pwd(argv));
 	else if (data->builtin == EXPORT_CMD)

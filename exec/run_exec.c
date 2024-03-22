@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:11 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 23:20:20 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/22 10:55:22 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	has_arg(t_execcmd *ecmd, t_data *data)
 	return (1);
 }
 
-static int	execute(t_execcmd *ecmd, t_data *data)
+static void	execute(t_execcmd *ecmd, t_data *data)
 {
 	update_shlvl(ecmd->argc, ecmd->argv, data->env_lst);
 	data->cmd_path = get_cmd_path(ecmd->argv, data);

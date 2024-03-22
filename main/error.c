@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:24 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 20:23:59 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/22 09:52:20 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,19 @@ t_env	*error_handler(char *err_msg, int *err_flag)
 	return (NULL);
 }
 
-/* (1) print error message, (2) if in child process, 
-free all heap allocated memory and exit with status code; 
-if in parent process, data->status is set to status code */
+/* (1) print error message (if msg is NULL, no error msg 
+will be printed), (2) if in child process, free all heap 
+allocated memory and exit with status code; if in parent 
+process, data->status is set to status code */
 
 int	panic(char *msg, t_data *data, int status_code)
 {
-
-	if (ft_dprintf(2, "%s", PMT) == -1)
-		perror(PMT_ERR_WRITE);
-	perror(msg);
+	if (msg != NULL)
+	{
+		if (ft_dprintf(2, "%s", PMT) == -1)
+			perror(PMT_ERR_WRITE);
+		perror(msg);
+	}
 	if (data->proc == CHILD_PROC)
 	{
 		free_data(data);

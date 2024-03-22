@@ -44,9 +44,9 @@ STRINGS_FILES = str_list_utils.c \
 				arraylist.c \
 				heapsort_str.c
 EXEC_FILES = runcmd.c \
-				runcmd_utils.c \
 				run_exec.c \
 				run_redir.c \
+				run_pipe.c \
 				get_cmd_path.c \
 				environment.c
 BUILTINS_FILES = builtins.c \
