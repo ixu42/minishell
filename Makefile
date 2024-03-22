@@ -50,12 +50,15 @@ EXEC_FILES = runcmd.c \
 				get_cmd_path.c \
 				environment.c
 BUILTINS_FILES = builtins.c \
-					echo.c \
-					directory.c \
-					export.c \
-					unset.c \
-					env.c \
-					exit.c
+					exec_echo.c \
+					exec_cd.c \
+					exec_pwd.c \
+					exec_export.c \
+					exec_unset.c \
+					exec_env.c \
+					exec_exit.c \
+					env.c
+					
 
 # Source files including paths
 SRCS = $(addprefix $(MAIN_DIR), $(MAIN_FILES)) \

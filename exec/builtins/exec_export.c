@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   export.c                                           :+:      :+:    :+:   */
+/*   exec_export.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 15:16:25 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/22 20:02:25 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,6 @@ static int	print_exported(t_env *env_lst)
 		tmp = tmp->next;
 	}
 	return (0);
-}
-
-static size_t	get_name_len(char *name_value_str)
-{
-	int		i;
-	size_t	name_len;
-
-	i = 0;
-	name_len = 0;
-	while (name_value_str[i] != '=' && name_value_str[i] != '\0')
-	{
-		name_len++;
-		i++;
-	}
-	return (name_len);
 }
 
 static int	is_valid_identifier(char *name, int name_len)
@@ -86,9 +71,27 @@ static int	set_value(char *arg, t_env *node)
 	return (0);
 }
 
+static int	export(char *arg, t_env *env_lst, t_env *node, size_t name_len)
+{
+	if (name_in_env_lst(env_lst, arg, name_len, &node))
+	{
+		if (set_value(arg, node) == 1)
+			return (1);
+	}
+	else
+	{
+		node = get_node(arg);
+		if (node == NULL)
+			return (1);
+		lst_append(&env_lst, node);
+	}
+	return (0);
+}
+
 int	exec_export(char **argv, t_env *env_lst)
 {
 	int		i;
+	int		j;
 	t_env	*node;
 	size_t	name_len;
 
@@ -97,25 +100,18 @@ int	exec_export(char **argv, t_env *env_lst)
 	i = 0;
 	while (argv[++i] != NULL)
 	{
-		name_len = get_name_len(argv[i]);
+		j = -1;
+		name_len = 0;
+		while (argv[i][++j] != '=' && argv[i][j] != '\0')
+			name_len++;
 		if (!is_valid_identifier(argv[i], name_len))
 		{
 			if (ft_dprintf(2, "%sexport: '%s': %s\n", PMT, argv[i], ERR_ID) < 0)
 				perror(PMT_ERR_WRITE);
 			return (1);
 		}
-		if (name_in_env_lst(env_lst, argv[i], name_len, &node))
-		{
-			if (set_value(argv[i], node) == 1)
-				return (1);
-		}
-		else
-		{
-			node = get_node(argv[i]);
-			if (node == NULL)
-				return (1);
-			lst_append(&env_lst, node);
-		}
+		if (export(argv[i], env_lst, node, name_len) == 1)
+			return (1);
 	}
 	return (0);
 }

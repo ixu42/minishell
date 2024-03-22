@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:36 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 14:05:37 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/22 20:06:12 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,6 @@ int	run_builtin(char **argv, t_data *data)
 	else if (data->builtin == ENV_CMD)
 		return (exec_env(data->env_lst));
 	else if (data->builtin == EXIT_CMD)
-		return (exec_exit(argv));
+		return (exec_exit(argv, data));
 	return (1);
 }

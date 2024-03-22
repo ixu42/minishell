@@ -54,9 +54,7 @@
 # define PMT_ERR_WRITE "\033[0;31mLiteShell: \033[0mwrite error"
 # define PMT_ERR_PRINTF "\033[0;31mLiteShell: \033[0mprintf error"
 # define PMT_ERR_GETCWD "\033[0;31mLiteShell: \033[0mgetcwd error"
-// # define EXIT_CMD_PERM_ERR 126
-// # define EXIT_CMD_NOT_FOUND 127
-# define PMT "\033[0;31mLiteShell: \033[0m"
+# define PMT_ERR_MALLOC "\033[0;31mLiteShell: \033[0mmalloc error"
 
 // macros for processes
 # define PARENT_PROC 0
@@ -347,8 +345,10 @@ char	*get_cmd_path(char **argv, t_data *data);
 char	**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
 
 // handling builtins
+int		is_builtin(char **argv, t_data **data);
+int		run_builtin(char **argv, t_data *data);
 int		exec_echo(char **argv);
-int		exec_exit(char **argv);
+int		exec_exit(char **argv, t_data *data);
 int		exec_cd(char **argv, t_data *data);
 int		exec_pwd(char **argv);
 int		exec_export(char **argv, t_env *env_lst);
@@ -358,8 +358,6 @@ int		name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
 char	*get_value(char *name_value_str, t_env *new_node, int *err_flag);
 t_env	*get_node(char *name_value_str);
 void	lst_append(t_env **env_lst, t_env *new_node);
-int		is_builtin(char **argv, t_data **data);
-int		run_builtin(char **argv, t_data *data);
 
 // handling env
 char	**copy_env(char **envp);

@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:24 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 09:52:20 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/22 17:15:07 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,12 @@ void	print_error_n_exit(char *err_msg)
 	exit(EXIT_FAILURE);
 }
 
-// (1) print error message, (2) set error flag to 1, and (3) return NULL
+/* used in implementing env builtin. (1) print error message, 
+(2) set error flag to 1, and (3) return NULL */
 
 t_env	*error_handler(char *err_msg, int *err_flag)
 {
-	if (ft_putstr_fd("minishell: ", 2) == -1)
+	if (ft_putstr_fd(PMT, 2) == -1)
 	{
 		perror(PMT_ERR_WRITE);
 		*err_flag = 1;

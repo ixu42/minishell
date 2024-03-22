@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit.c                                             :+:      :+:    :+:   */
+/*   exec_exit.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:12 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 23:20:48 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/22 20:16:30 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,22 +23,25 @@ static int	is_valid(char *arg)
 	return (1);
 }
 
-static void	perror_n_exit(char *msg, int exit_code)
+static void	perror_free_exit(char *msg, t_data *data, int exit_code)
 {
 	if (ft_dprintf(2, "%s\n", msg) == -1)
-		perror_n_exit(PMT_ERR_WRITE, 1);
-	exit(exit_code);
+	{
+		perror(PMT_ERR_WRITE);
+		free_n_exit(data, 1);
+	}
+	free_n_exit(data, exit_code);
 }
 
 /* Exit the shell, returning a status of n to the shell’s parent. 
 If n is omitted, the exit status is that of the last command executed */
 
-int	exec_exit(char **argv) // clean everything before exit
+int	exec_exit(char **argv, t_data *data)
 {
 	int	err;
 
 	if (argv[1] == NULL)
-		perror_n_exit("exit", 0);
+		perror_free_exit("exit", data, 0);
 	else if (argv[2] != NULL)
 	{
 		if (ft_dprintf(2, "%sexit: too many arguments\n", PMT) == -1)
@@ -50,14 +53,14 @@ int	exec_exit(char **argv) // clean everything before exit
 		if (!is_valid(argv[1]))
 		{
 			if (write(2, "exit\n", 5) == -1)
-				perror_n_exit(PMT_ERR_WRITE, 1);
+				perror_free_exit(PMT_ERR_WRITE, data, 1);
 			if (ft_dprintf(2, "%sexit: %s: ", PMT, argv[1]) == -1)
-				perror_n_exit(PMT_ERR_WRITE, 1);
+				perror_free_exit(PMT_ERR_WRITE, data, 1);
 			if (ft_dprintf(2, "numeric argument required\n") == -1)
-				perror_n_exit(PMT_ERR_WRITE, 1);
-			exit(255);
+				perror_free_exit(PMT_ERR_WRITE, data, 1);
+			free_n_exit(data, 255);
 		}
-		perror_n_exit("exit", (unsigned char)ft_strtol(argv[1], &err));
+		perror_free_exit("exit", data, (unsigned char)ft_strtol(argv[1], &err));
 	}
 	return (0);
 }
