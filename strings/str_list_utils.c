@@ -417,8 +417,9 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 		return (MALLOC_ERROR);
 	i = ft_strlen(rcmd->file);
 	//printf("file = ->%s<- len=%d\n", rcmd->file, i);
-	while (i-- >= 0)
+	while (--i >= 0)
 	{
+//		printf("i=%d\n", i);
 		if (rcmd->file[i] == ASCII_SEPARATOR || \
 				(rcmd->file[0] == '\0' && is_str_with_only_var(rcmd->str)))
 		{

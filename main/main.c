@@ -63,6 +63,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			add_history(data.buf);
 			status = make_ast(&cmd, data.buf);
+			data.tree = cmd;
 			if (TESTMODE)
 			{
 				ft_dprintf(2,"------------->TESTMODE<----------\n");

@@ -263,6 +263,7 @@ int	wildcard_star_redir(t_redircmd *cmd)
 	cmd->file = wild.list->data[0];
 	free_wildcard(&wild, 0, 0);
 	ft_free_char2d(wild.argv);
-	free(wild.argv);
+//	free(wild.argv);
+	wild.argv = NULL;
 	return (0);
 }

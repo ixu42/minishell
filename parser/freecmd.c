@@ -62,9 +62,9 @@ int	free_listcmd(t_cmd *cmd)
 	t_listcmd	*lcmd;
 
 	lcmd = (t_listcmd *)cmd;
-	if (lcmd->left)
-		freecmd((t_cmd *)lcmd->left);
-	if (lcmd->right)
+//	if (lcmd->left)
+	freecmd((t_cmd *)lcmd->left);
+//	if (lcmd->right)
 		freecmd((t_cmd *)lcmd->right);
 	free(cmd);
 	return (0);
@@ -75,16 +75,18 @@ int	free_pipe(t_cmd *cmd)
 	t_pipecmd	*pcmd;
 
 	pcmd = (t_pipecmd *)cmd;
-	if (pcmd->left)
-		freecmd((t_cmd *)pcmd->left);
-	if (pcmd->right)
-		freecmd((t_cmd *)pcmd->right);
+//	if (pcmd->left)
+	freecmd((t_cmd *)pcmd->left);
+//	if (pcmd->right)
+	freecmd((t_cmd *)pcmd->right);
 	free(cmd);
 	return (0);
 }
 
 int freecmd(t_cmd *cmd)
 {
+	if (!cmd)
+		return (0);
 	if (cmd->type == EXEC)
 		return (free_exec(cmd));
 	else if (cmd->type == REDIR)

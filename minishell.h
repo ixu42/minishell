@@ -153,6 +153,12 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+typedef struct s_cmd
+{
+	int	type;
+	int	flag;
+}	t_cmd;
+
 typedef struct s_data
 {
 	char		*buf;
@@ -168,6 +174,7 @@ typedef struct s_data
 	int			fd_stdout;
 	int			under_pipe;
 	int			under_redir;
+	t_cmd		*tree;
 }	t_data;
 
 typedef struct s_arrlist
@@ -207,11 +214,6 @@ typedef struct s_aststate
 	int		heredoc;
 }	t_aststate;
 
-typedef struct s_cmd
-{
-	int	type;
-	int	flag;
-}	t_cmd;
 
 typedef struct s_strcmd
 {

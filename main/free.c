@@ -35,5 +35,8 @@ void	free_data(t_data *data)
 	free_lst(&(data->env_lst));
 	free_arr(data->env_paths);
 	free(data->buf);
+	freecmd(data->tree);
+	if (data->stat_str)
+		free(data->stat_str);
 	//free(data->cmd_path);
 }
