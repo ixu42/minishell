@@ -25,7 +25,9 @@ int	run_redir(t_cmd *cmd, t_data *data)
 			if (make_filename(rcmd, data))
 			{
 				ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
-				return (1);
+				return (panic("", data, 1));
+//
+//				return (1);
 			}
 			int	fd = open(rcmd->file, rcmd->mode, 0644);
 			if (fd == -1)

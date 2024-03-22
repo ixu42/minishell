@@ -6,7 +6,7 @@
 /*   By: alex <alex@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/02 11:56:25 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/22 04:32:58 by alex             ###   ########.fr       */
+/*   Updated: 2024/03/22 15:24:34 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -427,9 +427,10 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 			return (1);
 		}
 	}
-	if (wildcard_star_redir(rcmd))
-		return (1);
-	return (0);
+	return (wildcard_star_redir(rcmd));
+	//if (wildcard_star_redir(rcmd))
+	//	return (1);
+	//return (0);
 }
 
 int	make_argv(t_execcmd *cmd, t_data *data)

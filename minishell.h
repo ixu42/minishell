@@ -135,6 +135,14 @@ typedef enum e_parse_error
 	ENOMEM_ERR = 0x100
 }	t_parse_error;
 
+typedef enum e_wild_error
+{
+	WILD_ERR_REDIR_AMBIG = 0x01,
+	WILD_ERR_DIR = 0x02,
+	WILD_MALLOC_ERROR = 0x10,
+	WILD_ERR_TERMINATE = 0x20
+}	t_wild_error;
+
 typedef enum e_builtin
 {
 	ECHO_CMD = 1,
@@ -190,6 +198,7 @@ typedef struct s_wildcard
 	t_arrlist	**pnt;
 	char		**argv;
 	int			argc;
+//	int			flag;
 }	t_wildcard;
 
 typedef struct s_strstate
