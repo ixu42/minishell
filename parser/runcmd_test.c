@@ -129,6 +129,7 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 		printstr(rcmd->str, data);
 		runcmd_test(rcmd->cmd, data);
 	}
+	/*
 	else if (cmd->type == LIST)
 	{
 		lcmd = (t_listcmd *)cmd;
@@ -140,6 +141,7 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 		wait(NULL);
 		runcmd_test(lcmd->right, data);
 	}
+		*/
 	else if (cmd->type == AND_CMD)
 	{
 		lcmd = (t_listcmd *)cmd;

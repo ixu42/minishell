@@ -69,7 +69,6 @@ int	main(int argc, char **argv, char **envp)
 			//	cmd = parsecmd(data.buf, NULL);
 				if (cmd)
 					runcmd_test(cmd, &data);
-				// clean cmd
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
 			if (status == 0)
@@ -79,14 +78,12 @@ int	main(int argc, char **argv, char **envp)
 			}
 			else if (status == ENOMEM_ERR)
 			{
-				// ?? data->cmd_path 
 				freecmd(cmd);
 				//        clean data
 				break ; //do we need to break?
 			}
 			else
 				data.status = status;
-			// ??? free(data->cmd_path);
 			freecmd(cmd);
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
 			// ------ print out envp ------

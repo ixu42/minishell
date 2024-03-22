@@ -43,6 +43,7 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 		return ;
 	}
 	rcmd->str = parsestr(state_str);
+	free(state_str);
 	if (!rcmd->str)
 	{
 		rcmd->flag |= MALLOC_ERROR;
@@ -429,7 +430,6 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 		cmd->flag |= new_arg->flag;
 		set_execcmd_sargv(cmd, tok_str);
 		cmd->argc++;
-
 		if (add_redirections(head, cmd, ps, ast))
 			return (1);
 	}

@@ -232,6 +232,7 @@ int	wildcard_star(t_execcmd *cmd)
 		return (4);
 	// ??? do we need free(cmd->argv);  ???
 	ft_free_char2d(cmd->argv);
+	// free(cmd->argv);  lead to double free
 	cmd->argv = wild.list->data;
 	cmd->argc = wild.argc;
 	cmd->list = wild.list;
@@ -262,5 +263,6 @@ int	wildcard_star_redir(t_redircmd *cmd)
 	cmd->file = wild.list->data[0];
 	free_wildcard(&wild, 0, 0);
 	ft_free_char2d(wild.argv);
+	free(wild.argv);
 	return (0);
 }

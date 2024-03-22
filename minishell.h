@@ -63,21 +63,21 @@
 # define CHILD_PROC 1
 
 // macros for 2d arraylist
-#define INITIAL_CAPACITY 5
-#define GROWTH_FACTOR 2
+# define INITIAL_CAPACITY 5
+# define GROWTH_FACTOR 2
 
 // macros for parsing 
-#define TESTMODE 0
-#define MAXARGS 4
-#define WHITESPACE  " \t\r\n\v"
-#define SYMBOLS "<>|&()"
-#define ASCII_EMPTY_X "\x1d"
-#define ASCII_EMPTY 29
-#define ASCII_WILD 30
-#define ASCII_SEPARATOR 31
-#define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
-#define ERR_REDIR_AMBIG  "ambiguous redirect"
-#define ERR_CODE_SYNTAX 258
+# define TESTMODE 0
+# define MAXARGS 4
+# define WHITESPACE  " \t\r\n\v"
+# define SYMBOLS "<>|&()"
+# define ASCII_EMPTY_X "\x1d"
+# define ASCII_EMPTY 29
+# define ASCII_WILD 30
+# define ASCII_SEPARATOR 31
+# define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
+# define ERR_REDIR_AMBIG  "ambiguous redirect"
+# define ERR_CODE_SYNTAX 258
 //#define ENOMEM 12
 
 // macros for termios
@@ -100,10 +100,10 @@ typedef enum e_node_type
 	STR_NODE_VAR,
 	STR_NODE_VAR_P,
 	STR_EXIT_CODE,
-	STR_STAR,
+	STR_STAR
 	// to be remove?
-	LIST
-}   t_node_type;
+	//LIST
+}	t_node_type;
 
 // types of tockens
 typedef enum e_token
@@ -118,10 +118,9 @@ typedef enum e_token
 	PIPE_TOK,
 	OR_TOK,
 	AND_TOK,
-	//unused tok
 	LPAR,
 	RPAR
-}   t_token_type;
+}	t_token_type;
 
 typedef enum e_parse_error
 {
@@ -145,7 +144,7 @@ typedef enum e_builtin
 	UNSET_CMD,
 	ENV_CMD,
 	EXIT_CMD,
-}   t_builtin;
+}	t_builtin;
 
 typedef struct s_env
 {
@@ -173,9 +172,9 @@ typedef struct s_data
 
 typedef struct s_arrlist
 {
-	 char		**data;
-	 size_t	size;
-	 size_t	capacity;
+	char	**data;
+	size_t	size;
+	size_t	capacity;
 }	t_arrlist;
 
 typedef struct s_wildcard
@@ -206,28 +205,28 @@ typedef struct s_aststate
 	char	*es;
 	int		flag;
 	int		heredoc;
-} t_aststate;
+}	t_aststate;
 
 typedef struct s_cmd
 {
 	int	type;
-	int		flag;
+	int	flag;
 }	t_cmd;
 
 typedef struct s_strcmd
 {
-	int		type;
-	int		flag;
-	char	*start;
-	char	*end;
+	int				type;
+	int				flag;
+	char			*start;
+	char			*end;
 	struct s_strcmd	*next;
 }	t_strcmd;
 
 typedef struct s_argcmd
 {
-	int		type;
-	int		flag;
-	t_strcmd	*left;
+	int				type;
+	int				flag;
+	t_strcmd		*left;
 	struct s_argcmd	*right;
 	char			*start;
 	char			*end;
@@ -235,27 +234,27 @@ typedef struct s_argcmd
 
 typedef struct s_execcmd
 {
-	int		type;
-	int		flag;
-	char	*sargv[MAXARGS];
-	char	*eargv[MAXARGS];
-	char	**argv;
-	int		argc;
+	int			type;
+	int			flag;
+	char		*sargv[MAXARGS];
+	char		*eargv[MAXARGS];
+	char		**argv;
+	int			argc;
 	t_argcmd	*args;
 	t_arrlist	*list;
 }	t_execcmd;
 
 typedef struct s_redircmd
 {
-	int		type;
-	int		flag;
-	t_cmd	*cmd;
-	char	*file;
-	char	*sfile;
-	char	*efile;
-	int		mode;
-	int		fd;
-	char	*heredoc;
+	int			type;
+	int			flag;
+	t_cmd		*cmd;
+	char		*file;
+	char		*sfile;
+	char		*efile;
+	int			mode;
+	int			fd;
+	char		*heredoc;
 	t_strcmd	*str;
 	t_arrlist	*list;
 }	t_redircmd;
@@ -300,7 +299,7 @@ void	move_to_nl(int signum);
 
 // constructors.c
 t_cmd		*execcmd(void);
-t_cmd		*redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
+//t_cmd		*redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
 t_cmd		*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd);
 t_cmd		*pipecmd(t_cmd *left, t_cmd *right);
 t_cmd		*list_cmd(t_cmd *left, t_cmd *right, int type);

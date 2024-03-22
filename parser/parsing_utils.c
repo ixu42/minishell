@@ -158,7 +158,8 @@ t_cmd	*nulterminate(t_cmd *cmd)
 		nulterminate(pcmd->left);
 		nulterminate(pcmd->right);
 	}
-	else if (cmd->type == LIST || cmd->type == AND_CMD || cmd->type == OR_CMD)
+	//else if (cmd->type == LIST || cmd->type == AND_CMD || cmd->type == OR_CMD)
+	else if (cmd->type == AND_CMD || cmd->type == OR_CMD)
 	{
 		lcmd = (t_listcmd *)cmd;
 		nulterminate(lcmd->left);
