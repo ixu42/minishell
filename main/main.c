@@ -43,6 +43,7 @@ int	main(int argc, char **argv, char **envp)
 	// 	printf("%s\n", envp[k]);
 	// ----------------------------
 	// (void)argv;
+	cmd = NULL;
 	validate_args(argc);
 	data_init(&data, envp);
 	while (data.status >= 0)
@@ -80,8 +81,12 @@ int	main(int argc, char **argv, char **envp)
 			else if (status == ENOMEM_ERR)
 			{
 				freecmd(cmd);
-				//        clean data
-				break ; //do we need to break?
+				break ;
+			}
+			else if (status & SIGNAL_CTRL_C)
+			{
+//				printf("ctrl+c\n");
+				data.status = 1;
 			}
 			else
 				data.status = status;
@@ -94,7 +99,7 @@ int	main(int argc, char **argv, char **envp)
 			// dprintf(2, "\033[0;35m[status: %d]\033[0m\n", data.status);
 			// ------
 		}
-		//free(data.buf);
+		free(data.buf);
 		if (data.status == 130)
 			dprintf(2, "\n");
 		if (data.status == 131)

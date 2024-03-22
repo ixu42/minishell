@@ -101,8 +101,8 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 		return (panic_parser(ERR_MALLOC, ENOMEM_ERR));
 	else if (cmd->flag & HEREDOC_OPEN_ERR)
 		return (ENOMEM_ERR);
-	else if (cmd->flag & SIGNAL_CNRL_C)
-		return (SIGNAL_CNRL_C);
+	else if (cmd->flag & SIGNAL_CTRL_C)
+		return (SIGNAL_CTRL_C);
 	else if (cmd->flag || s != es)
 	{
 		ft_dprintf(2, "%s%s ", PMT, ERR_SYNTAX_UNEXP);

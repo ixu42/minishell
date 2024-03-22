@@ -131,7 +131,7 @@ typedef enum e_parse_error
 	MALLOC_ERROR = 0x10,
 	DIR_OPEN_ERR = 0x20,
 	HEREDOC_OPEN_ERR = 0x40,
-	SIGNAL_CNRL_C = 0x80,
+	SIGNAL_CTRL_C = 0x80,
 	ENOMEM_ERR = 0x100
 }	t_parse_error;
 

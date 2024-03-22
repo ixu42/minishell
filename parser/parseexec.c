@@ -67,10 +67,13 @@ t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok, t_aststate *ast)
 	{
 		*state->end = '\0';
 		get_input_heredoc(state, ast, state->beg);
-		cmd = redircmd(cmd, state, O_RDONLY, 0);
+		ast->heredoc++;
+		if (state->flag == 0)
+			cmd = redircmd(cmd, state, O_RDONLY, 0);
+		else
+			cmd->flag = state->flag;
 		//cmd = redircmd(cmd, state, -1, 0);
 	//	ft_dprintf(2, "i=%d, eof=->%s<-, heredoc=->%s<-\n", ast->heredoc, state->beg, state->heredoc);
-		ast->heredoc++;
 	}
 	return (cmd);
 }

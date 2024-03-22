@@ -31,8 +31,7 @@ static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimite
 		line = get_next_line(0);
 		if (last_sig)
 		{
-			//state->flag |= HEREDOC_OPEN_ERR;
-			state->flag |= SIGNAL_CNRL_C; 
+			state->flag |= SIGNAL_CTRL_C; 
 			break ;
 		}
 		if (line == NULL)
