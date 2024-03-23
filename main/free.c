@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:25 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 21:00:18 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 11:44:00 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	free_arr(char **arr)
 {
 	int	i;
 
+	if (arr == NULL)
+		return ;
 	i = -1;
 	while (arr[++i] != NULL)
 		free(arr[i]);
@@ -47,4 +49,13 @@ void	free_data(t_data *data)
 	free_lst(&(data->env_lst));
 	free_arr(data->env_paths);
 	free(data->buf);
+}
+
+// used during the execution
+
+void	free_n_exit(t_data *data, int status_code)
+{
+	free_data(data);
+	// free AST in child proccesses?
+	exit(status_code);
 }
