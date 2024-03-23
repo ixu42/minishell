@@ -48,7 +48,7 @@ int	run_redir(t_cmd *cmd, t_data *data)
 		{
 			if (make_filename(rcmd, data))
 			{
-				ft_dprintf(2, "run_redir: malloc or multiple filename.\n");
+				ft_dprintf(2, "run_redir1: malloc or multiple filename.\n");
 				if (!data->under_pipe)
 				{
 					if (dup2(data->fd_stdin, 0) == -1)

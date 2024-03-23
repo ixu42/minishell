@@ -63,24 +63,27 @@ int	main(int argc, char **argv, char **envp)
 		if (is_valid_buf(data.buf))
 		{
 			add_history(data.buf);
-			status = make_ast(&cmd, data.buf);
-			data.tree = cmd;
+//			status = make_ast(&cmd, data.buf);
+			//data.tree = cmd;
+			status = make_ast(&(data.tree), data.buf);
+//			cmd = data.tree;
 			if (TESTMODE)
 			{
 				ft_dprintf(2,"------------->TESTMODE<----------\n");
 			//	cmd = parsecmd(data.buf, NULL);
 				if (cmd)
-					runcmd_test(cmd, &data);
+					runcmd_test(data.tree, &data);
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
 			if (status == 0)
 			{
-		        runcmd(cmd, &data);
+		        runcmd(data.tree, &data);
 				// getchar();
 			}
 			else if (status == ENOMEM_ERR)
 			{
-				freecmd(cmd);
+//				freecmd(cmd);
+				//
 				break ;
 			}
 			else if (status & SIGNAL_CTRL_C)
@@ -90,7 +93,7 @@ int	main(int argc, char **argv, char **envp)
 			}
 			else
 				data.status = status;
-			freecmd(cmd);
+			freecmd_null(&(data.tree));
 			// dprintf(2, "data.buf(after): %s\n", data.buf);
 			// ------ print out envp ------
 			// for (int k = 0; envp[k] != NULL; k++)
@@ -110,11 +113,8 @@ int	main(int argc, char **argv, char **envp)
 	}
 	close(data.fd_stdin);
 	close(data.fd_stdout);
-	unlink(".heredoc");
+//	unlink(".heredoc");
 	free_data(&data);
 	rl_clear_history();
-	// printf("about to exit\n");
-	//while (1)
-	//	;
 	exit(EXIT_SUCCESS);
 }

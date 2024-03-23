@@ -49,7 +49,6 @@ t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end)
 	return (cmd);
 }
 
-
 t_cmd	*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 {
 	t_redircmd	*cmd;

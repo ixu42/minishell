@@ -209,7 +209,7 @@ typedef struct s_strstate
 	char	*beg;
 	char	*end;
 	int		d_quotes;
-	int		s_quotes;
+	//int		s_quotes;
 	int		flag;
 	char	*heredoc;
 }	t_strstate;
@@ -333,6 +333,7 @@ t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
 
 // freecmd.c
 int	freecmd(t_cmd *cmd);
+void	freecmd_null(t_cmd **cmd);
 
 //parsing_utils.c
 int gettoken(char **ps, char *es, char **q, char **eq);

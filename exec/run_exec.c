@@ -35,7 +35,8 @@ int	run_exec(t_cmd *cmd, t_data *data)
 	int			status;
 
 	ecmd = (t_execcmd *)cmd;
-	make_argv(ecmd, data);
+	if (ecmd->argc)
+		make_argv(ecmd, data);
 	if (ecmd->argc == 0)
 	{
 		if (dup2(data->fd_stdin, 0) == -1)
@@ -125,7 +126,11 @@ int	run_exec(t_cmd *cmd, t_data *data)
 				// ------ print out arr ------
 				// for (int n = 0; data->envp[n] != NULL; n++)
 				// 	dprintf(2 ,"%s\n", data->envp[n]);
-				// ----------------------------
+				// ---------------------------
+				////// the following code is add to avoid running execve with NULL 
+				////// added to remove error: Valgrind: Syscall param execve(filename) points to unaddressable byte(s)
+				if (!data->cmd_path)
+					data->cmd_path = ecmd->argv[0];
 				execve(data->cmd_path, ecmd->argv, data->envp);
 				// if (ecmd->argv[0] == NULL)
 				// 	panic_cmd_not_found("", data);

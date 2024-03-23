@@ -3,7 +3,10 @@
 int	free_str(t_strcmd *cmd)
 {
 	if (cmd->next)
+	{
 		free_str(cmd->next);
+		cmd->next = NULL;
+	}
 	free(cmd);
 	return (0);
 }
@@ -11,9 +14,15 @@ int	free_str(t_strcmd *cmd)
 int	free_arg(t_argcmd *cmd)
 {
 	if (cmd->right)
+	{
 		free_arg(cmd->right);
+		cmd->right = NULL;
+	}
 	if (cmd->left)
+	{
 		free_str(cmd->left);
+		cmd->left = NULL;
+	}
 	free(cmd);
 	return (0);
 }
@@ -24,11 +33,15 @@ int	free_exec(t_cmd *cmd)
 
 	ecmd = (t_execcmd *)cmd;
 	if (ecmd->list)
+	{
 		free_arrlist(ecmd->list);
-	ecmd->list = NULL;
+		ecmd->list = NULL;
+	}
 	if (ecmd->args)
+	{
 		free_arg(ecmd->args);
-	ecmd->args = NULL;
+		ecmd->args = NULL;
+	}
 	free(cmd);
 	return (0);
 }
@@ -39,8 +52,10 @@ int	free_redir(t_cmd *cmd)
 
 	rcmd = (t_redircmd *)cmd;
 	if (rcmd->list)
+	{
 		free_arrlist(rcmd->list);
-	rcmd->list = NULL;
+		rcmd->list = NULL;
+	}
 	if (rcmd->str)
 		free_str(rcmd->str);
 	rcmd->str = NULL;
@@ -62,10 +77,10 @@ int	free_listcmd(t_cmd *cmd)
 	t_listcmd	*lcmd;
 
 	lcmd = (t_listcmd *)cmd;
-//	if (lcmd->left)
 	freecmd((t_cmd *)lcmd->left);
-//	if (lcmd->right)
-		freecmd((t_cmd *)lcmd->right);
+	lcmd->left = NULL;
+	freecmd((t_cmd *)lcmd->right);
+	lcmd->right = NULL;
 	free(cmd);
 	return (0);
 }
@@ -75,9 +90,8 @@ int	free_pipe(t_cmd *cmd)
 	t_pipecmd	*pcmd;
 
 	pcmd = (t_pipecmd *)cmd;
-//	if (pcmd->left)
 	freecmd((t_cmd *)pcmd->left);
-//	if (pcmd->right)
+	pcmd->left = NULL;
 	freecmd((t_cmd *)pcmd->right);
 	free(cmd);
 	return (0);
@@ -98,4 +112,13 @@ int freecmd(t_cmd *cmd)
 	else if (cmd->type == PIPE)
 		return (free_pipe(cmd));
 	return (0);
+}
+
+void freecmd_null(t_cmd **cmd)
+{
+	if (*cmd)
+	{
+		freecmd(*cmd);
+		*cmd = NULL;
+	}
 }

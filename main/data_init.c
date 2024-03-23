@@ -69,4 +69,5 @@ void	data_init(t_data *data, char **envp)
 	data->builtin = 0;
 	data->status = 0;
 	data->stat_str = NULL;
+	data->tree = NULL;
 }
