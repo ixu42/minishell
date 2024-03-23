@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 14:19:36 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 14:27:10 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,11 @@ static int	set_value(char *arg, t_env *node, t_data *data)
 	return (0);
 }
 
-static int	export(char *arg, t_env *env_lst, size_t name_len)
+static int	export(char *arg, t_data *data, size_t name_len)
 {
 	t_env	*node;
 
-	if (name_in_env_lst(env_lst, arg, name_len, &node))
+	if (name_in_env_lst(data->env_lst, arg, name_len, &node))
 	{
 		if (set_value(arg, node, data) == 1)
 			return (1);
@@ -117,7 +117,7 @@ int	exec_export(char **argv, t_data *data)
 				perror(PMT_ERR_WRITE);
 			return (1);
 		}
-		if (export(argv[i], env_lst, name_len) == 1)
+		if (export(argv[i], data, name_len) == 1)
 			return (1);
 	}
 	return (0);
