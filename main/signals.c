@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:39 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 20:50:00 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 13:47:44 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void	update_termios(int set_echoctl)
 	}
 }
 
-int	set_signals_interactive(t_data *data)
+int	set_signals_interactive(void)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
@@ -54,7 +54,7 @@ int	set_signals_interactive(t_data *data)
 	return (0);
 }
 
-int	set_default_signals(t_data *data)
+int	set_default_signals(void)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;

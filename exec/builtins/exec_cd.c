@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cd.c                                               :+:      :+:    :+:   */
+/*   exec_cd.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:46 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 17:08:28 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 13:52:55 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,6 @@ static int	set_pwd_env_values(t_data *data, char *var, char cwd[PATH_MAX])
 static int	update_oldpwd_in_env_lst(t_data *data)
 {
 	char	cwd[PATH_MAX];
-	t_env	*tmp;
-	t_env	*node;
-	char	*name_value_pair;
 
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 	{
@@ -72,8 +69,6 @@ static int	update_oldpwd_in_env_lst(t_data *data)
 static int	update_pwd_in_env_lst(t_data *data)
 {
 	char	cwd[PATH_MAX];
-	t_env	*tmp;
-	t_env	*node;
 
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 	{

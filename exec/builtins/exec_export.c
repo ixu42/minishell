@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 20:02:25 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 13:56:16 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ static int	is_valid_identifier(char *name, int name_len)
 
 static int	set_value(char *arg, t_env *node)
 {
-	t_env	*tmp;
 	char	*arg_cpy;
 	char	*value;
 	int		err_flag;
@@ -71,8 +70,10 @@ static int	set_value(char *arg, t_env *node)
 	return (0);
 }
 
-static int	export(char *arg, t_env *env_lst, t_env *node, size_t name_len)
+static int	export(char *arg, t_env *env_lst, size_t name_len)
 {
+	t_env	*node;
+
 	if (name_in_env_lst(env_lst, arg, name_len, &node))
 	{
 		if (set_value(arg, node) == 1)
@@ -92,7 +93,6 @@ int	exec_export(char **argv, t_env *env_lst)
 {
 	int		i;
 	int		j;
-	t_env	*node;
 	size_t	name_len;
 
 	if (argv[1] == NULL)
@@ -110,7 +110,7 @@ int	exec_export(char **argv, t_env *env_lst)
 				perror(PMT_ERR_WRITE);
 			return (1);
 		}
-		if (export(argv[i], env_lst, node, name_len) == 1)
+		if (export(argv[i], env_lst, name_len) == 1)
 			return (1);
 	}
 	return (0);

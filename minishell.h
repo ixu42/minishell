@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 21:22:40 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 13:53:47 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,8 +298,8 @@ void		lst_append_in_init(t_env **env_lst, t_env *new_node);
 void		print_error_partial_free(char *name, t_data *data);
 
 // signal handling
-int			set_signals_interactive(t_data *data);
-int			set_default_signals(t_data *data);
+int			set_signals_interactive(void);
+int			set_default_signals(void);
 int			ignore_signals(void);
 int			heredoc_signal_handler(void);
 void		display_pmt_on_nl(int signum);
@@ -358,7 +358,7 @@ int			run_builtin(char **argv, t_data *data);
 int			exec_echo(char **argv);
 int			exec_exit(char **argv, t_data *data);
 int			exec_cd(char **argv, t_data *data);
-int			exec_pwd(char **argv);
+int			exec_pwd(void);
 int			exec_export(char **argv, t_env *env_lst);
 int			exec_unset(char **argv, t_env *env_lst);
 int			exec_env(t_env *env_lst);

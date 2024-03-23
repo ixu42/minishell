@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:12 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 20:16:30 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 13:57:03 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,9 @@
 
 static int	is_valid(char *arg)
 {
-	long	num;
 	int		err;
 
-	num = ft_strtol(arg, &err);
+	ft_strtol(arg, &err);
 	if (err == 1)
 		return (0);
 	return (1);
