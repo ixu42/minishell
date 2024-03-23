@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:39 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 13:47:44 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 14:20:31 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int	set_signals_interactive(void)
 	update_termios(UNSET_ECHOCTL);
 	g_last_sig = 0;
 	sa_int.sa_handler = &display_pmt_on_nl;
+	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
 	{
@@ -45,6 +46,7 @@ int	set_signals_interactive(void)
 		return (1);
 	}
 	sa_quit.sa_handler = SIG_IGN;
+	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
 	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
 	{
@@ -62,6 +64,7 @@ int	set_default_signals(void)
 	update_termios(SET_ECHOCTL);
 	g_last_sig = 0;
 	sa_int.sa_handler = SIG_DFL;
+	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
 	{
@@ -69,6 +72,7 @@ int	set_default_signals(void)
 		return (1);
 	}
 	sa_quit.sa_handler = SIG_DFL;
+	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
 	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
 	{
@@ -84,6 +88,7 @@ int	ignore_signals(void)
 	struct sigaction	sa_quit;
 
 	sa_int.sa_handler = SIG_IGN;
+	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
 	{
@@ -91,6 +96,8 @@ int	ignore_signals(void)
 		return (1);
 	}
 	sa_quit.sa_handler = SIG_IGN;
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = 0;
 	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
 	{
 		perror(ERR_SIGACTION);
@@ -106,6 +113,7 @@ int	heredoc_signal_handler(void)
 
 	update_termios(UNSET_ECHOCTL);
 	sa_int.sa_handler = &move_to_nl;
+	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
 	if (sigaction(SIGINT, &sa_int, NULL) == -1)
 	{
@@ -113,6 +121,7 @@ int	heredoc_signal_handler(void)
 		return (1);
 	}
 	sa_quit.sa_handler = SIG_IGN;
+	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
 	if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
 	{

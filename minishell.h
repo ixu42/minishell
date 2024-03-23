@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 13:53:47 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 14:20:53 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -359,8 +359,8 @@ int			exec_echo(char **argv);
 int			exec_exit(char **argv, t_data *data);
 int			exec_cd(char **argv, t_data *data);
 int			exec_pwd(void);
-int			exec_export(char **argv, t_env *env_lst);
-int			exec_unset(char **argv, t_env *env_lst);
+int			exec_export(char **argv, t_data *data);
+int			exec_unset(char **argv, t_data *data);
 int			exec_env(t_env *env_lst);
 int			name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
 char		*get_value(char *name_value_str, t_env *new_node, int *err_flag);
@@ -375,6 +375,7 @@ char		**get_env_paths(char **envp, t_data *data);
 // freeing
 void		free_arr(char **arr);
 void		free_data(t_data *data);
+void		free_n_exit(t_data *data, int status_code);
 
 // error handling
 void		validate_args(int argc);
@@ -384,7 +385,7 @@ t_env		*error_handler(char *err_msg, int *err_flag);
 int			panic(char *msg, t_data *data, int status_code);
 int			panic_is_a_dir(char *msg, t_data *data);
 int			panic_cmd_not_found(char *msg, t_data *data);
-void		free_n_exit(t_data *data, int status_code);
+int			perror_n_return(char *msg, int return_value);
 
 // string operations
 char		*strlist_join(t_strcmd *str);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   exec_error.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:38:31 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 20:38:58 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 11:46:22 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,9 @@ int	panic_cmd_not_found(char *msg, t_data *data)
 	if (data->proc == CHILD_PROC)
 	{
 		free(data->cmd_path);
+		free_arr(data->envp);
 		free_data(data);
+		data = NULL;
 		// free tree nodes?
 		exit(127);
 	}
@@ -82,11 +84,8 @@ int	panic_cmd_not_found(char *msg, t_data *data)
 	return (1);
 }
 
-// used during the execution
-
-void	free_n_exit(t_data *data, int status_code)
+int	perror_n_return(char *msg, int return_value)
 {
-	free_data(data);
-	// free AST in child proccesses?
-	exit(status_code);
+	perror(msg);
+	return (return_value);
 }
