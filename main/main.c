@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 11:23:31 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 14:19:44 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,17 @@ int	main(int argc, char **argv, char **envp)
 	t_cmd	*cmd;
 	int		status;
 
-	// (void)argv;
+	(void)argv;
 	validate_args(argc);
 	data_init(&data, envp);
 	while (data.status >= 0)
 	{
-		if (set_signals_interactive(&data) == 1)
+		if (set_signals_interactive() == 1)
 			break ;
 		data.buf = readline("LiteShell$ ");
 		if (g_last_sig)
 			data.status = 1;
-		if (set_default_signals(&data) == 1)
+		if (set_default_signals() == 1)
 			break ;
 		if (data.buf == NULL)
 		{
