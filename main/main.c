@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 21:44:01 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 11:23:31 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ static void	cleanup_before_exit(t_data *data)
 		print_error_n_exit(ERR_CLOSE);
 	unlink(".heredoc");
 	free_data(data);
+	data = NULL;
 	rl_clear_history();
 }
 

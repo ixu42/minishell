@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:17:03 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 22:19:33 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/23 11:40:06 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ static char	*search_in_env(char **argv, t_data *data)
 	int		i;
 
 	i = 0;
+	cmd_path = NULL;
 	while (data->env_paths != NULL && data->env_paths[i] != NULL)
 	{
 		tmp = ft_strjoin(data->env_paths[i], "/");
