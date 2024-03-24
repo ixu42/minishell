@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 16:17:06 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 18:34:47 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,8 @@ typedef enum e_parse_error
 	DIR_OPEN_ERR = 0x20,
 	HEREDOC_OPEN_ERR = 0x40,
 	SIGNAL_CTRL_C = 0x80,
-	ENOMEM_ERR = 0x100
+	ENOMEM_ERR = 0x100,
+	READ_ERR = 0x200
 }	t_parse_error;
 
 typedef enum e_wild_error

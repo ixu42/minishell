@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_heredoc.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:33:17 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 17:47:36 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 19:18:15 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 int	panic_heredoc(char *err_msg, t_strstate *state, int err_code)
 {
 	state->flag |= err_code;
+	unlink(state->heredoc);
 	if (!err_msg)
 		return (1);
 	if (ft_dprintf(2, "%s", PMT) == -1)
@@ -41,20 +42,24 @@ static int	convert_input_here(t_strstate *state, \
 	char	*line;
 	int		len;
 	int		malloc_err;
+	int		read_err;
 
 	len = ft_strlen(delimiter);
 	line = NULL;
 	malloc_err = 0;
+	read_err = 0;
 	if (heredoc_signal_handler() == 1)
 		return (panic_heredoc(ERR_SIGACTION, state, HEREDOC_OPEN_ERR));
 	while (1)
 	{
 		write(1, "> ", 2);
-		line = get_next_line(0, &malloc_err);
+		line = get_next_line(0, &malloc_err, &read_err);
 		if (g_last_sig && panic_heredoc(NULL, state, SIGNAL_CTRL_C))
 			break ;
 		if (malloc_err)
 			return (panic_heredoc(NULL, state, MALLOC_ERROR));
+		if (read_err)
+			return (panic_heredoc(NULL, state, READ_ERR));
 		if (line == NULL)
 			return (0);
 		if (ft_strncmp(line, delimiter, len) == 0 \

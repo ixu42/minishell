@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 21:14:22 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 17:47:31 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 18:19:34 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,26 +32,28 @@ int	has_newline_char(t_lst *list)
 	return (0);
 }
 
-int	ft_lst_append(t_lst **lst, char *buf)
+void	ft_lst_append(t_lst **lst, char *buf, int *malloc_err)
 {
 	t_lst	*ptr;
 	t_lst	*new_node;
 
 	new_node = (t_lst *)malloc(sizeof(t_lst));
 	if (new_node == NULL)
-		return (-2);
+	{
+		*malloc_err = 1;
+		return ;
+	}
 	new_node->next = NULL;
 	new_node->str_buf = buf;
 	if (*lst == NULL)
 	{
 		*lst = new_node;
-		return (1);
+		return ;
 	}
 	ptr = *lst;
 	while (ptr->next != NULL)
 		ptr = ptr->next;
 	ptr->next = new_node;
-	return (1);
 }
 
 void	free_list(t_lst **list)
