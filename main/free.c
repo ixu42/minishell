@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:25 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 16:14:27 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 17:32:54 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void	free_arr(char **arr)
 	while (arr[++i] != NULL)
 		free(arr[i]);
 	free(arr);
-	arr = NULL;
 }
 
 void	free_lst(t_env **lst)

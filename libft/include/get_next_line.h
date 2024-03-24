@@ -26,7 +26,7 @@ typedef struct s_lst
 	struct s_lst	*next;
 }	t_lst;
 
-char	*get_next_line(int fd);
+char	*get_next_line(int fd, int *malloc_err);
 int		has_newline_char(t_lst *list);
 int		ft_lst_append(t_lst **lst, char *buf);
 void	free_list(t_lst **list);

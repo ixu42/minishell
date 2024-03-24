@@ -109,12 +109,13 @@ if reading is successful, status = 1.
 An array of linked list is used to handle multiple fd.
  */
 
-char	*get_next_line(int fd)
+char	*get_next_line(int fd, int *malloc_err)
 {
 	static t_lst	*list[MAX_FD + 1];
 	char			*next_line;
 	int				status;
 
+	(void)malloc_err;
 	if (fd < 0 || fd > MAX_FD || BUFFER_SIZE <= 0)
 		return (NULL);
 	status = create_list(list, fd);
