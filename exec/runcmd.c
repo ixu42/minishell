@@ -1,4 +1,74 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   runcmd.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/21 15:13:23 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/22 11:04:34 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
+
+int	fork1(t_data *data)
+{
+	int	pid;
+
+	pid = fork();
+	if (pid == -1)
+		panic(ERR_FORK, data, 1);
+	return (pid);
+}
+
+int	restore_stdin_n_stdout(t_data *data)
+{
+	if (!data->under_pipe && data->under_redir)
+	{
+		if (dup2(data->fd_stdin, 0) == -1)
+			return (panic(ERR_DUP2, data, 1));
+		if (dup2(data->fd_stdout, 1) == -1)
+			return (panic(ERR_DUP2, data, 1));
+	}
+	return (0);
+}
+
+void	run_and(t_cmd *cmd, t_data *data)
+{
+	t_listcmd	*lcmd;
+	int			process;
+
+	lcmd = (t_listcmd *)cmd;
+	process = data->proc;
+	data->proc = PARENT_PROC;
+	runcmd(lcmd->left, data);
+	if (data->status == 0)
+	{
+		data->proc = PARENT_PROC;
+		runcmd(lcmd->right, data);
+	}
+	if (process == CHILD_PROC)
+		free_n_exit(data, data->status);
+}
+
+void	run_or(t_cmd *cmd, t_data *data)
+{
+	t_listcmd	*lcmd;
+	int			process;
+
+	lcmd = (t_listcmd *)cmd;
+	process = data->proc;
+	data->proc = PARENT_PROC;
+	runcmd(lcmd->left, data);
+	if (data->status != 0)
+	{
+		data->proc = PARENT_PROC;
+		runcmd(lcmd->right, data);
+	}
+	if (process == CHILD_PROC)
+		free_n_exit(data, data->status);
+}
 
 /* the parameter process to indicate if runcmd 
 is executed in child process or in parent process
@@ -9,46 +79,24 @@ void	runcmd(t_cmd *cmd, t_data *data)
 {
 	if (cmd->type == EXEC)
 	{
-		// ------ debug ------
-		// dprintf(2, "exec\n");
-		// -------------------
 		run_exec(cmd, data);
-		if (data->status == 1)
+		if (data->status)
 			return ;
 	}
 	else if (cmd->type == REDIR)
 	{
-		// ------ debug ------
-		// dprintf(2, "redir\n");
-		// -------------------
-		// dprintf(2, "debug2\n");
 		run_redir(cmd, data);
-		// dprintf(2, "debug3\n");
-		if (data->status == 1)
+		if (data->status)
 			return ;
-		// dprintf(2, "debug4\n");
 	}
 	else if (cmd->type == AND_CMD)
-	{
-		// ------ debug ------
-		// dprintf(2, "&& operator\n");
-		// -------------------
 		run_and(cmd, data);
-	}
 	else if (cmd->type == OR_CMD)
-	{
-		// ------ debug ------
-		// dprintf(2, "|| operator\n");
-		// -------------------
 		run_or(cmd, data);
-	}
 	else if (cmd->type == PIPE)
 	{
-		// ------ debug ------
-		// dprintf(2, "pipe\n");
-		// -------------------
 		run_pipe(cmd, data);
-		if (data->status == 1)
+		if (data->status)
 			return ;
 	}
 }

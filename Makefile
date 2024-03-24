@@ -57,18 +57,22 @@ STRINGS_FILES = make_argv_and_filename.c \
 				arraylist.c \
 				heapsort_str.c
 EXEC_FILES = runcmd.c \
-				runcmd_utils.c \
 				run_exec.c \
+				run_redir.c \
+				run_pipe.c \
 				get_cmd_path.c \
 				environment.c \
-				heredoc.c
+				exec_error.c
 BUILTINS_FILES = builtins.c \
-					echo.c \
-					directory.c \
-					export.c \
-					unset.c \
-					env.c \
-					exit.c
+					exec_echo.c \
+					exec_cd.c \
+					exec_pwd.c \
+					exec_export.c \
+					exec_unset.c \
+					exec_env.c \
+					exec_exit.c \
+					env.c
+					
 
 # Source files including paths
 SRCS = $(addprefix $(MAIN_DIR), $(MAIN_FILES)) \
@@ -106,28 +110,23 @@ $(OBJS_DIR):
 	@echo "$(COLOR_CYAN)object directory created$(COLOR_END)"
 
 $(OBJS_DIR)%.o: $(MAIN_DIR)%.c
-	@cc -c $< -o $@ -I$(RL_HEADER_DIR)
-	@#cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
+	@cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
 	@echo "$(COLOR_CYAN)$@ created$(COLOR_END)"
 
 $(OBJS_DIR)%.o: $(PARSER_DIR)%.c
-	@#cc -c $< -o $@ -I$(RL_HEADER_DIR)
 	@cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
 	@echo "$(COLOR_CYAN)$@ created$(COLOR_END)"
 
 $(OBJS_DIR)%.o: $(STRINGS_DIR)%.c
-	@#cc -c $< -o $@ -I$(RL_HEADER_DIR)
 	@cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
 	@echo "$(COLOR_CYAN)$@ created$(COLOR_END)"
 
 $(OBJS_DIR)%.o: $(EXEC_DIR)%.c
-	@cc -c $< -o $@ -I$(RL_HEADER_DIR)
-	@#cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
+	@cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
 	@echo "$(COLOR_CYAN)$@ created$(COLOR_END)"
 
 $(OBJS_DIR)%.o: $(EXEC_DIR)$(BUILTINS_DIR)%.c
-	@cc -c $< -o $@ -I$(RL_HEADER_DIR)
-	@#cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
+	@cc $(CFLAGS) -c $< -o $@ -I$(RL_HEADER_DIR)
 	@echo "$(COLOR_CYAN)$@ created$(COLOR_END)"
 
 $(LIBFT):

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/21 15:15:02 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/24 12:49:42 by ixu              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../minishell.h"
 
 char	*get_value(char *name_value_str, t_env *new_node, int *err_flag)
@@ -22,12 +34,33 @@ char	*get_value(char *name_value_str, t_env *new_node, int *err_flag)
 	return (value);
 }
 
+static t_env	*set_node_values(t_env *node, char *name_value)
+{
+	int	err_flag;
+
+	err_flag = 0;
+	node->value = get_value(name_value, node, &err_flag);
+	if (err_flag == 1)
+		return (NULL);
+	node->name = ft_strdup(name_value);
+	if (node->name == NULL)
+	{
+		free(name_value);
+		free(node->value);
+		free(node);
+		return (error_handler(ERR_MALLOC, &err_flag));
+	}
+	node->next = NULL;
+	return (node);
+}
+
 t_env	*get_node(char *name_value_str)
 {
 	t_env	*new_node;
 	char	*name_value_cpy;
 	int		err_flag;
 
+	err_flag = 0;
 	name_value_cpy = ft_strdup(name_value_str);
 	if (name_value_cpy == NULL)
 		return (error_handler(ERR_MALLOC, &err_flag));
@@ -37,18 +70,8 @@ t_env	*get_node(char *name_value_str)
 		free(name_value_cpy);
 		return (error_handler(ERR_MALLOC, &err_flag));
 	}
-	new_node->value = get_value(name_value_cpy, new_node, &err_flag);
-	if (err_flag == 1)
+	if (set_node_values(new_node, name_value_cpy) == NULL)
 		return (NULL);
-	new_node->name = ft_strdup(name_value_cpy);
-	if (new_node->name == NULL)
-	{
-		free(name_value_cpy);
-		free(new_node->value);
-		free(new_node);
-		return (error_handler(ERR_MALLOC, &err_flag));
-	}
-	new_node->next = NULL;
 	free(name_value_cpy);
 	return (new_node);
 }
@@ -84,25 +107,5 @@ int	name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node)
 		tmp = tmp->next;
 	}
 	*node = NULL;
-	return (0);
-}
-
-int	exec_env(t_env *env_lst)
-{
-	t_env	*tmp;
-
-	tmp = env_lst;
-	while (tmp != NULL)
-	{
-		if (tmp->value != NULL)
-		{
-			if (printf("%s=%s\n", tmp->name, tmp->value) < 0)
-			{
-				perror(PMT_ERR_PRINTF);
-				return (1);
-			}
-		}
-		tmp = tmp->next;
-	}
 	return (0);
 }

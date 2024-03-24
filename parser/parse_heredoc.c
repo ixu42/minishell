@@ -40,7 +40,7 @@ static void	convert_input_here(t_strstate *state, \
 	{
 		write(1, "> ", 2);
 		line = get_next_line(0);
-		if (last_sig)
+		if (g_last_sig)
 		{
 			state->flag |= SIGNAL_CTRL_C;
 			break ;

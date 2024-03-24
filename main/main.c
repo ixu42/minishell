@@ -1,62 +1,72 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/24 13:48:15 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-volatile sig_atomic_t	last_sig;
+volatile sig_atomic_t	g_last_sig;
 
-/* buf is considered valid if (1) it is not empty string,
-and (2) it contains at least one character other than white spaces */
-
-int	is_valid_buf(char *buf)
+static void	cleanup_n_reset(t_data *data)
 {
-	int	i;
-	int	j;
-	int	is_white_space;
+	if (data->status == 130)
+		dprintf(2, "\n");
+	if (data->status == 131)
+		dprintf(2, "Quit: 3\n");
+	g_last_sig = 0;
+	data->under_pipe = 0;
+	data->under_redir = 0;
+	free(data->buf);
+	freecmd_null(&(data->tree));
+}
 
-	if (ft_strlen(buf) == 0)
-		return (0);
-	i = -1;
-	while (buf[++i] != '\0')
-	{
-		j = -1;
-		is_white_space = 0;
-		while (WHITESPACE[++j] != '\0')
-		{
-			if (buf[i] == WHITESPACE[j])
-			{
-				is_white_space = 1;
-				break ;
-			}
-		}
-		if (!is_white_space)
-			return (1);
-	}
-	return (0);	
+static void	cleanup_before_exit(t_data *data)
+{
+	if (close(data->fd_stdin) == -1)
+		print_error_n_exit(ERR_CLOSE);
+	if (close(data->fd_stdout) == -1)
+		print_error_n_exit(ERR_CLOSE);
+	free_data(data);
+	data = NULL;
+	rl_clear_history();
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
-	t_cmd	*cmd;
+	//t_cmd	*cmd;
 	int		status;
 
-	// ------ print out envp ------
-	// for (int k = 0; envp[k] != NULL; k++)
-	// 	printf("%s\n", envp[k]);
-	// ----------------------------
-	// (void)argv;
-	cmd = NULL;
+	//cmd = NULL;
+	(void)argv;
 	validate_args(argc);
 	data_init(&data, envp);
+	status = 0;
 	while (data.status >= 0)
 	{
-		if (set_signals_interactive(&data) == 1)
-			break ;
-		data.buf = readline("LiteShell$ ");
-		if (last_sig)
-			data.status = 1;
-		if (set_default_signals(&data) == 1)
-			break ;
-		if (data.buf == NULL) // Check for EOF (Ctrl+D)
+		if (set_signals_interactive() == 1)
 		{
+			status = 1;
+			break ;
+		}
+		data.buf = readline("LiteShell$ ");
+		if (g_last_sig)
+			data.status = 1;
+		if (set_default_signals() == 1)
+		{
+			status = 1;
+			break ;
+		}
+		if (data.buf == NULL)
+		{
+			status = data.status;
 			printf("\033[A\033[11Cexit\n");
 			break ;
 		}
@@ -69,9 +79,9 @@ int	main(int argc, char **argv, char **envp)
 //			cmd = data.tree;
 			if (TESTMODE)
 			{
-				ft_dprintf(2,"------------->TESTMODE<----------\n");
+				ft_dprintf(2, "------------->TESTMODE<----------\n");
 			//	cmd = parsecmd(data.buf, NULL);
-				if (cmd)
+				if (data.tree)
 					runcmd_test(data.tree, &data);
 				ft_dprintf(2,"------------->  END   <----------\n");
 			}
@@ -82,39 +92,19 @@ int	main(int argc, char **argv, char **envp)
 			}
 			else if (status == ENOMEM_ERR)
 			{
-//				freecmd(cmd);
-				//
+				//replace == by &
+				status = 1;
 				break ;
 			}
 			else if (status & SIGNAL_CTRL_C)
-			{
-//				printf("ctrl+c\n");
 				data.status = 1;
-			}
 			else
 				data.status = status;
-			freecmd_null(&(data.tree));
-			// dprintf(2, "data.buf(after): %s\n", data.buf);
-			// ------ print out envp ------
-			// for (int k = 0; envp[k] != NULL; k++)
-			// 	printf("%s\n", envp[k]);
-			// ----------------------------
-			// dprintf(2, "\033[0;35m[status: %d]\033[0m\n", data.status);
-			// ------
 		}
-		free(data.buf);
-		if (data.status == 130)
-			dprintf(2, "\n");
-		if (data.status == 131)
-			dprintf(2, "Quit: 3\n");
-		last_sig = 0;
-		data.under_pipe = 0;
-		data.under_redir = 0;
+		cleanup_n_reset(&data);
 	}
-	close(data.fd_stdin);
-	close(data.fd_stdout);
-//	unlink(".heredoc");
-	free_data(&data);
-	rl_clear_history();
-	exit(EXIT_SUCCESS);
+	cleanup_before_exit(&data);
+//	while (1)
+//		;
+	exit(status);
 }

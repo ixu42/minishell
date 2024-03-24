@@ -1,33 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signal_handlers.c                                  :+:      :+:    :+:   */
+/*   exec_env.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/22 20:29:35 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 13:49:01 by ixu              ###   ########.fr       */
+/*   Created: 2024/03/22 17:31:52 by ixu               #+#    #+#             */
+/*   Updated: 2024/03/22 17:33:15 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "../../minishell.h"
 
-/* SIGINT signal handler when waiting 
-for user inputting command line */
-
-void	display_pmt_on_nl(int signum)
+int	exec_env(t_env *env_lst)
 {
-	g_last_sig = signum;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
+	t_env	*tmp;
 
-// SIGINT signal handler for here documents
-
-void	move_to_nl(int signum)
-{
-	g_last_sig = signum;
-	write(1, "\n", 1);
+	tmp = env_lst;
+	while (tmp != NULL)
+	{
+		if (tmp->value != NULL)
+		{
+			if (printf("%s=%s\n", tmp->name, tmp->value) < 0)
+			{
+				perror(PMT_ERR_PRINTF);
+				return (1);
+			}
+		}
+		tmp = tmp->next;
+	}
+	return (0);
 }
