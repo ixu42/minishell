@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:30:45 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:41:22 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 18:45:11 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_strcmd	*strcmd(int type, char *start, char *end)
 	cmd->end = end;
 	cmd->next = NULL;
 	cmd->flag = 0;
+	cmd->malloc_flag = 0;
 	return (cmd);
 }
 

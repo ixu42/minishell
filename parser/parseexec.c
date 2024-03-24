@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:33:43 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:50:31 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 18:25:02 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 	{
 		if (*ps == ast->es)
 			break ;
+		//if (STR_TOK != gettoken(ps, ast->es, tok_str, tok_str + 1))
 		tok = gettoken(ps, ast->es, tok_str, tok_str + 1);
 		if (tok != STR_TOK)
 		{

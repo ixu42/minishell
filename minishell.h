@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 16:17:06 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 18:40:59 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,7 @@ typedef struct s_strcmd
 	char			*start;
 	char			*end;
 	struct s_strcmd	*next;
+	int				malloc_flag;
 }	t_strcmd;
 
 typedef struct s_argcmd

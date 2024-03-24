@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:31:58 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 11:39:58 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 18:47:12 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,15 @@ int	free_str(t_strcmd *cmd)
 		free_str(cmd->next);
 		cmd->next = NULL;
 	}
-	/* potencial leakage for cmd with $VAR 
-	 if (cmd->type == STR_NODE_VAR)
-	 	free(cmd->start);
-	 */
+	//if (cmd->type == STR_NODE_VAR)
+	if (cmd->type == STR_EXIT_CODE || cmd->type == STR_NODE_VAR)
+	{
+		if (cmd->malloc_flag && cmd->start)
+		{
+			free(cmd->start);
+			cmd->start = NULL;
+		}
+	}
 	free(cmd);
 	return (0);
 }

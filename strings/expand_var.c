@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 12:00:51 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 12:02:46 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 19:31:50 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	set_exit_code_node(t_strcmd *str, t_data *data)
 	data->stat_str = ft_itoa(data->status);
 	str->start = data->stat_str;
 	str->end = str->start + ft_strlen(str->start);
+	str->malloc_flag = 1;
 }
 
 void	replace_space_by(t_strcmd *str, int c)
@@ -41,6 +42,7 @@ void	duplicate_data_in_str(t_strcmd *str)
 	copy = ft_strdup(str->start);
 	str->start = copy;
 	str->end = copy + ft_strlen(copy);
+	str->malloc_flag = 1;
 }
 
 void	set_variable_node(t_strcmd *str, t_env *node)
