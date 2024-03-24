@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_exec.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:31:58 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 11:39:58 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	free_str(t_strcmd *cmd)
@@ -7,6 +19,10 @@ int	free_str(t_strcmd *cmd)
 		free_str(cmd->next);
 		cmd->next = NULL;
 	}
+	/* potencial leakage for cmd with $VAR 
+	 if (cmd->type == STR_NODE_VAR)
+	 	free(cmd->start);
+	 */
 	free(cmd);
 	return (0);
 }

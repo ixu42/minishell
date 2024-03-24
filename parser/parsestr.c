@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsestr.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:48:23 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:48:24 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 t_strcmd	*parse_double_elem(t_strstate *state)
@@ -44,6 +56,7 @@ t_strcmd	*parse_element(t_strstate *state)
 {
 	t_strcmd	*node;
 
+	node = NULL;
 	if (state->d_quotes == 1)
 		node = parse_double(state);
 	else if (!ft_strchr("*$\'\"", *(state->pos)))

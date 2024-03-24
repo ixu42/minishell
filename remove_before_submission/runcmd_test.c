@@ -6,11 +6,28 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/21 08:52:40 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 11:30:17 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void printf_nonprintable(char *str)
+{
+    int i;
+
+    i = 0;
+    printf("String with non-printable: ->");
+    while (str[i] != '\0')
+    {
+        if (str[i] < 32 || str[i] > 126)
+            printf("\\x%02X", (unsigned char)str[i]);
+        else
+            printf("%c", str[i]);
+        i++;
+    }
+    printf("<-\n");
+}
 
 int	fork1_test(void)	// Fork but panics on failure.
 {

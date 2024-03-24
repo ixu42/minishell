@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parseredirs.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:47:48 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:50:56 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 t_cmd	*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
@@ -20,7 +32,7 @@ t_cmd	*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 		last->cmd = extra;
 	}
 	else if (extra->type == REDIR)
-		return (extra); 
+		return (extra);
 	return (head);
 }
 
@@ -29,8 +41,6 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 	t_strstate	*state_str;
 	t_redircmd	*rcmd;
 
-//	if (cmd->type != REDIR || cmd->flag)
-//		return ;
 	rcmd = (t_redircmd *)cmd;
 	state_str = make_strstate(state->beg, state->end);
 	if (!state_str)
@@ -49,7 +59,8 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 	return ;
 }
 
-t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok, t_aststate *ast)
+t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, \
+	int tok, t_aststate *ast)
 {
 	if (cmd->flag)
 		return (cmd);
@@ -68,8 +79,6 @@ t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, int tok, t_aststate *ast)
 			cmd = redircmd(cmd, state, O_RDONLY, 0);
 		else
 			cmd->flag = state->flag;
-		//cmd = redircmd(cmd, state, -1, 0);
-	//	ft_dprintf(2, "i=%d, eof=->%s<-, heredoc=->%s<-\n", ast->heredoc, state->beg, state->heredoc);
 	}
 	return (cmd);
 }

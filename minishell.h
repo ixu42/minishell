@@ -353,11 +353,15 @@ int	freecmd(t_cmd *cmd);
 void	freecmd_null(t_cmd **cmd);
 
 //parsing_utils.c
+void    increase_s_quotes(char **pnt_s, int *p_quotes);
+t_cmd   *nulterminate(t_cmd *cmd);
+int	panic_parser(char *s, int err);
+int select_token(char **pnt);
+
+//gettoken_peek.c
 int gettoken(char **ps, char *es, char **q, char **eq);
 int peek(char **ps, char *es, char *toks);
-t_cmd   *nulterminate(t_cmd *cmd);
 const char  *token_type_to_str(t_token_type token);
-int	panic_parser(char *s, int err);
 
 // runcmd() func and its helper funcs
 void	runcmd(t_cmd *cmd, t_data *data);
@@ -414,6 +418,28 @@ void	rl_clear_history(void);
 void	rl_replace_line (const char *text, int clear_undo);
 
 // string operations
+// do_single_match.c
+int	do_single_match(int i, t_wildcard *wild, char *str, DIR *dir);
+int free_wildcard(t_wildcard *wild, int clean_list, int error);
+int init_wildcard(t_wildcard *wild, t_execcmd *cmd);
+int init_wildcard_redir(t_wildcard *wild, t_redircmd *cmd);
+// match_to_files.c
+int match_to_files(t_wildcard *wild);
+int make_sorted_argv(t_wildcard *wild, int be_sorted);
+int copy_sorted_argv(t_wildcard *wild);
+
+//join_args.c
+char    *join_all_arguments(char **pnt, t_execcmd *cmd);
+int get_argc(t_execcmd *cmd);
+
+// ft_free_char.c
+void    ft_free_char2d(char **split);
+int ft_free_char2d_return(char **split, int ret);
+
+// expand_var.c
+void    expand_var_in_strlist(t_strcmd *str, t_data *data);
+
+
 char	*strlist_join(t_strcmd *str);
 int		make_argv(t_execcmd *cmd, t_data *data);
 int		make_filename(t_redircmd *rcmd, t_data *data);

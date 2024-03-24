@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_heredoc.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:33:17 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:49:59 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	panic_heredoc(char *err_msg, t_strstate *state, int err_code)
@@ -11,7 +23,8 @@ int	panic_heredoc(char *err_msg, t_strstate *state, int err_code)
 
 // save input from stdin to .heredoc
 
-static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimiter)
+static void	convert_input_here(t_strstate *state, \
+	int fd_heredoc, char *delimiter)
 {
 	char	*line;
 	int		len;
@@ -23,15 +36,13 @@ static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimite
 		state->flag |= HEREDOC_OPEN_ERR;
 		return ;
 	}
-	// do we need to return here after signal handler?
-	// we have not the same behavior at alex's pc for `<<eof cat` when Cntl+D
 	while (1)
 	{
 		write(1, "> ", 2);
 		line = get_next_line(0);
 		if (last_sig)
 		{
-			state->flag |= SIGNAL_CTRL_C; 
+			state->flag |= SIGNAL_CTRL_C;
 			break ;
 		}
 		if (line == NULL)
@@ -52,7 +63,10 @@ static void	convert_input_here(t_strstate *state, int fd_heredoc, char *delimite
 	free(line);
 }
 
-/* in case of here documents (1) create a temporary file .heredoc, (2) get input from stdin and save to .heredoc, and (3) close .heredoc */
+/* 
+in case of here documents (1) create a temporary file .heredoc, 
+(2) get input from stdin and save to .heredoc, and (3) close .heredoc 
+*/
 
 char	*heredoc_filename(int n)
 {

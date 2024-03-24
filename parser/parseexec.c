@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parseexec.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:33:43 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:50:31 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	extend_arg_node(t_argcmd **arg, char *q, char *eq)
@@ -34,8 +46,6 @@ void	set_execcmd_sargv(t_execcmd *cmd, char **tok_str)
 		cmd->eargv[cmd->argc] = tok_str[1];
 	}
 }
-
-
 
 int	add_redirections(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 {
@@ -90,7 +100,6 @@ t_cmd	*parseexec(char **ps, char *es, t_aststate *ast)
 {
 	t_execcmd	*cmd;
 	t_cmd		*head;
-	t_cmd		*last_node;
 
 	if (peek(ps, es, "("))
 		return (parseblock(ps, es, ast));

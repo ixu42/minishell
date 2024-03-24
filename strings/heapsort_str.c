@@ -1,7 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heapsort_str.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 11:06:25 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 11:06:28 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
 
 // i is current root node, and n is total number of el in arr
 void	heapify(char **arr, int n, int i)
@@ -44,27 +53,3 @@ void	heapsort_str(char **arr, int n)
 		heapify(arr, i--, 0);
 	}
 }
-
-
-/*
-// Function to print an array
-void print_array(char **arr, int n) {
-	for (int i = 0; i < n; ++i)
-		printf("%s ", arr[i]);
-	printf("\n");
-}
-
-int main() {
-	char *arr[] = {"Apple", "banana", "orange", "grape", "kiwi", "ape"};
-	int n = sizeof(arr)/sizeof(arr[0]);
-
-	printf("Original array: \n");
-	print_array(arr, n);
-
-	heapsort_str(arr, n);
-
-	printf("\nSorted array: \n");
-	print_array(arr, n);
-	return 0;
-}
-*/

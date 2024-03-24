@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_word_singl_var.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:33:30 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:49:21 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 // parse_word_singl_var.c
@@ -12,13 +24,6 @@ t_strcmd	*parse_word(t_strstate *state)
 		s++;
 	state->end = s;
 	state->pos = s;
-	/*
-	if (state->end == state->beg)
-	{
-		ft_dprintf(2, "Error: word of zerosize.\n");
-		state->flag |= SYNTAX_ERROR;
-	}
-	*/
 	node = strcmd(STR_NODE, state->beg, state->end);
 	if (node == NULL)
 		state->flag |= MALLOC_ERROR;
@@ -38,13 +43,6 @@ t_strcmd	*parse_str_till(t_strstate *state, char *stop_toks)
 		s++;
 	state->end = s;
 	state->pos = s;
-	/*
-	if (state->end == state->beg)
-	{
-		ft_dprintf(2, "Error: str of zerosize.\n");
-		state->flag |= SYNTAX_ERROR;
-	}
-	*/
 	node = strcmd(STR_NODE, state->beg, state->end);
 	if (node == NULL)
 		state->flag |= MALLOC_ERROR;

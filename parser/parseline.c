@@ -1,8 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parseline.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:33:53 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:52:13 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 // parseline.c
-
-t_cmd	*parsepipe(char **ps, char *es,t_aststate *ast)
+t_cmd	*parsepipe(char **ps, char *es,	t_aststate *ast)
 {
 	t_cmd	*cmd;
 	int		tok;
@@ -80,12 +91,9 @@ t_cmd	*parseblock(char **ps, char *es, t_aststate *ast)
 		return (NULL);
 	if (cmd->flag)
 		return (cmd);
-//	if (peek(ps, es, ")") && cmd->flag == 0)
 	if (peek(ps, es, ")"))
 		(*ps)++;
 	else
 		cmd->flag |= SYNTAX_ERROR;
-//	if (cmd->flag == 0)
-	//	cmd = parseredirs(cmd, ps, es);
 	return (cmd);
 }

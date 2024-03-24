@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   freecmd.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:45:40 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:45:49 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	free_redir(t_cmd *cmd)
@@ -51,7 +63,7 @@ int	free_pipe(t_cmd *cmd)
 	return (0);
 }
 
-int freecmd(t_cmd *cmd)
+int	freecmd(t_cmd *cmd)
 {
 	if (!cmd)
 		return (0);
@@ -68,7 +80,7 @@ int freecmd(t_cmd *cmd)
 	return (0);
 }
 
-void freecmd_null(t_cmd **cmd)
+void	freecmd_null(t_cmd **cmd)
 {
 	if (*cmd)
 	{

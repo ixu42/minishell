@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   constructors_aux.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:30:45 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:41:22 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 t_strcmd	*strcmd(int type, char *start, char *end)
@@ -48,7 +60,6 @@ t_strstate	*make_strstate(char *start, char *finish)
 	state->beg = NULL;
 	state->end = NULL;
 	state->d_quotes = 0;
-//	state->s_quotes = 0; //unused sofar
 	state->flag = 0;
 	state->heredoc = NULL;
 	return (state);

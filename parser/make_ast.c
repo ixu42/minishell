@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   make_ast.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 10:32:43 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 10:47:27 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 void	print_syntax_err_msg(char *s, char *es)
@@ -10,7 +22,8 @@ void	print_syntax_err_msg(char *s, char *es)
 	if (tok == UNDEFINED_TOK)
 		ft_dprintf(2, "'%c'\n", *str[0]);
 	else if (tok == STR_TOK)
-	{			*str[1] = '\0';
+	{
+		*str[1] = '\0';
 		ft_dprintf(2, "'%s'\n", str[0]);
 	}
 	else
@@ -37,14 +50,13 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 
 t_cmd	*parsecmd(char *s, int *status)
 {
-	char	*es;
-	t_cmd	*cmd;	
-	int		ret;
+	char		*es;
+	t_cmd		*cmd;	
+	int			ret;
 	t_aststate	*ast;
 
 	ret = 0;
 	es = s + ft_strlen(s);
-
 	ast = make_aststate(s, es);
 	if (!ast)
 		return (NULL);
