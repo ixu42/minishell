@@ -51,6 +51,8 @@ void	free_data(t_data *data)
 	freecmd_null(&(data->tree));
 	if (data->stat_str)
 		free(data->stat_str);
+	free(data->cmd_path);
+	free_arr(data->envp);
 }
 
 // used during the execution
