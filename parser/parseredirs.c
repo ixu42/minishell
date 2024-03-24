@@ -1,9 +1,5 @@
 #include "../minishell.h"
 
-//parseexec.c
-//t_strcmd	*parsestr(t_strstate *state);
-
-// parseredirs.c
 t_cmd	*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd)
 {
 	t_cmd		*tail;

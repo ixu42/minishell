@@ -34,13 +34,15 @@ MAIN_FILES = main.c \
 				free.c
 PARSER_FILES = constructors_tree.c \
 				constructors_aux.c \
-				parseexec.c \
-				parsestr.c \
-				parseline.c \
-				make_ast.c \
-				parse_heredoc.c \
 				freecmd.c \
 				free_exec.c \
+				make_ast.c \
+				parseexec.c \
+				parseline.c \
+				parseredirs.c \
+				parsestr.c \
+				parse_word_singl_var.c \
+				parse_heredoc.c \
 				parsing_utils.c \
 				../remove_before_submission/runcmd_test.c
 STRINGS_FILES = str_list_utils.c \

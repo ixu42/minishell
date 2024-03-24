@@ -335,6 +335,14 @@ t_cmd   *parsecmd(char *buf, int *status);
 t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
 t_cmd	*parseline(char **ps, char *es, t_aststate *ast);
 
+//parseredirs.c
+t_cmd	*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd);
+
+//parse_word_singl_var.c
+t_strcmd	*parse_word(t_strstate *state);
+t_strcmd	*parse_str_till(t_strstate *state, char *stop_toks);
+t_strcmd	*parse_single(t_strstate *state);
+t_strcmd	*parse_variable(t_strstate *state);
 
 // free_exec.c
 int	free_str(t_strcmd *cmd);
