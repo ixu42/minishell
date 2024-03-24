@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   exec_echo.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:54 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/21 15:14:56 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 13:16:59 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,16 @@ static int	print_args(char **argv, int i)
 {
 	while (argv[i] != NULL)
 	{
-		if (printf("%s", argv[i]) < 0)
+		if (write(1, argv[i], ft_strlen(argv[i])) == -1)
 		{
-			perror(PMT_ERR_PRINTF);
+			perror(PMT_ERR_WRITE);
 			return (1);
 		}
 		if (argv[++i] != NULL)
 		{
-			if (printf(" ") < 0)
+			if (write(1, " ", 1) == -1)
 			{
-				perror(PMT_ERR_PRINTF);
+				perror(PMT_ERR_WRITE);
 				return (1);
 			}
 		}
@@ -50,9 +50,9 @@ int	exec_echo(char **argv)
 		return (1);
 	if (add_new_line)
 	{
-		if (printf("\n") < 0)
+		if (write(1, "\n", 1) == -1)
 		{
-			perror(PMT_ERR_PRINTF);
+			perror(PMT_ERR_WRITE);
 			return (1);
 		}
 	}

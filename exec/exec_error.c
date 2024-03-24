@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:38:31 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 11:46:22 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 14:20:49 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ int	panic(char *msg, t_data *data, int status_code)
 	if (data->proc == CHILD_PROC)
 	{
 		free_data(data);
-		// free tree nodes?
 		exit(status_code);
 	}
 	data->status = status_code;
@@ -58,7 +57,6 @@ int	panic_is_a_dir(char *msg, t_data *data)
 	if (data->proc == CHILD_PROC)
 	{
 		free_data(data);
-		// free tree nodes?
 		exit(126);
 	}
 	data->status = 126;
@@ -77,7 +75,6 @@ int	panic_cmd_not_found(char *msg, t_data *data)
 		free_arr(data->envp);
 		free_data(data);
 		data = NULL;
-		// free tree nodes?
 		exit(127);
 	}
 	data->status = 127;

@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:25 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 11:44:00 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 14:20:32 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ void	free_data(t_data *data)
 	freecmd_null(&(data->tree));
 	if (data->stat_str)
 		free(data->stat_str);
-	//free(data->cmd_path);
 }
 
 // used during the execution
@@ -60,6 +59,5 @@ void	free_data(t_data *data)
 void	free_n_exit(t_data *data, int status_code)
 {
 	free_data(data);
-	// free AST in child proccesses?
 	exit(status_code);
 }

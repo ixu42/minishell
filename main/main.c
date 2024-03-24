@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 13:48:15 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 14:30:14 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,12 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (data.buf == NULL)
 		{
-			status = data.status;
-			printf("\033[A\033[11Cexit\n");
+			// struct winsize ws;
+    		// ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+			// dprintf(2, "ws.ws_col:%d\n", ws.ws_col);
+			// printf("\033[A\033[%dC%s\n", ws.ws_col, "exit");
+			printf("exit\n");
+			// printf("\033[A\033[%dC%s\n", 11, "exit");
 			break ;
 		}
 		if (is_valid_buf(data.buf))
