@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   data_init.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:16 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 13:25:40 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 16:00:07 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void	data_init(t_data *data, char **envp)
 	if (data->fd_stdout == -1)
 		print_error_n_exit(ERR_DUP);
 	data->envp = NULL;
+	data->cmd_path = NULL;
 	data->stat_str = NULL;
 	data->tree = NULL;
 	data->env_lst = copy_env_arr_to_lst(envp);
