@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 11:30:17 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 14:16:41 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void	printstr(t_strcmd *str, t_data *data)
 
 	i = 0;
 	first = str;
+	(void)data;
 	while (str != NULL)
 	{
 		start = str->start;
@@ -117,7 +118,7 @@ void	printargs(t_argcmd *args, t_data *data)
 // test version of runcmd for testing AST
 void	runcmd_test(t_cmd *cmd, t_data *data)
 {
-	int			p[2];
+//	int			p[2];
 	t_execcmd	*ecmd;
 	t_listcmd	*lcmd;
 	t_pipecmd	*pcmd;
