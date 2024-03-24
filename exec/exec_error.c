@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:38:31 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 14:20:49 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 16:17:06 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,47 +38,55 @@ int	panic(char *msg, t_data *data, int status_code)
 	if (msg != NULL)
 	{
 		if (ft_dprintf(2, "%s", PMT) == -1)
+		{
 			perror(PMT_ERR_WRITE);
+			return (handle_exit_or_return(data, 1));
+		}
 		perror(msg);
 	}
-	if (data->proc == CHILD_PROC)
-	{
-		free_data(data);
-		exit(status_code);
-	}
-	data->status = status_code;
-	return (1);
+	return (handle_exit_or_return(data, status_code));
 }
 
 int	panic_is_a_dir(char *msg, t_data *data)
 {
-	if (ft_dprintf(2, "%s%s: is a directory\n", PMT, msg) == -1)
-		perror(PMT_ERR_WRITE);
-	if (data->proc == CHILD_PROC)
+	char	*full_msg;
+
+	if (msg != NULL)
 	{
-		free_data(data);
-		exit(126);
+		full_msg = join_msgs(PMT, msg, ": is a directory\n");
+		if (full_msg == NULL)
+			return (handle_exit_or_return(data, 1));
+		if (ft_dprintf(2, "%s", full_msg) == -1)
+		{
+			free(full_msg);
+			perror(PMT_ERR_WRITE);
+			return (handle_exit_or_return(data, 1));
+		}
+		free(full_msg);
 	}
-	data->status = 126;
-	return (1);
+	return (handle_exit_or_return(data, 126));
 }
 
 // error handling in case of command not found
 
-int	panic_cmd_not_found(char *msg, t_data *data)
+int	panic_cmd_not_found(char *cmd, t_data *data)
 {
-	if (ft_dprintf(2, "%s%s: command not found\n", PMT, msg) == -1)
-		perror(PMT_ERR_WRITE);
-	if (data->proc == CHILD_PROC)
+	char	*full_msg;
+
+	if (cmd != NULL)
 	{
-		free(data->cmd_path);
-		free_arr(data->envp);
-		free_data(data);
-		data = NULL;
-		exit(127);
+		full_msg = join_msgs(PMT, cmd, ": command not found\n");
+		if (full_msg == NULL)
+			return (handle_exit_or_return(data, 1));
+		if (ft_dprintf(2, "%s", full_msg) == -1)
+		{
+			free(full_msg);
+			perror(PMT_ERR_WRITE);
+			return (handle_exit_or_return(data, 1));
+		}
+		free(full_msg);
 	}
-	data->status = 127;
-	return (1);
+	return (handle_exit_or_return(data, 127));
 }
 
 int	perror_n_return(char *msg, int return_value)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 14:08:58 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 16:17:06 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -415,8 +415,10 @@ void		print_error_n_exit(char *err_msg);
 t_env		*error_handler(char *err_msg, int *err_flag);
 int			panic(char *msg, t_data *data, int status_code);
 int			panic_is_a_dir(char *msg, t_data *data);
-int			panic_cmd_not_found(char *msg, t_data *data);
+int			panic_cmd_not_found(char *cmd, t_data *data);
 int			perror_n_return(char *msg, int return_value);
+char		*join_msgs(char const *s1, char const *s2, char const *s3);
+int			handle_exit_or_return(t_data *data, int status_code);
 
 // string operations
 // do_single_match.c
