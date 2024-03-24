@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parseredirs.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:47:48 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:50:56 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 19:19:19 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,15 @@ t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, \
 		*state->end = '\0';
 		get_input_heredoc(state, ast, state->beg);
 		ast->heredoc++;
+		/*
+		cmd->flag |= state->flag; // alex will continue
+		cmd = redircmd(cmd, state, O_RDONLY, 0);
+		cmd->flag |= state->flag;
+		*/
 		if (state->flag == 0)
 			cmd = redircmd(cmd, state, O_RDONLY, 0);
 		else
-			cmd->flag = state->flag;
+			cmd->flag |= state->flag;
 	}
 	return (cmd);
 }

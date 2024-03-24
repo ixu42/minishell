@@ -6,48 +6,49 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 21:13:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/01/11 21:13:29 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 21:08:38 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/get_next_line.h"
 
-static int	create_list(t_lst **list, int fd)
+static void	create_list(t_lst **list, int fd, int *malloc_err, int *read_err)
 {
 	int		chars_read;
 	char	*buf;
-	int		status;
 
 	while (!has_newline_char(list[fd]))
 	{
 		buf = (char *)malloc(BUFFER_SIZE + 1);
 		if (buf == NULL)
-			return (-2);
+		{
+			*malloc_err = 1;
+			return ;
+		}
 		chars_read = read(fd, buf, BUFFER_SIZE);
-		if (chars_read < 0 || (chars_read == 0 && list[fd] == NULL))
+		if (chars_read == -1 || (chars_read == 0 && list[fd] == NULL))
 		{
 			free(buf);
-			return (chars_read);
+			*read_err = -chars_read;
+			return ;
 		}
 		buf[chars_read] = '\0';
-		status = ft_lst_append(&list[fd], buf);
-		if (status == -2)
+		if (ft_lst_append(&list[fd], buf, malloc_err) == 1)
 		{
 			free(buf);
-			return (-2);
+			return ;
 		}
 	}
-	return (1);
 }
 
-static char	*list_to_str(t_lst *list, int *status)
+static char	*list_to_str(t_lst *list, int *malloc_err)
 {
 	char	*str;
 
 	str = (char *)malloc((ft_str_len(list) + 1) * sizeof(char));
 	if (str == NULL)
 	{
-		*status = -2;
+		*malloc_err = 1;
 		return (NULL);
 	}
 	str = ft_str_cpy(str, list);
@@ -74,7 +75,7 @@ static void	fill_new_node(t_lst *list, t_lst **new_node, char **buf)
 	(*new_node)->next = NULL;
 }
 
-static void	update_list(t_lst **list, int *status)
+static void	update_list(t_lst **list, int *malloc_err)
 {
 	char	*buf;
 	t_lst	*new_node;
@@ -86,7 +87,7 @@ static void	update_list(t_lst **list, int *status)
 		free(new_node);
 		free(buf);
 		free_list(list);
-		*status = -2;
+		*malloc_err = 1;
 		return ;
 	}
 	fill_new_node(*list, &new_node, &buf);
@@ -101,37 +102,29 @@ static void	update_list(t_lst **list, int *status)
 	}
 }
 
-/* 
-If malloc fails, status = -2;
-if there is error in reading, status = -1;
-if reading is successful, status = 1.
+// An array of linked list is used to handle multiple fd.
 
-An array of linked list is used to handle multiple fd.
- */
-
-char	*get_next_line(int fd, int *malloc_err)
+char	*get_next_line(int fd, int *malloc_err, int *read_err)
 {
 	static t_lst	*list[MAX_FD + 1];
 	char			*next_line;
-	int				status;
 
-	(void)malloc_err;
 	if (fd < 0 || fd > MAX_FD || BUFFER_SIZE <= 0)
 		return (NULL);
-	status = create_list(list, fd);
-	if (status == -1 || status == -2 || !list[fd])
+	create_list(list, fd, malloc_err, read_err);
+	if (*malloc_err || *read_err || !list[fd])
 	{
 		free_list(&list[fd]);
 		return (NULL);
 	}
-	next_line = list_to_str(list[fd], &status);
-	if (status == -2)
+	next_line = list_to_str(list[fd], malloc_err);
+	if (*malloc_err)
 	{
 		free_list(&list[fd]);
 		return (NULL);
 	}
-	update_list(&list[fd], &status);
-	if (status == -2)
+	update_list(&list[fd], malloc_err);
+	if (*malloc_err)
 	{
 		free(next_line);
 		return (NULL);
