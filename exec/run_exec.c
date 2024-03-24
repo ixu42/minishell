@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:11 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 14:10:10 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 20:53:25 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ static void	execute(t_execcmd *ecmd, t_data *data)
 	////// the following code is add to avoid running execve with NULL 
 	////// added to remove error: Valgrind: Syscall param execve(filename) points 
 	// to unaddressable byte(s)
-	//if (!data->cmd_path)
-	//	data->cmd_path = ecmd->argv[0];
+	// if (!data->cmd_path)
+	// 	data->cmd_path = ecmd->argv[0];
 	execve(data->cmd_path, ecmd->argv, data->envp);
 	panic_cmd_not_found(ecmd->argv[0], data);
 }

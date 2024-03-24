@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 18:34:47 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 21:55:25 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@
 # define ERR_WAITPID "waitpid error"
 # define ERR_OPEN "open error"
 # define ERR_CLOSE "close error"
+# define ERR_READ "read error"
 # define ERR_DUP2 "dup2 error"
 # define ERR_DUP "dup error"
 # define ERR_HEREDOC "heredoc error"
@@ -333,6 +334,10 @@ t_strcmd	*parsestr(t_strstate *state);
 t_cmd		*parseexec(char **ps, char *es, t_aststate *ast);
 t_cmd		*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast);
 int			get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter);
+int			panic_heredoc(char *err_msg, t_strstate *state, int err_code);
+int			write_heredoc(char *line, int fd_heredoc, t_strstate *state);
+int			heredoc_stop_iter(t_strstate *state, char *line, \
+			int malloc_err, int read_err);
 
 // make_ask.c
 int			make_ast(t_cmd **p_cmd, char *s);

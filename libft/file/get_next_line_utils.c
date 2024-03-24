@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 21:14:22 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 18:19:34 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 21:10:18 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ int	has_newline_char(t_lst *list)
 	return (0);
 }
 
-void	ft_lst_append(t_lst **lst, char *buf, int *malloc_err)
+/* if malloc() fails, malloc_err flag is set to 1, and
+the func returns 1 to indicate malloc error */
+
+int	ft_lst_append(t_lst **lst, char *buf, int *malloc_err)
 {
 	t_lst	*ptr;
 	t_lst	*new_node;
@@ -41,19 +44,20 @@ void	ft_lst_append(t_lst **lst, char *buf, int *malloc_err)
 	if (new_node == NULL)
 	{
 		*malloc_err = 1;
-		return ;
+		return (1);
 	}
 	new_node->next = NULL;
 	new_node->str_buf = buf;
 	if (*lst == NULL)
 	{
 		*lst = new_node;
-		return ;
+		return (0);
 	}
 	ptr = *lst;
 	while (ptr->next != NULL)
 		ptr = ptr->next;
 	ptr->next = new_node;
+	return (0);
 }
 
 void	free_list(t_lst **list)

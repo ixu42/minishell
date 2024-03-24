@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 21:13:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 18:49:21 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 21:08:38 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,7 @@ static void	create_list(t_lst **list, int fd, int *malloc_err, int *read_err)
 			return ;
 		}
 		buf[chars_read] = '\0';
-		ft_lst_append(&list[fd], buf, malloc_err);
-		if (*malloc_err)
+		if (ft_lst_append(&list[fd], buf, malloc_err) == 1)
 		{
 			free(buf);
 			return ;

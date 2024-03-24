@@ -28,7 +28,7 @@ typedef struct s_lst
 
 char	*get_next_line(int fd, int *malloc_err, int *read_err);
 int		has_newline_char(t_lst *list);
-void	ft_lst_append(t_lst **lst, char *buf, int *malloc_err);
+int		ft_lst_append(t_lst **lst, char *buf, int *malloc_err);
 void	free_list(t_lst **list);
 int		ft_str_len(t_lst *list);
 char	*ft_str_cpy(char *str, t_lst *list);
