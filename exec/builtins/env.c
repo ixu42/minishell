@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:15:02 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 17:33:12 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 12:49:42 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,11 @@ char	*get_value(char *name_value_str, t_env *new_node, int *err_flag)
 	return (value);
 }
 
-static t_env	*set_node_values(t_env *node, char *name_value, int err_flag)
+static t_env	*set_node_values(t_env *node, char *name_value)
 {
+	int	err_flag;
+
+	err_flag = 0;
 	node->value = get_value(name_value, node, &err_flag);
 	if (err_flag == 1)
 		return (NULL);
@@ -57,6 +60,7 @@ t_env	*get_node(char *name_value_str)
 	char	*name_value_cpy;
 	int		err_flag;
 
+	err_flag = 0;
 	name_value_cpy = ft_strdup(name_value_str);
 	if (name_value_cpy == NULL)
 		return (error_handler(ERR_MALLOC, &err_flag));
@@ -66,7 +70,7 @@ t_env	*get_node(char *name_value_str)
 		free(name_value_cpy);
 		return (error_handler(ERR_MALLOC, &err_flag));
 	}
-	if (set_node_values(new_node, name_value_cpy, err_flag) == NULL)
+	if (set_node_values(new_node, name_value_cpy) == NULL)
 		return (NULL);
 	free(name_value_cpy);
 	return (new_node);
