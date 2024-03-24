@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 14:20:53 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 14:08:58 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@
 # define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
 # define ERR_REDIR_AMBIG  "ambiguous redirect"
 # define ERR_CODE_SYNTAX 258
-# define ENOMEM 12
 
 // macros for termios
 # define SET_ECHOCTL 1
@@ -109,9 +108,7 @@ typedef enum e_node_type
 	STR_NODE_VAR,
 	STR_NODE_VAR_P,
 	STR_EXIT_CODE,
-	STR_STAR,
-	// to be remove?
-	LIST
+	STR_STAR
 }	t_node_type;
 
 // types of tockens
@@ -127,7 +124,6 @@ typedef enum e_token
 	PIPE_TOK,
 	OR_TOK,
 	AND_TOK,
-	//unused tok
 	LPAR,
 	RPAR
 }	t_token_type;
@@ -140,8 +136,18 @@ typedef enum e_parse_error
 	SYNTAX_ERROR = 0x08,
 	MALLOC_ERROR = 0x10,
 	DIR_OPEN_ERR = 0x20,
-	HEREDOC_OPEN_ERR = 0x40
+	HEREDOC_OPEN_ERR = 0x40,
+	SIGNAL_CTRL_C = 0x80,
+	ENOMEM_ERR = 0x100
 }	t_parse_error;
+
+typedef enum e_wild_error
+{
+	WILD_ERR_REDIR_AMBIG = 0x01,
+	WILD_ERR_DIR = 0x02,
+	WILD_MALLOC_ERROR = 0x10,
+	WILD_ERR_TERMINATE = 0x20
+}	t_wild_error;
 
 typedef enum e_builtin
 {
@@ -161,6 +167,12 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+typedef struct s_cmd
+{
+	int	type;
+	int	flag;
+}	t_cmd;
+
 typedef struct s_data
 {
 	char		*buf;
@@ -176,6 +188,7 @@ typedef struct s_data
 	int			fd_stdout;
 	int			under_pipe;
 	int			under_redir;
+	t_cmd		*tree;
 }	t_data;
 
 typedef struct s_arrlist
@@ -191,6 +204,7 @@ typedef struct s_wildcard
 	t_arrlist	**pnt;
 	char		**argv;
 	int			argc;
+//	int			flag;
 }	t_wildcard;
 
 typedef struct s_strstate
@@ -201,7 +215,7 @@ typedef struct s_strstate
 	char	*beg;
 	char	*end;
 	int		d_quotes;
-	int		s_quotes;
+	//int		s_quotes;
 	int		flag;
 	char	*heredoc;
 }	t_strstate;
@@ -215,11 +229,6 @@ typedef struct s_aststate
 	int		heredoc;
 }	t_aststate;
 
-typedef struct s_cmd
-{
-	int	type;
-	int	flag;
-}	t_cmd;
 
 typedef struct s_strcmd
 {
@@ -305,38 +314,60 @@ int			heredoc_signal_handler(void);
 void		display_pmt_on_nl(int signum);
 void		move_to_nl(int signum);
 
-// constructors.c
+// constructors_tree.c
 t_cmd		*execcmd(void);
-t_cmd		*redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
 t_cmd		*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd);
 t_cmd		*pipecmd(t_cmd *left, t_cmd *right);
 t_cmd		*list_cmd(t_cmd *left, t_cmd *right, int type);
+
+// constructors_aux.c
 t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
 t_strcmd	*strcmd(int type, char *start, char *end);
 t_strstate	*make_strstate(char *pos, char *finish);
 t_aststate	*make_aststate(char *pos, char *finish);
 
+
+t_strcmd	*parsestr(t_strstate *state);
 // parseexec.c
 t_cmd		*parseexec(char **ps, char *es, t_aststate *ast);
 t_cmd		*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast);
 int			get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter);
 
-// parsecmd.c
+// make_ask.c
 int			make_ast(t_cmd **p_cmd, char *s);
-t_cmd		*parsecmd(char *buf, int *status);
-t_cmd		*parseblock(char **ps, char *es, t_aststate *ast);
-//t_cmd   *parseline(char**, char*);
-//t_cmd   *parsepipe(char**, char*);
+t_cmd   *parsecmd(char *buf, int *status);
+
+// parseline.c
+t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
+t_cmd	*parseline(char **ps, char *es, t_aststate *ast);
+
+//parseredirs.c
+t_cmd	*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd);
+
+//parse_word_singl_var.c
+t_strcmd	*parse_word(t_strstate *state);
+t_strcmd	*parse_str_till(t_strstate *state, char *stop_toks);
+t_strcmd	*parse_single(t_strstate *state);
+t_strcmd	*parse_variable(t_strstate *state);
+
+// free_exec.c
+int	free_str(t_strcmd *cmd);
+int	free_exec(t_cmd *cmd);
 
 // freecmd.c
-int			freecmd(t_cmd *cmd);
+int	freecmd(t_cmd *cmd);
+void	freecmd_null(t_cmd **cmd);
 
-// parsing_utils.c
-int			gettoken(char **ps, char *es, char **q, char **eq);
-int			peek(char **ps, char *es, char *toks);
-t_cmd		*nulterminate(t_cmd *cmd);
-const char	*token_type_to_str(t_token_type token);
-int			panic_parser(char *s, int err);
+//parsing_utils.c
+void    increase_s_quotes(char **pnt_s, int *p_quotes);
+t_cmd   *nulterminate(t_cmd *cmd);
+int	panic_parser(char *s, int err);
+int select_token(char **pnt);
+
+//gettoken_peek.c
+int gettoken(char **ps, char *es, char **q, char **eq);
+int peek(char **ps, char *es, char *toks);
+const char  *token_type_to_str(t_token_type token);
 
 // runcmd() func and its helper funcs
 void		runcmd(t_cmd *cmd, t_data *data);
@@ -388,12 +419,35 @@ int			panic_cmd_not_found(char *msg, t_data *data);
 int			perror_n_return(char *msg, int return_value);
 
 // string operations
-char		*strlist_join(t_strcmd *str);
-int			make_argv(t_execcmd *cmd, t_data *data);
-int			make_filename(t_redircmd *rcmd, t_data *data);
-int			match(const char *pattern, const char *text);
-void		ft_free_char2d(char **split);
-void		heapsort_str(char **arr, int n);
+// do_single_match.c
+int	do_single_match(int i, t_wildcard *wild, char *str, DIR *dir);
+int free_wildcard(t_wildcard *wild, int clean_list, int error);
+int init_wildcard(t_wildcard *wild, t_execcmd *cmd);
+int init_wildcard_redir(t_wildcard *wild, t_redircmd *cmd);
+// match_to_files.c
+int match_to_files(t_wildcard *wild);
+int make_sorted_argv(t_wildcard *wild, int be_sorted);
+int copy_sorted_argv(t_wildcard *wild);
+
+//join_args.c
+char    *join_all_arguments(char **pnt, t_execcmd *cmd);
+int get_argc(t_execcmd *cmd);
+
+// ft_free_char.c
+void    ft_free_char2d(char **split);
+int ft_free_char2d_return(char **split, int ret);
+
+// expand_var.c
+void    expand_var_in_strlist(t_strcmd *str, t_data *data);
+
+
+char	*strlist_join(t_strcmd *str);
+int		make_argv(t_execcmd *cmd, t_data *data);
+int		make_filename(t_redircmd *rcmd, t_data *data);
+int		match(const char *pattern, const char *text);
+void	ft_free_char2d(char **split);
+void	heapsort_str(char **arr, int n);
+
 
 // arraylist
 t_arrlist	*create_arrlist(void);

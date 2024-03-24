@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   arraylist.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: apimikov <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/24 11:05:41 by apimikov          #+#    #+#             */
+/*   Updated: 2024/03/24 11:06:12 by apimikov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 void	*ft_realloc(void *ptr, size_t old_size, size_t new_size)
@@ -24,15 +36,6 @@ void	*ft_realloc(void *ptr, size_t old_size, size_t new_size)
 	free(ptr);
 	return (new_ptr);
 }
-
-/*
-typedef struct s_arrlist
-{
-	 char		**data;
-	 size_t	size;
-	 size_t	capacity;
-} t_arrlist;
-*/
 
 t_arrlist	*create_arrlist(void)
 {
@@ -73,7 +76,7 @@ int	add_string_arrlist(t_arrlist *list, const char *str)
 	return (0);
 }
 
-void free_arrlist(t_arrlist *list)
+void	free_arrlist(t_arrlist *list)
 {
 	size_t	i;
 
@@ -91,40 +94,3 @@ void free_arrlist(t_arrlist *list)
 	list->data = NULL;
 	free(list);
 }
-
-/*
-int	main(void)
-{
-	DIR				*directory;
-	struct dirent	*entry;
-	char *pattern = "test*.txt";
-	t_arrlist	*list;
-	list = create_arrlist();
-
-	directory = opendir(".");
-	if (!directory)
-	{
-		perror("Unable to open directory");
-		return (1);
-	}
-	entry = readdir(directory);
-	while (entry)
-	{
-		if (entry->d_type == DT_REG)
-		{
-			if (match(pattern,entry->d_name))
-				add_string_arrlist(list, entry->d_name);
-//			printf("%s\n", entry->d_name);
-		}
-		entry = readdir(directory);
-	}
-
-    for (size_t i = 0; i < list->capacity; i++) {
-        printf("->%s<-\n", list->data[i]);
-    }
-//    printf("\n");
-	free_arrlist(list);
-	closedir(directory);
-	return (0);
-}
-*/

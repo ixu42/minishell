@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:11 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 11:37:18 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 14:10:10 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,11 @@ static void	execute(t_execcmd *ecmd, t_data *data)
 	update_shlvl(ecmd->argc, ecmd->argv, data->env_lst);
 	data->cmd_path = get_cmd_path(ecmd->argv, data);
 	data->envp = copy_env_lst_to_arr(data->env_lst, data);
+	////// the following code is add to avoid running execve with NULL 
+	////// added to remove error: Valgrind: Syscall param execve(filename) points 
+	// to unaddressable byte(s)
+	//if (!data->cmd_path)
+	//	data->cmd_path = ecmd->argv[0];
 	execve(data->cmd_path, ecmd->argv, data->envp);
 	panic_cmd_not_found(ecmd->argv[0], data);
 }
@@ -86,7 +91,8 @@ void	run_exec(t_cmd *cmd, t_data *data)
 	t_execcmd	*ecmd;
 
 	ecmd = (t_execcmd *)cmd;
-	make_argv(ecmd, data);
+	if (ecmd->argc)
+		make_argv(ecmd, data);
 	if (!has_arg(ecmd, data))
 		return ;
 	if (is_builtin(ecmd->argv, &data))
