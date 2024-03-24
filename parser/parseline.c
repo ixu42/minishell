@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-// parsecmd.c
+// parseline.c
 
 t_cmd	*parsepipe(char **ps, char *es,t_aststate *ast)
 {
@@ -69,7 +69,7 @@ t_cmd	*parseline(char **ps, char *es, t_aststate *ast)
 	return (cmd_a);
 }
 
-// redir after block -> syntax error
+// redir after block is not supported, i.e. it is syntax error
 t_cmd	*parseblock(char **ps, char *es, t_aststate *ast)
 {
 	t_cmd	*cmd;
@@ -88,69 +88,4 @@ t_cmd	*parseblock(char **ps, char *es, t_aststate *ast)
 //	if (cmd->flag == 0)
 	//	cmd = parseredirs(cmd, ps, es);
 	return (cmd);
-}
-
-int	cmd_status(char *s, t_cmd *cmd, char *es)
-{
-	int		tok;
-	char	*str[2];
-
-	if (cmd->flag & SYNTAX_ERR_UNCLOSED)
-		return (ERR_CODE_SYNTAX);
-	if (cmd->flag & MALLOC_ERROR)
-		return (panic_parser(ERR_MALLOC, ENOMEM_ERR));
-	else if (cmd->flag & HEREDOC_OPEN_ERR)
-		return (ENOMEM_ERR);
-	else if (cmd->flag & SIGNAL_CTRL_C)
-		return (SIGNAL_CTRL_C);
-	else if (cmd->flag || s != es)
-	{
-		ft_dprintf(2, "%s%s ", PMT, ERR_SYNTAX_UNEXP);
-		tok = gettoken(&s, es, &str[0], &str[1]);
-		if (tok == UNDEFINED_TOK)
-			ft_dprintf(2, "'%c'\n", *str[0]);
-		else if (tok == STR_TOK)
-		{
-			*str[1] = '\0';
-			ft_dprintf(2, "'%s'\n", str[0]);
-		}
-		else
-			ft_dprintf(2, "'%s'\n", token_type_to_str(tok));
-		return (ERR_CODE_SYNTAX);
-	}
-	return (0);
-}
-
-t_cmd	*parsecmd(char *s, int *status)
-{
-	char	*es;
-	t_cmd	*cmd;	
-	int		ret;
-	t_aststate	*ast;
-
-	ret = 0;
-	es = s + ft_strlen(s);
-
-	ast = make_aststate(s, es);
-	if (!ast)
-		return (NULL);
-	cmd = parseline(&s, es, ast);
-	free(ast);
-	if (!cmd)
-		return (NULL);
-	ret = cmd_status(s, cmd, es);
-	nulterminate(cmd);
-	if (status)
-		*status = ret;
-	return (cmd);
-}
-
-int	make_ast(t_cmd **p_cmd, char *s)
-{
-	int		status;
-
-	*p_cmd = parsecmd(s, &status);
-	if (!*p_cmd)
-		status = ENOMEM_ERR;
-	return (status);
 }

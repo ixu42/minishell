@@ -308,28 +308,37 @@ int		heredoc_signal_handler(void);
 void	display_pmt_on_nl(int signum);
 void	move_to_nl(int signum);
 
-// constructors.c
+// constructors_tree.c
 t_cmd		*execcmd(void);
-//t_cmd		*redircmd_old(t_cmd *subcmd, char *file, char *efile, int mode, int fd);
 t_cmd		*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd);
 t_cmd		*pipecmd(t_cmd *left, t_cmd *right);
 t_cmd		*list_cmd(t_cmd *left, t_cmd *right, int type);
+
+// constructors_aux.c
 t_argcmd	*argcmd(t_strcmd *str, t_argcmd *args, char *start, char *end);
 t_strcmd	*strcmd(int type, char *start, char *end);
 t_strstate	*make_strstate(char *pos, char *finish);
 t_aststate	*make_aststate(char *pos, char *finish);
 
+
+t_strcmd	*parsestr(t_strstate *state);
 // parseexec.c
 t_cmd	*parseexec(char **ps, char *es, t_aststate *ast);
 t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast);
 int		get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter);
 
-// parsecmd.c
+// make_ask.c
 int			make_ast(t_cmd **p_cmd, char *s);
 t_cmd   *parsecmd(char *buf, int *status);
+
+// parseline.c
 t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
-//t_cmd   *parseline(char**, char*);
-//t_cmd   *parsepipe(char**, char*);
+t_cmd	*parseline(char **ps, char *es, t_aststate *ast);
+
+
+// free_exec.c
+int	free_str(t_strcmd *cmd);
+int	free_exec(t_cmd *cmd);
 
 // freecmd.c
 int	freecmd(t_cmd *cmd);

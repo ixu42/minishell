@@ -32,13 +32,17 @@ MAIN_FILES = main.c \
 				signal_handlers.c \
 				error.c \
 				free.c
-PARSER_FILES = constructors.c \
+PARSER_FILES = constructors_tree.c \
+				constructors_aux.c \
 				parseexec.c \
-				parsecmd.c \
+				parsestr.c \
+				parseline.c \
+				make_ast.c \
 				parse_heredoc.c \
 				freecmd.c \
+				free_exec.c \
 				parsing_utils.c \
-				runcmd_test.c
+				../remove_before_submission/runcmd_test.c
 STRINGS_FILES = str_list_utils.c \
 				match.c \
 				arraylist.c \
