@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:33:17 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:49:59 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 17:47:36 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,54 +14,70 @@
 
 int	panic_heredoc(char *err_msg, t_strstate *state, int err_code)
 {
+	state->flag |= err_code;
+	if (!err_msg)
+		return (1);
 	if (ft_dprintf(2, "%s", PMT) == -1)
 		perror(PMT_ERR_WRITE);
 	perror(err_msg);
-	state->flag |= err_code;
 	return (1);
+}
+int	write_heredoc(char *line, int fd_heredoc, t_strstate *state)
+{
+	if (ft_putstr_fd(line, fd_heredoc) == -1)
+	{
+		free(line);
+		if (close(fd_heredoc) == -1)
+			panic_heredoc(ERR_HEREDOC, state, HEREDOC_OPEN_ERR);
+		return (1);
+	}
+	return (0);
 }
 
 // save input from stdin to .heredoc
-
-static void	convert_input_here(t_strstate *state, \
+static int	convert_input_here(t_strstate *state, \
 	int fd_heredoc, char *delimiter)
 {
 	char	*line;
 	int		len;
+	int		malloc_err;
 
 	len = ft_strlen(delimiter);
+	line = NULL;
+	malloc_err = 0;
 	if (heredoc_signal_handler() == 1)
-	{
-		panic_heredoc(ERR_SIGACTION, state, HEREDOC_OPEN_ERR);
-		state->flag |= HEREDOC_OPEN_ERR;
-		return ;
-	}
+		return (panic_heredoc(ERR_SIGACTION, state, HEREDOC_OPEN_ERR));
 	while (1)
 	{
 		write(1, "> ", 2);
-		line = get_next_line(0);
-		if (g_last_sig)
-		{
-			state->flag |= SIGNAL_CTRL_C;
+		line = get_next_line(0, &malloc_err);
+		if (g_last_sig && panic_heredoc(NULL, state, SIGNAL_CTRL_C))
 			break ;
-		}
+		if (malloc_err)
+			return (panic_heredoc(NULL, state, MALLOC_ERROR));
 		if (line == NULL)
-			return ;
+			return (0);
 		if (ft_strncmp(line, delimiter, len) == 0 \
 			&& (line[len] == '\n' || line[len] == '\0'))
 			break ;
+		if (write_heredoc(line, fd_heredoc, state))
+			return (panic_heredoc(ERR_WRITE, state, HEREDOC_OPEN_ERR));   //do we need continue to the next iteration?
+		free(line);
+		line = NULL;
+	}
+	if (line)
+		free(line);
+	return (0);
+}
+/*
 		if (ft_putstr_fd(line, fd_heredoc) == -1)
 		{
 			free(line);
 			if (close(fd_heredoc) == -1)
 				panic_heredoc(ERR_HEREDOC, state, HEREDOC_OPEN_ERR);
-			panic_heredoc(ERR_WRITE, state, HEREDOC_OPEN_ERR);
-			//do we need continue to the next while loop ?
+			return (panic_heredoc(ERR_WRITE, state, HEREDOC_OPEN_ERR));   //do we need continue to the next while loop ?
 		}
-		free(line);
-	}
-	free(line);
-}
+*/
 
 /* 
 in case of here documents (1) create a temporary file .heredoc, 
