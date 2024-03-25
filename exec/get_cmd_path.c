@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:17:03 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 11:40:06 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 16:05:09 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,9 @@ char	*get_cmd_path(char **argv, t_data *data)
 			panic(ERR_MALLOC, data, 1);
 		return (cmd_path);
 	}
+	else if ((data->env_paths == NULL || ft_strlen(data->env_paths[0]) == 0)
+		&& access(argv[0], F_OK | X_OK) != 0)
+		panic(argv[0], data, 127);
 	cmd_path = search_in_env(argv, data);
 	return (cmd_path);
 }
