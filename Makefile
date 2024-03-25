@@ -43,6 +43,7 @@ PARSER_FILES = constructors_tree.c \
 				parsestr.c \
 				parse_word_singl_var.c \
 				parse_heredoc.c \
+				parse_heredoc_utils.c \
 				parsing_utils.c \
 				nulterminate.c \
 				gettoken_peek.c #\
