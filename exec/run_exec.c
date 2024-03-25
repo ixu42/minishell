@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:11 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 12:07:39 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 20:46:32 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,10 @@ static int	make_child_proc_n_exec(t_execcmd *ecmd, t_data *data)
 	if (WIFEXITED(status))
 		data->status = WEXITSTATUS(status);
 	if (WIFSIGNALED(status))
+	{
+		handle_signal_output(WTERMSIG(status));
 		data->status = 128 + WTERMSIG(status);
+	}
 	return (0);
 }
 
