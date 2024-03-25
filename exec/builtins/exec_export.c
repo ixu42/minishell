@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 13:14:33 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 15:21:03 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,21 +34,16 @@ static int	print_exported(t_env *env_lst)
 	return (0);
 }
 
-int	is_valid_identifier(char *name, int name_len)
+static int	get_name_len(char *name_value_pair)
 {
-	int	i;
+	size_t	name_len;
+	int		j;
 
-	if (name == NULL || name_len == 0)
-		return (0);
-	if (!ft_isalpha(name[0]) && name[0] != '_')
-		return (0);
-	i = 0;
-	while (++i < name_len)
-	{
-		if (!ft_isalpha(name[i]) && !ft_isdigit(name[i]) && name[i] != '_')
-			return (0);
-	}
-	return (1);
+	name_len = 0;
+	j = -1;
+	while (name_value_pair[++j] != '=' && name_value_pair[j] != '\0')
+		name_len++;
+	return (name_len);
 }
 
 static int	set_value(char *arg, t_env *node, t_data *data)
@@ -99,26 +94,25 @@ static int	export(char *arg, t_data *data, size_t name_len)
 int	exec_export(char **argv, t_data *data)
 {
 	int		i;
-	int		j;
 	size_t	name_len;
+	int		status;
 
 	if (argv[1] == NULL)
 		print_exported(data->env_lst);
 	i = 0;
+	status = 0;
 	while (argv[++i] != NULL)
 	{
-		j = -1;
-		name_len = 0;
-		while (argv[i][++j] != '=' && argv[i][j] != '\0')
-			name_len++;
+		name_len = get_name_len(argv[i]);
 		if (!is_valid_identifier(argv[i], name_len))
 		{
 			if (ft_dprintf(2, "%sexport: '%s': %s\n", PMT, argv[i], ERR_ID) < 0)
-				perror(PMT_ERR_WRITE);
-			return (1);
+				return (perror_n_return(PMT_ERR_WRITE, 1));
+			status = 1;
+			continue ;
 		}
 		if (export(argv[i], data, name_len) == 1)
 			return (1);
 	}
-	return (0);
+	return (status);
 }
