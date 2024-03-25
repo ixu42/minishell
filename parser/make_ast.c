@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:32:43 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 14:49:26 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 15:17:40 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ t_cmd	*parsecmd(char *s, int *status, int *num_heredoc)
 	if (!ast)
 		return (NULL);
 	cmd = parseline(&s, es, ast);
+	*num_heredoc = ast->heredoc;
 	free(ast);
 	if (!cmd)
 		return (NULL);
@@ -68,7 +69,6 @@ t_cmd	*parsecmd(char *s, int *status, int *num_heredoc)
 	nulterminate(cmd);
 	if (status)
 		*status = ret;
-	*num_heredoc = ast->heredoc;
 	return (cmd);
 }
 
