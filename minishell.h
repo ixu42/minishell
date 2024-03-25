@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 13:23:38 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 15:38:48 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,7 +220,6 @@ typedef struct s_strstate
 	char	*beg;
 	char	*end;
 	int		d_quotes;
-	//int		s_quotes;
 	int		flag;
 	char	*heredoc;
 }	t_strstate;
@@ -332,27 +331,27 @@ t_strcmd	*strcmd(int type, char *start, char *end);
 t_strstate	*make_strstate(char *pos, char *finish);
 t_aststate	*make_aststate(char *pos, char *finish);
 
-
 t_strcmd	*parsestr(t_strstate *state);
 // parseexec.c
 t_cmd		*parseexec(char **ps, char *es, t_aststate *ast);
 t_cmd		*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast);
-int			get_input_heredoc(t_strstate *state, t_aststate *ast, char *delimiter);
+int			get_input_heredoc(t_strstate *state, t_aststate *ast, \
+			char *delimiter);
 int			panic_heredoc(char *err_msg, t_strstate *state, int err_code);
 int			write_heredoc(char *line, int fd_heredoc, t_strstate *state);
 int			heredoc_stop_iter(t_strstate *state, char *line, \
 			int malloc_err, int read_err);
 
 // make_ask.c
-int	make_ast(t_cmd **p_cmd, char *s, int *num_heredoc);
-t_cmd	*parsecmd(char *s, int *status, int *num_heredoc);
+int			make_ast(t_cmd **p_cmd, char *s, int *num_heredoc);
+t_cmd		*parsecmd(char *s, int *status, int *num_heredoc);
 
 // parseline.c
-t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
-t_cmd	*parseline(char **ps, char *es, t_aststate *ast);
+t_cmd		*parseblock(char **ps, char *es, t_aststate *ast);
+t_cmd		*parseline(char **ps, char *es, t_aststate *ast);
 
 //parseredirs.c
-t_cmd	*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd);
+t_cmd		*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd);
 
 //parse_word_singl_var.c
 t_strcmd	*parse_word(t_strstate *state);
@@ -361,23 +360,23 @@ t_strcmd	*parse_single(t_strstate *state);
 t_strcmd	*parse_variable(t_strstate *state);
 
 // free_exec.c
-int	free_str(t_strcmd *cmd);
-int	free_exec(t_cmd *cmd);
+int			free_str(t_strcmd *cmd);
+int			free_exec(t_cmd *cmd);
 
 // freecmd.c
-int	freecmd(t_cmd *cmd);
-void	freecmd_null(t_cmd **cmd);
+int			freecmd(t_cmd *cmd);
+void		freecmd_null(t_cmd **cmd);
 
-//parsing_utils.c
-void    increase_s_quotes(char **pnt_s, int *p_quotes);
-t_cmd   *nulterminate(t_cmd *cmd);
-int	panic_parser(char *s, int err);
-int select_token(char **pnt);
+// parsing_utils.c
+void		increase_s_quotes(char **pnt_s, int *p_quotes);
+t_cmd		*nulterminate(t_cmd *cmd);
+int			panic_parser(char *s, int err);
+int			select_token(char **pnt);
 
 //gettoken_peek.c
-int gettoken(char **ps, char *es, char **q, char **eq);
-int peek(char **ps, char *es, char *toks);
-const char  *token_type_to_str(t_token_type token);
+int			gettoken(char **ps, char *es, char **q, char **eq);
+int			peek(char **ps, char *es, char *toks);
+const char	*token_type_to_str(t_token_type token);
 
 // runcmd() func and its helper funcs
 void		runcmd(t_cmd *cmd, t_data *data);
@@ -392,8 +391,8 @@ char		*get_cmd_path(char **argv, t_data *data);
 char		**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
 
 // to be removed at some point
-void		runcmd_test(t_cmd *cmd, t_data *data);
-void		printf_nonprintable(char *str);
+// void		runcmd_test(t_cmd *cmd, t_data *data);
+// void		printf_nonprintable(char *str);
 
 // handling builtins
 int			is_builtin(char **argv, t_data **data);
@@ -405,7 +404,8 @@ int			exec_pwd(void);
 int			exec_export(char **argv, t_data *data);
 int			exec_unset(char **argv, t_data *data);
 int			exec_env(t_env *env_lst);
-int			name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
+int			name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, \
+			t_env **node);
 char		*get_value(char *name_value_str, t_env *new_node, int *err_flag);
 t_env		*get_node(char *name_value_str);
 void		lst_append(t_env **env_lst, t_env *new_node);
@@ -435,35 +435,32 @@ int			handle_exit_or_return(t_data *data, int status_code);
 
 // string operations
 // do_single_match.c
-int	do_single_match(int i, t_wildcard *wild, char *str, DIR *dir);
-int free_wildcard(t_wildcard *wild, int clean_list, int error);
-int init_wildcard(t_wildcard *wild, t_execcmd *cmd);
-int init_wildcard_redir(t_wildcard *wild, t_redircmd *cmd);
+int			do_single_match(int i, t_wildcard *wild, char *str, DIR *dir);
+int			free_wildcard(t_wildcard *wild, int clean_list, int error);
+int			init_wildcard(t_wildcard *wild, t_execcmd *cmd);
+int			init_wildcard_redir(t_wildcard *wild, t_redircmd *cmd);
 // match_to_files.c
-int match_to_files(t_wildcard *wild);
-int make_sorted_argv(t_wildcard *wild, int be_sorted);
-int copy_sorted_argv(t_wildcard *wild);
-void	replace_str(char *s, char from, char to);
+int			match_to_files(t_wildcard *wild);
+int			make_sorted_argv(t_wildcard *wild, int be_sorted);
+int			copy_sorted_argv(t_wildcard *wild);
+void		replace_str(char *s, char from, char to);
 
 //join_args.c
-char    *join_all_arguments(char **pnt, t_execcmd *cmd);
-int get_argc(t_execcmd *cmd);
+char		*join_all_arguments(char **pnt, t_execcmd *cmd);
+int			get_argc(t_execcmd *cmd);
 
 // ft_free_char.c
-void    ft_free_char2d(char **split);
-int ft_free_char2d_return(char **split, int ret);
+void		ft_free_char2d(char **split);
+int			ft_free_char2d_return(char **split, int ret);
 
 // expand_var.c
-void    expand_var_in_strlist(t_strcmd *str, t_data *data);
-
-
-char	*strlist_join(t_strcmd *str);
-int		make_argv(t_execcmd *cmd, t_data *data);
-int		make_filename(t_redircmd *rcmd, t_data *data);
-int		match(const char *pattern, const char *text);
-void	ft_free_char2d(char **split);
-void	heapsort_str(char **arr, int n);
-
+void		expand_var_in_strlist(t_strcmd *str, t_data *data);
+char		*strlist_join(t_strcmd *str);
+int			make_argv(t_execcmd *cmd, t_data *data);
+int			make_filename(t_redircmd *rcmd, t_data *data);
+int			match(const char *pattern, const char *text);
+void		ft_free_char2d(char **split);
+void		heapsort_str(char **arr, int n);
 
 // arraylist
 t_arrlist	*create_arrlist(void);
