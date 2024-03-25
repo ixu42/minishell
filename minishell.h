@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
 /*   Updated: 2024/03/25 13:23:38 by apimikov         ###   ########.fr       */
@@ -409,6 +409,7 @@ int			name_in_env_lst(t_env *env_lst, char *arg, size_t name_len, t_env **node);
 char		*get_value(char *name_value_str, t_env *new_node, int *err_flag);
 t_env		*get_node(char *name_value_str);
 void		lst_append(t_env **env_lst, t_env *new_node);
+int			is_valid_identifier(char *name, int name_len);
 
 // handling env
 char		**copy_env(char **envp);

@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 14:27:10 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 13:14:33 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static int	print_exported(t_env *env_lst)
 	return (0);
 }
 
-static int	is_valid_identifier(char *name, int name_len)
+int	is_valid_identifier(char *name, int name_len)
 {
 	int	i;
 
