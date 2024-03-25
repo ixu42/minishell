@@ -56,7 +56,9 @@ static void	execute(t_execcmd *ecmd, t_data *data)
 	// to unaddressable byte(s)
 	//if (!data->cmd_path)
 	//	data->cmd_path = ecmd->argv[0];
-	execve(data->cmd_path, ecmd->argv, data->envp);
+	// the next is better option. see also modification in free_data
+	if (data->cmd_path)
+		execve(data->cmd_path, ecmd->argv, data->envp);
 	panic_cmd_not_found(ecmd->argv[0], data);
 }
 

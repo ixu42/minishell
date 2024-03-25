@@ -19,7 +19,6 @@ void	set_exit_code_node(t_strcmd *str, t_data *data)
 	data->stat_str = ft_itoa(data->status);
 	str->start = data->stat_str;
 	str->end = str->start + ft_strlen(str->start);
-	str->malloc_flag = 1;
 }
 
 void	replace_space_by(t_strcmd *str, int c)

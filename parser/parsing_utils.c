@@ -57,44 +57,6 @@ int	select_token(char **pnt)
 	return (ret);
 }
 
-t_cmd	*nulterminate(t_cmd *cmd)
-{
-	int			i;
-	t_execcmd	*ecmd;
-	t_listcmd	*lcmd;
-	t_pipecmd	*pcmd;
-	t_redircmd	*rcmd;
-
-	if (cmd == 0)
-		return (NULL);
-	else if (cmd->type == EXEC)
-	{
-		ecmd = (t_execcmd *)cmd;
-		i = 0;
-		while (ecmd->sargv[i])
-			*ecmd->eargv[i++] = 0;
-	}
-	else if (cmd->type == REDIR)
-	{
-		rcmd = (t_redircmd *)cmd;
-		nulterminate(rcmd->cmd);
-		*rcmd->efile = 0;
-	}
-	else if (cmd->type == PIPE)
-	{
-		pcmd = (t_pipecmd *)cmd;
-		nulterminate(pcmd->left);
-		nulterminate(pcmd->right);
-	}
-	else if (cmd->type == AND_CMD || cmd->type == OR_CMD)
-	{
-		lcmd = (t_listcmd *)cmd;
-		nulterminate(lcmd->left);
-		nulterminate(lcmd->right);
-	}
-	return (cmd);
-}
-
 int	panic_parser(char *s, int err)
 {
 	ft_dprintf(2, "%s %s\n", PMT, s);

@@ -19,7 +19,6 @@ int	free_str(t_strcmd *cmd)
 		free_str(cmd->next);
 		cmd->next = NULL;
 	}
-	//if (cmd->type == STR_NODE_VAR)
 	if (cmd->type == STR_EXIT_CODE || cmd->type == STR_NODE_VAR)
 	{
 		if (cmd->malloc_flag && cmd->start)

@@ -12,23 +12,22 @@
 
 #include "../minishell.h"
 
+int	panic_wildcard(t_wildcard *wild)
+{
+	perror("Unable to open directory");
+	free_wildcard(wild, 1, 1);
+	return (WILD_ERR_DIR);
+}
+
 // readdir and write matches to p_list given cmd->argv
 int	match_to_files(t_wildcard *wild)
 {
-	DIR				*directory;
 	struct dirent	*entry;
 	int				i;
 	int				err;
 
 	err = 0;
-	directory = opendir(".");
-	if (!directory)
-	{
-		perror("Unable to open directory");
-		free_wildcard(wild, 1, 1);
-		return (WILD_ERR_DIR);
-	}
-	entry = readdir(directory);
+	entry = readdir(wild->directory);
 	while (entry)
 	{
 		i = -1;
@@ -36,13 +35,14 @@ int	match_to_files(t_wildcard *wild)
 		{
 			if (!ft_strchr(wild->argv[i], ASCII_WILD))
 				continue ;
-			err = do_single_match(i, wild, entry->d_name, directory);
+			err = do_single_match(i, wild, entry->d_name, wild->directory);
 			if (err)
 				return (err);
 		}
-		entry = readdir(directory);
+		entry = readdir(wild->directory);
 	}
-	closedir(directory);
+	if (closedir(wild->directory) == -1)
+		return (panic_wildcard(wild));
 	return (0);
 }
 

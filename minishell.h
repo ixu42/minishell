@@ -204,7 +204,7 @@ typedef struct s_wildcard
 	t_arrlist	**pnt;
 	char		**argv;
 	int			argc;
-//	int			flag;
+	DIR			*directory;
 }	t_wildcard;
 
 typedef struct s_strstate
