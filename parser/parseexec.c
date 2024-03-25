@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:33:43 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:50:31 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/24 18:25:02 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ int	add_redirections(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 {
 	char		*tok_str[2];
-	int			tok;
 	t_argcmd	*new_arg;
 
 	new_arg = NULL;
@@ -77,8 +76,7 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 	{
 		if (*ps == ast->es)
 			break ;
-		tok = gettoken(ps, ast->es, tok_str, tok_str + 1);
-		if (tok != STR_TOK)
+		if (STR_TOK != gettoken(ps, ast->es, tok_str, tok_str + 1))
 		{
 			if (*head)
 				(*head)->flag |= SYNTAX_ERR_UNDEFTOK;

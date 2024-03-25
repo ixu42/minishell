@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 21:55:25 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/24 18:40:59 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,7 +206,7 @@ typedef struct s_wildcard
 	t_arrlist	**pnt;
 	char		**argv;
 	int			argc;
-//	int			flag;
+	DIR			*directory;
 }	t_wildcard;
 
 typedef struct s_strstate
@@ -239,6 +239,7 @@ typedef struct s_strcmd
 	char			*start;
 	char			*end;
 	struct s_strcmd	*next;
+	int				malloc_flag;
 }	t_strcmd;
 
 typedef struct s_argcmd

@@ -38,6 +38,17 @@ static void	cleanup_before_exit(t_data *data)
 	rl_clear_history();
 }
 
+// for testmode add the following after make_ast funciton
+			/*
+			if (TESTMODE)
+			{
+				ft_dprintf(2, "------------->TESTMODE<----------\n");
+			//	cmd = parsecmd(data.buf, NULL);
+				if (data.tree)
+					runcmd_test(data.tree, &data);
+				ft_dprintf(2,"------------->  END   <----------\n");
+			}
+			*/
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
@@ -77,23 +88,9 @@ int	main(int argc, char **argv, char **envp)
 		if (is_valid_buf(data.buf))
 		{
 			add_history(data.buf);
-//			status = make_ast(&cmd, data.buf);
-			//data.tree = cmd;
 			status = make_ast(&(data.tree), data.buf);
-//			cmd = data.tree;
-			if (TESTMODE)
-			{
-				ft_dprintf(2, "------------->TESTMODE<----------\n");
-			//	cmd = parsecmd(data.buf, NULL);
-				if (data.tree)
-					runcmd_test(data.tree, &data);
-				ft_dprintf(2,"------------->  END   <----------\n");
-			}
 			if (status == 0)
-			{
-		        runcmd(data.tree, &data);
-				// getchar();
-			}
+		    runcmd(data.tree, &data);
 			else if (status == ENOMEM_ERR)
 			{
 				//replace == by &

@@ -51,7 +51,10 @@ void	free_data(t_data *data)
 	freecmd_null(&(data->tree));
 	if (data->stat_str)
 		free(data->stat_str);
-	free(data->cmd_path);
+//	this is protection for case of nonexisting command
+	if (data->cmd_path)
+		free(data->cmd_path);
+	data->cmd_path = NULL;
 	free_arr(data->envp);
 }
 

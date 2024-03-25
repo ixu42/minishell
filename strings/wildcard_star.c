@@ -11,11 +11,15 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <dirent.h>
 
 int	wildcard_star(t_execcmd *cmd)
 {
 	t_wildcard	wild;
 
+	wild.directory = opendir(".");
+	if (!wild.directory)
+		return (7);
 	if (init_wildcard(&wild, cmd))
 		return (1);
 	if (match_to_files(&wild))
@@ -32,17 +36,27 @@ int	wildcard_star(t_execcmd *cmd)
 	return (0);
 }
 
+int	make_filename_with_wildcard(t_wildcard *wild, t_redircmd *cmd)
+{
+	wild->directory = opendir(".");
+	if (!wild->directory)
+		return (WILD_ERR_TERMINATE);
+	if (init_wildcard_redir(wild, cmd))
+		return (WILD_ERR_TERMINATE);
+	if (match_to_files(wild))
+		return (WILD_ERR_TERMINATE);
+	if (make_sorted_argv(wild, 0))
+		return (WILD_ERR_TERMINATE);
+	if (copy_sorted_argv(wild))
+		return (WILD_ERR_TERMINATE);
+	return (0);
+}
+
 int	wildcard_star_redir(t_redircmd *cmd)
 {
 	t_wildcard	wild;
 
-	if (init_wildcard_redir(&wild, cmd))
-		return (WILD_ERR_TERMINATE);
-	if (match_to_files(&wild))
-		return (WILD_ERR_TERMINATE);
-	if (make_sorted_argv(&wild, 0))
-		return (WILD_ERR_TERMINATE);
-	if (copy_sorted_argv(&wild))
+	if (make_filename_with_wildcard(&wild, cmd))
 		return (WILD_ERR_TERMINATE);
 	if (wild.pnt[0]->size > 1)
 	{
