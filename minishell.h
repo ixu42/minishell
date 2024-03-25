@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 10:29:53 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 11:26:54 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@
 # define ERR_DUP2 "dup2 error"
 # define ERR_DUP "dup error"
 # define ERR_HEREDOC "heredoc error"
+# define ERR_UNLINK "unlink error"
 # define ERR_SIGACTION "sigaction error"
 # define ERR_ID "not a valid identifier"
 # define PMT "\033[0;31mLiteShell: \033[0m"

@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 11:19:21 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 11:32:34 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,9 @@ static int	process_buf(t_data *data, int *status)
 
 static void	cleanup_n_reset(t_data *data)
 {
+	int		i;
+	char	*filename;
+
 	if (data->status == 130)
 		dprintf(2, "\n");
 	if (data->status == 131)
@@ -52,7 +55,16 @@ static void	cleanup_n_reset(t_data *data)
 	data->under_redir = 0;
 	free(data->buf);
 	freecmd_null(&(data->tree));
-	// unlink .heredoc[n]
+	i = -1;
+	while (++i < data->num_heredoc)
+	{
+		filename = ft_strjoin(".heredoc", ft_itoa(i));
+		if (filename == NULL)
+			print_error_n_exit(ERR_MALLOC);
+		if (unlink(filename) == -1)
+			print_error_n_exit(ERR_UNLINK);
+		free(filename);
+	}
 }
 
 static void	cleanup_before_exit(t_data *data)
