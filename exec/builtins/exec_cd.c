@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:46 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 13:52:55 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 14:40:02 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,28 +41,37 @@ static int	set_pwd_env_values(t_data *data, char *var, char cwd[PATH_MAX])
 			free(tmp->value);
 			tmp->value = ft_strdup(cwd);
 			if (tmp->value == NULL)
-			{
-				perror(PMT_ERR_MALLOC);
-				return (1);
-			}
+				return (perror_n_return(PMT_ERR_MALLOC, 1));
 			return (0);
 		}
 		tmp = tmp->next;
 	}
-	return (0);
+	return (2);
 }
 
 static int	update_oldpwd_in_env_lst(t_data *data)
 {
 	char	cwd[PATH_MAX];
+	char	*name_value_pair;
+	t_env	*node;
+	int		status;
 
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
+		return (perror_n_return(PMT_ERR_GETCWD, 1));
+	status = set_pwd_env_values(data, "OLDPWD", cwd);
+	if (status == 1)
+		return (1);
+	if (status == 2)
 	{
-		perror(PMT_ERR_GETCWD);
-		return (1);
+		name_value_pair = ft_strjoin("OLDPWD=", cwd);
+		if (name_value_pair == NULL)
+			return (perror_n_return(PMT_ERR_MALLOC, 1));
+		node = get_node(name_value_pair);
+		if (node == NULL)
+			return (1);
+		lst_append(&data->env_lst, node);
+		free(name_value_pair);
 	}
-	if (set_pwd_env_values(data, "OLDPWD", cwd) == 1)
-		return (1);
 	return (0);
 }
 
@@ -71,10 +80,7 @@ static int	update_pwd_in_env_lst(t_data *data)
 	char	cwd[PATH_MAX];
 
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
-	{
-		perror(PMT_ERR_GETCWD);
-		return (1);
-	}
+		return (perror_n_return(PMT_ERR_GETCWD, 1));
 	if (set_pwd_env_values(data, "PWD", cwd) == 1)
 		return (1);
 	return (0);
@@ -89,14 +95,10 @@ int	exec_cd(char **argv, t_data *data)
 	if (chdir(argv[1]) == -1)
 	{
 		if (ft_dprintf(2, "%scd: ", PMT) == -1)
-		{
-			perror(PMT_ERR_WRITE);
-			return (1);
-		}
+			return (perror_n_return(PMT_ERR_WRITE, 1));
 		perror(argv[1]);
 		return (1);
 	}
 	else
 		return (update_pwd_in_env_lst(data));
-	return (0);
 }
