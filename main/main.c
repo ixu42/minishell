@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 11:30:02 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 11:40:34 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ static void	cleanup_n_reset(t_data *data)
 	data->under_pipe = 0;
 	data->under_redir = 0;
 	free(data->buf);
-	printf("cleanup_n_reset: hi\n");
 	freecmd_null(&(data->tree));
 }
 

@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:32:43 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 11:26:43 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 11:40:42 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ t_cmd	*parsecmd(char *s, int *status, int *num_heredoc)
 	if (status)
 		*status = ret;
 	*num_heredoc = ast->heredoc;
-	//printf("num of heredocs=%d\n", ast->heredoc);
 	return (cmd);
 }
 

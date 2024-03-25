@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 11:45:48 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 10:23:55 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 11:56:57 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ int	make_argv_expanded(t_execcmd *cmd)
 		return (1);
 	while (cmd->argv[cmd->argc])
 	{
-		printf_nonprintable(cmd->argv[cmd->argc]);
 		if (cmd->argv[cmd->argc][0] == ASCII_EMPTY)
 			cmd->argv[cmd->argc][0] = '\0';
 		cmd->argc++;
@@ -89,12 +88,13 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 	if (!rcmd->file)
 		return (MALLOC_ERROR);
 	i = ft_strlen(rcmd->file);
-	while (--i >= 0)
+	while (i-- >= 0)
 	{
 		if (rcmd->file[i] == ASCII_SEPARATOR || \
 				(rcmd->file[0] == '\0' && is_str_with_only_var(rcmd->str)))
 		{
 			ft_dprintf(2, "%s %s %s\n", PMT, rcmd->sfile, ERR_REDIR_AMBIG);
+			free(rcmd->file);
 			return (1);
 		}
 	}

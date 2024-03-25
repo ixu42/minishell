@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:31:58 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 09:10:07 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 11:45:22 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int	free_str(t_strcmd *cmd)
 	{
 		if (cmd->malloc_flag && cmd->start)
 		{
-			printf("free_str: hi\n");
 			free(cmd->start);
 			cmd->start = NULL;
 		}
