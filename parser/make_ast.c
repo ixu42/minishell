@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:32:43 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 11:40:42 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 13:05:36 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,11 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 	if (cmd->flag & SYNTAX_ERR_UNCLOSED)
 		return (ERR_CODE_SYNTAX);
 	if (cmd->flag & MALLOC_ERROR)
-		return (panic_parser(ERR_MALLOC, ENOMEM_ERR));
+		return (panic_parser(ERR_MALLOC, ERR_CODE_TERMINATE));
 	else if (cmd->flag & HEREDOC_OPEN_ERR)
-		return (ENOMEM_ERR);
+		return (ERR_CODE_TERMINATE);
 	else if (cmd->flag & SIGNAL_CTRL_C)
-		return (SIGNAL_CTRL_C);
+		return (SIGNAL_CTRL_C_MSG);
 	else if (cmd->flag || s != es)
 	{
 		print_syntax_err_msg(s, es);
