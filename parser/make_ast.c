@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:32:43 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:47:27 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 11:26:43 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	cmd_status(char *s, t_cmd *cmd, char *es)
 	return (0);
 }
 
-t_cmd	*parsecmd(char *s, int *status)
+t_cmd	*parsecmd(char *s, int *status, int *num_heredoc)
 {
 	char		*es;
 	t_cmd		*cmd;	
@@ -68,14 +68,16 @@ t_cmd	*parsecmd(char *s, int *status)
 	nulterminate(cmd);
 	if (status)
 		*status = ret;
+	*num_heredoc = ast->heredoc;
+	//printf("num of heredocs=%d\n", ast->heredoc);
 	return (cmd);
 }
 
-int	make_ast(t_cmd **p_cmd, char *s)
+int	make_ast(t_cmd **p_cmd, char *s, int *num_heredoc)
 {
 	int		status;
 
-	*p_cmd = parsecmd(s, &status);
+	*p_cmd = parsecmd(s, &status, num_heredoc);
 	if (!*p_cmd)
 		status = ENOMEM_ERR;
 	return (status);

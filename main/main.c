@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 14:30:14 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 11:30:02 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ static void	cleanup_n_reset(t_data *data)
 	data->under_pipe = 0;
 	data->under_redir = 0;
 	free(data->buf);
+	printf("cleanup_n_reset: hi\n");
 	freecmd_null(&(data->tree));
 }
 
@@ -88,9 +89,19 @@ int	main(int argc, char **argv, char **envp)
 		if (is_valid_buf(data.buf))
 		{
 			add_history(data.buf);
-			status = make_ast(&(data.tree), data.buf);
+			status = make_ast(&(data.tree), data.buf, &(data.num_heredoc));
+			printf("num of heredocs=%d\n", data.num_heredoc);
+		/*	if (TESTMODE)
+			{
+				ft_dprintf(2, "------------->TESTMODE<----------\n");
+			//	cmd = parsecmd(data.buf, NULL);
+				if (data.tree)
+					runcmd_test(data.tree, &data);
+				ft_dprintf(2,"------------->  END   <----------\n");
+			}
+		*/
 			if (status == 0)
-		    runcmd(data.tree, &data);
+			    runcmd(data.tree, &data);
 			else if (status == ENOMEM_ERR)
 			{
 				//replace == by &

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   make_argv_and_filename.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 11:45:48 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 11:45:52 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 10:23:55 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,21 @@ int	make_argv_expanded(t_execcmd *cmd)
 	joined_arg = join_all_arguments(cmd->argv, cmd);
 	ft_free_char2d(cmd->argv);
 	cmd->argv = NULL;
+	cmd->argc = 0;
 	if (!joined_arg)
 		return (1);
 	if (!*joined_arg)
 	{
-		cmd->argc = 0;
+		free(joined_arg);
 		return (0);
 	}
 	cmd->argv = ft_split(joined_arg, ASCII_SEPARATOR);
 	free(joined_arg);
 	if (!cmd->argv)
 		return (1);
-	cmd->argc = 0;
 	while (cmd->argv[cmd->argc])
 	{
+		printf_nonprintable(cmd->argv[cmd->argc]);
 		if (cmd->argv[cmd->argc][0] == ASCII_EMPTY)
 			cmd->argv[cmd->argc][0] = '\0';
 		cmd->argc++;

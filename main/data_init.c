@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   data_init.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:16 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 16:00:07 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 11:20:31 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,5 @@ void	data_init(t_data *data, char **envp)
 	data->tree = NULL;
 	data->env_lst = copy_env_arr_to_lst(envp);
 	data->env_paths = get_env_paths(envp, data);
+	data->num_heredoc = 0;
 }

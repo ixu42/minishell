@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 18:40:59 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 11:23:37 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,7 @@ typedef struct s_data
 	int			under_pipe;
 	int			under_redir;
 	t_cmd		*tree;
+	int			num_heredoc;
 }	t_data;
 
 typedef struct s_arrlist
@@ -230,7 +231,6 @@ typedef struct s_aststate
 	int		flag;
 	int		heredoc;
 }	t_aststate;
-
 
 typedef struct s_strcmd
 {
@@ -341,8 +341,8 @@ int			heredoc_stop_iter(t_strstate *state, char *line, \
 			int malloc_err, int read_err);
 
 // make_ask.c
-int			make_ast(t_cmd **p_cmd, char *s);
-t_cmd   *parsecmd(char *buf, int *status);
+int	make_ast(t_cmd **p_cmd, char *s, int *num_heredoc);
+t_cmd	*parsecmd(char *s, int *status, int *num_heredoc);
 
 // parseline.c
 t_cmd   *parseblock(char **ps, char *es, t_aststate *ast);
@@ -387,8 +387,10 @@ int			fork1(t_data *data);
 int			restore_stdin_n_stdout(t_data *data);
 char		*get_cmd_path(char **argv, t_data *data);
 char		**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
+
 // to be removed at some point
 void		runcmd_test(t_cmd *cmd, t_data *data);
+void		printf_nonprintable(char *str);
 
 // handling builtins
 int			is_builtin(char **argv, t_data **data);
