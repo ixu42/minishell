@@ -6,13 +6,40 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 14:30:14 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 11:19:21 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
 volatile sig_atomic_t	g_last_sig;
+
+static int	process_buf(t_data *data, int *status)
+{
+	if (data->buf == NULL)
+	{
+		printf("exit\n");
+		*status = 0;
+		return (1);
+	}
+	if (is_valid_buf(data->buf))
+	{
+		add_history(data->buf);
+		*status = make_ast(&(data->tree), data->buf);
+		if (*status == 0)
+			runcmd(data->tree, data);
+		else if (*status & ENOMEM_ERR)
+		{
+			*status = 1;
+			return (1);
+		}
+		else if (*status & SIGNAL_CTRL_C)
+			data->status = 1;
+		else
+			data->status = *status;
+	}
+	return (0);
+}
 
 static void	cleanup_n_reset(t_data *data)
 {
@@ -25,6 +52,7 @@ static void	cleanup_n_reset(t_data *data)
 	data->under_redir = 0;
 	free(data->buf);
 	freecmd_null(&(data->tree));
+	// unlink .heredoc[n]
 }
 
 static void	cleanup_before_exit(t_data *data)
@@ -52,60 +80,25 @@ static void	cleanup_before_exit(t_data *data)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
-	//t_cmd	*cmd;
 	int		status;
 
-	//cmd = NULL;
 	(void)argv;
 	validate_args(argc);
 	data_init(&data, envp);
-	status = 0;
+	status = 1;
 	while (data.status >= 0)
 	{
 		if (set_signals_interactive() == 1)
-		{
-			status = 1;
 			break ;
-		}
 		data.buf = readline("LiteShell$ ");
 		if (g_last_sig)
 			data.status = 1;
 		if (set_default_signals() == 1)
-		{
-			status = 1;
 			break ;
-		}
-		if (data.buf == NULL)
-		{
-			// struct winsize ws;
-    		// ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-			// dprintf(2, "ws.ws_col:%d\n", ws.ws_col);
-			// printf("\033[A\033[%dC%s\n", ws.ws_col, "exit");
-			printf("exit\n");
-			// printf("\033[A\033[%dC%s\n", 11, "exit");
+		if (process_buf(&data, &status) == 1)
 			break ;
-		}
-		if (is_valid_buf(data.buf))
-		{
-			add_history(data.buf);
-			status = make_ast(&(data.tree), data.buf);
-			if (status == 0)
-		    runcmd(data.tree, &data);
-			else if (status == ENOMEM_ERR)
-			{
-				//replace == by &
-				status = 1;
-				break ;
-			}
-			else if (status & SIGNAL_CTRL_C)
-				data.status = 1;
-			else
-				data.status = status;
-		}
 		cleanup_n_reset(&data);
 	}
 	cleanup_before_exit(&data);
-//	while (1)
-//		;
 	exit(status);
 }

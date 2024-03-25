@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:25 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 17:32:54 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 09:47:22 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,7 @@ void	free_data(t_data *data)
 	freecmd_null(&(data->tree));
 	if (data->stat_str)
 		free(data->stat_str);
-//	this is protection for case of nonexisting command
-	if (data->cmd_path)
-		free(data->cmd_path);
-	data->cmd_path = NULL;
+	free(data->cmd_path);
 	free_arr(data->envp);
 }
 

@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 21:51:16 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 21:52:42 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 10:29:34 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	heredoc_stop_iter(t_strstate *state, char *line, \
 	if (malloc_err)
 		return (panic_heredoc(ERR_MALLOC, state, MALLOC_ERROR));
 	if (read_err)
-		return (panic_heredoc(ERR_READ, state, READ_ERR));
+		return (panic_heredoc(ERR_READ, state, HEREDOC_OPEN_ERR));
 	if (line == NULL)
 		return (1);
 	return (0);

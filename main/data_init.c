@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:16 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 16:00:07 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 10:07:47 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,24 @@ char	**get_env_paths(char **envp, t_data *data)
 	return (env_paths);
 }
 
+void	increment_shlvl(t_env *env_lst)
+{
+	t_env	*tmp;
+	int		new_shlvl;
+
+	tmp = env_lst;
+	while (tmp != NULL)
+	{
+		if (ft_strcmp(tmp->name, "SHLVL") == 0 && tmp->value != NULL)
+		{
+			new_shlvl = ft_atoi(tmp->value) + 1;
+			free(tmp->value);
+			tmp->value = ft_itoa(new_shlvl);
+		}
+		tmp = tmp->next;
+	}
+}
+
 void	data_init(t_data *data, char **envp)
 {
 	data->builtin = 0;
@@ -74,5 +92,6 @@ void	data_init(t_data *data, char **envp)
 	data->stat_str = NULL;
 	data->tree = NULL;
 	data->env_lst = copy_env_arr_to_lst(envp);
+	increment_shlvl(data->env_lst);
 	data->env_paths = get_env_paths(envp, data);
 }

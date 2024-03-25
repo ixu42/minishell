@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   freecmd.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:45:40 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:45:49 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 11:17:14 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	free_redir(t_cmd *cmd)
 	rcmd->str = NULL;
 	if (rcmd->heredoc)
 	{
-		unlink(rcmd->heredoc);
+		// unlink(rcmd->heredoc);
 		free(rcmd->heredoc);
 		rcmd->heredoc = NULL;
 	}
