@@ -46,8 +46,8 @@ PARSER_FILES = constructors_tree.c \
 				parse_heredoc_utils.c \
 				parsing_utils.c \
 				nulterminate.c \
-				gettoken_peek.c #\
-	#			../remove_before_submission/runcmd_test.c
+				gettoken_peek.c \
+				../remove_before_submission/runcmd_test.c
 STRINGS_FILES = make_argv_and_filename.c \
 				expand_var.c \
 				join_args.c \

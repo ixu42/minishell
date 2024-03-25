@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nulterminate.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/25 03:59:46 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 04:01:46 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 08:17:34 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	nulterminate_exec(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
-	int				i;
+	int			i;
 
 	ecmd = (t_execcmd *)cmd;
 	i = 0;

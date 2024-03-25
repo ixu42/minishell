@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:31:58 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 18:47:12 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 11:45:22 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ int	free_exec(t_cmd *cmd)
 		free_arg(ecmd->args);
 		ecmd->args = NULL;
 	}
+	//ft_free_char2d(ecmd->argv);
 	free(cmd);
 	return (0);
 }

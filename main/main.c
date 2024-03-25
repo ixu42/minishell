@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 11:32:34 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 12:10:02 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,9 @@ static int	process_buf(t_data *data, int *status)
 	if (is_valid_buf(data->buf))
 	{
 		add_history(data->buf);
-		*status = make_ast(&(data->tree), data->buf);
+		//*status = make_ast(&(data->tree), data->buf);
+		*status = make_ast(&(data->tree), data->buf, &(data->num_heredoc));
+		printf("process_buf: num of heredocs=%d\n", data->num_heredoc); //remove me
 		if (*status == 0)
 			runcmd(data->tree, data);
 		else if (*status & ENOMEM_ERR)

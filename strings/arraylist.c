@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   arraylist.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 11:05:41 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 11:06:12 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 10:00:05 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,13 @@ void	free_arrlist(t_arrlist *list)
 	{
 		if (list->data[i])
 		{
+//			printf("free_arrlist: %s\n", list->data[i]);
 			free(list->data[i]);
 			list->data[i] = NULL;
 		}
 		i++;
 	}
+//	printf("free_arrlist: free list->data\n");
 	free(list->data);
 	list->data = NULL;
 	free(list);

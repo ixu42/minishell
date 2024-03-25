@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 06:12:04 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 14:16:41 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 09:50:04 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,8 @@ void	runcmd_test(t_cmd *cmd, t_data *data)
 		ft_dprintf(2, "EXEC:   flag=%d, argc=%d\n", ecmd->flag, ecmd->argc);
 		ft_dprintf(2, "    argv=\n");
 		ft_print_char2d(ecmd->argv);
+		//printf("argv=%p, %p \n", ecmd->argv,ecmd->argv[0]);
+		//printf_nonprintable(ecmd->argv[0]);
 		printargs(ecmd->args, data);
 		//ft_dprintf(2, "    MAXARG limited sargv=%s, %s, %s, %s\n", ecmd->sargv[0], ecmd->sargv[1], ecmd->sargv[2], ecmd->sargv[3]);
 	}
