@@ -15,7 +15,7 @@
 void	nulterminate_exec(t_cmd *cmd)
 {
 	t_execcmd	*ecmd;
-	int		i;
+	int				i;
 
 	ecmd = (t_execcmd *)cmd;
 	i = 0;
