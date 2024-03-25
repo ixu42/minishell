@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   data_init.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:16 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 12:07:44 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 15:51:51 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ t_env	*copy_env_arr_to_lst(char **envp)
 	i = -1;
 	while (envp[++i] != NULL)
 		lst_append_in_init(&head, get_node_in_init(envp[i]));
+	lst_append_in_init(&head, get_node_in_init("OLDPWD"));
 	return (head);
 }
 
