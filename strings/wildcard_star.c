@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 11:14:51 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 12:52:01 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 14:17:28 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,8 @@ int	wildcard_star_redir(t_redircmd *cmd)
 		return (WILD_ERR_TERMINATE);
 	if (wild.pnt[0]->size > 1)
 	{
-		ft_dprintf(2, "%s%s %s\n", PMT, cmd->sfile, ERR_REDIR_AMBIG);
+		replace_str(cmd->file, ASCII_WILD, '*');
+		ft_dprintf(2, "%s%s%s\n", PMT, cmd->file, ERR_REDIR_AMBIG);
 		free(cmd->file);
 		free_wildcard(&wild, 1, 0);
 		ft_free_char2d(wild.argv);

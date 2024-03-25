@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 13:14:31 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 13:23:38 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -443,6 +443,7 @@ int init_wildcard_redir(t_wildcard *wild, t_redircmd *cmd);
 int match_to_files(t_wildcard *wild);
 int make_sorted_argv(t_wildcard *wild, int be_sorted);
 int copy_sorted_argv(t_wildcard *wild);
+void	replace_str(char *s, char from, char to);
 
 //join_args.c
 char    *join_all_arguments(char **pnt, t_execcmd *cmd);
