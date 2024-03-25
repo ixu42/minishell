@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 12:05:41 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 13:05:47 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,10 @@
 # define ASCII_WILD 30
 # define ASCII_SEPARATOR 31
 # define ERR_SYNTAX_UNEXP "syntax error near unexpected token" 
-# define ERR_REDIR_AMBIG  "ambiguous redirect"
+# define ERR_REDIR_AMBIG  ": ambiguous redirect"
 # define ERR_CODE_SYNTAX 258
+# define ERR_CODE_TERMINATE 1
+# define SIGNAL_CTRL_C_MSG 2
 
 // macros for termios
 # define SET_ECHOCTL 1
