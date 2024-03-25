@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:30:45 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 18:45:11 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 16:47:33 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ t_strcmd	*strcmd(int type, char *start, char *end)
 	t_strcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
+	//cmd = NULL;
 	if (!cmd)
 		return (NULL);
 	ft_memset(cmd, 0, sizeof(*cmd));
