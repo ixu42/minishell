@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 11:45:48 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 12:59:59 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 13:42:36 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ int	is_str_with_only_var(t_strcmd *str)
 	return (1);
 }
 
+//			printf_nonprintable(rcmd->file);
+//			replace_str(rcmd->file, ASCII_WILD, '*');
 int	make_filename(t_redircmd *rcmd, t_data *data)
 {
 	int	i;
@@ -93,7 +95,7 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 		if (rcmd->file[i] == ASCII_SEPARATOR || \
 				(rcmd->file[0] == '\0' && is_str_with_only_var(rcmd->str)))
 		{
-			ft_dprintf(2, "%s%s%s\n", PMT, rcmd->sfile, ERR_REDIR_AMBIG);
+			ft_dprintf(2, "%s%s%s\n", PMT, rcmd->file, ERR_REDIR_AMBIG);
 			free(rcmd->file);
 			return (1);
 		}
