@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:41 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 11:38:19 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 13:20:48 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,12 @@ int	exec_unset(char **argv, t_data *data)
 	i = 0;
 	while (argv[++i] != NULL)
 	{
+		if (!is_valid_identifier(argv[i], ft_strlen(argv[i])))
+		{
+			if (ft_dprintf(2, "%sunset: '%s': %s\n", PMT, argv[i], ERR_ID) < 0)
+				perror(PMT_ERR_WRITE);
+			return (1);
+		}
 		if (name_in_env_lst(data->env_lst, argv[i], ft_strlen(argv[i]), &node))
 			unset_var(data->env_lst, node);
 		if (ft_strcmp(argv[i], "PATH") == 0)
