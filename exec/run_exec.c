@@ -6,32 +6,11 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:11 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 10:52:15 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 12:07:39 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-static void	update_shlvl(int argc, char **argv, t_env *env_lst)
-{
-	t_env	*tmp;
-	int		new_shlvl;
-
-	if (argc == 1 && argv != NULL && ft_strcmp(argv[0], "./minishell") == 0)
-	{
-		tmp = env_lst;
-		while (tmp != NULL)
-		{
-			if (ft_strcmp(tmp->name, "SHLVL") == 0 && tmp->value != NULL)
-			{
-				new_shlvl = ft_atoi(tmp->value) + 1;
-				free(tmp->value);
-				tmp->value = ft_itoa(new_shlvl);
-			}
-			tmp = tmp->next;
-		}
-	}
-}
 
 static int	has_arg(t_execcmd *ecmd, t_data *data)
 {
@@ -48,16 +27,12 @@ static int	has_arg(t_execcmd *ecmd, t_data *data)
 
 static void	execute(t_execcmd *ecmd, t_data *data)
 {
-	update_shlvl(ecmd->argc, ecmd->argv, data->env_lst);
+	if (ecmd->argc == 1 && ecmd->argv != NULL && \
+		ft_strcmp(ecmd->argv[0], "./minishell") == 0)
+		increment_shlvl(data->env_lst);
 	data->cmd_path = get_cmd_path(ecmd->argv, data);
 	data->envp = copy_env_lst_to_arr(data->env_lst, data);
-	////// the following code is add to avoid running execve with NULL 
-	////// added to remove error: Valgrind: Syscall param execve(filename) points 
-	// to unaddressable byte(s)
-	//if (!data->cmd_path)
-	//	data->cmd_path = ecmd->argv[0];
-	// the next is better option. see also modification in free_data
-	if (data->cmd_path)
+	if (data->cmd_path != NULL)
 		execve(data->cmd_path, ecmd->argv, data->envp);
 	panic_cmd_not_found(ecmd->argv[0], data);
 }

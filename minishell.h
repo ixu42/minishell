@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 11:23:37 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 12:05:41 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@
 # define ERR_DUP2 "dup2 error"
 # define ERR_DUP "dup error"
 # define ERR_HEREDOC "heredoc error"
+# define ERR_UNLINK "unlink error"
 # define ERR_SIGACTION "sigaction error"
 # define ERR_ID "not a valid identifier"
 # define PMT "\033[0;31mLiteShell: \033[0m"
@@ -139,8 +140,7 @@ typedef enum e_parse_error
 	DIR_OPEN_ERR = 0x20,
 	HEREDOC_OPEN_ERR = 0x40,
 	SIGNAL_CTRL_C = 0x80,
-	ENOMEM_ERR = 0x100,
-	READ_ERR = 0x200
+	ENOMEM_ERR = 0x100
 }	t_parse_error;
 
 typedef enum e_wild_error
@@ -302,6 +302,7 @@ void		rl_replace_line(const char *text, int clear_undo);
 // data init
 t_env		*copy_env_arr_to_lst(char **envp);
 char		**get_env_paths(char **envp, t_data *data);
+void		increment_shlvl(t_env *env_lst);
 void		data_init(t_data *data, char **envp);
 
 // data init utils
