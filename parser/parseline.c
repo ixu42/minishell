@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:33:53 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:52:13 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/26 11:18:45 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 t_cmd	*parsepipe(char **ps, char *es,	t_aststate *ast)
 {
 	t_cmd	*cmd;
+	t_cmd	*cmd_b;
 	int		tok;
 
 	cmd = parseexec(ps, es, ast);
@@ -27,7 +28,8 @@ t_cmd	*parsepipe(char **ps, char *es,	t_aststate *ast)
 	if (tok && (*ps)[1] != '|')
 	{
 		tok = gettoken(ps, es, 0, 0);
-		cmd = pipecmd(cmd, parsepipe(ps, es, ast));
+		cmd_b = parsepipe(ps, es, ast);
+		cmd = pipecmd(cmd, cmd_b);
 	}
 	return (cmd);
 }
@@ -39,17 +41,21 @@ int	make_listcmd(t_cmd **p_cmd_a, char **ps, char *es, t_aststate *ast)
 	int		tok;
 
 	cmd_a = *p_cmd_a;
+	cmd_b = NULL;
 	tok = gettoken(ps, es, 0, 0);
+	if (tok == AND_TOK || tok == OR_TOK)
+	{
+		cmd_b = parsepipe(ps, es, ast);
+		if (!cmd_b)
+		{
+			freecmd_null(p_cmd_a);
+			return (1);
+		}
+	}
 	if (tok == AND_TOK)
-	{
-		cmd_b = parsepipe(ps, es, ast);
 		cmd_a = list_cmd(cmd_a, cmd_b, AND_CMD);
-	}
 	else if (tok == OR_TOK)
-	{
-		cmd_b = parsepipe(ps, es, ast);
 		cmd_a = list_cmd(cmd_a, cmd_b, OR_CMD);
-	}
 	else
 		return (1);
 	*p_cmd_a = cmd_a;

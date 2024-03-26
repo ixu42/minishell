@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:31:09 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:41:21 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/26 11:25:25 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_cmd	*redircmd(t_cmd *subcmd, t_strstate *state, int mode, int fd)
 	{
 		subcmd->flag |= MALLOC_ERROR;
 		state->flag |= MALLOC_ERROR;
-		return (subcmd);
+		return (NULL);
 	}
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = REDIR;
@@ -57,19 +57,25 @@ t_cmd	*pipecmd(t_cmd *left, t_cmd *right)
 {
 	t_pipecmd	*cmd;
 
+	if (!left)
+		return (NULL);
+	if (!right)
+	{
+		freecmd(left);
+		return (NULL);
+	}
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
+	{
+		freecmd(left);
+		freecmd(right);
 		return (NULL);
+	}
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = PIPE;
 	cmd->left = left;
 	cmd->right = right;
-	if (left)
-		cmd->flag = left->flag;
-	if (right)
-		cmd->flag |= right->flag;
-	else
-		cmd->flag = MALLOC_ERROR;
+	cmd->flag = left->flag | right->flag;
 	return ((t_cmd *)cmd);
 }
 
@@ -77,16 +83,25 @@ t_cmd	*list_cmd(t_cmd *left, t_cmd *right, int type)
 {
 	t_listcmd	*cmd;
 
+	if (!left)
+		return (NULL);
+	if (!right)
+	{
+		freecmd(left);
+		return (NULL);
+	}
 	cmd = malloc(sizeof(*cmd));
 	if (!cmd)
+	{
+		freecmd(left);
+		freecmd(right);
 		return (NULL);
+	}
 	ft_memset(cmd, 0, sizeof(*cmd));
 	cmd->type = type;
 	cmd->left = left;
 	cmd->right = right;
-	if (left)
-		cmd->flag = left->flag;
-	if (right)
-		cmd->flag |= right->flag;
+	cmd->flag = left->flag;
+	cmd->flag |= right->flag;
 	return ((t_cmd *)cmd);
 }

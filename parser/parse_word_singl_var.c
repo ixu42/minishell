@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:33:30 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:49:21 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 16:45:12 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,8 @@ t_strcmd	*parse_variable(t_strstate *state)
 	{
 		state->beg--;
 		node = strcmd(STR_NODE, state->beg, state->end);
+		if (node == NULL)
+			state->flag |= MALLOC_ERROR;
 		return (node);
 	}
 	make_var_node(&node, state);

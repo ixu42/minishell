@@ -78,6 +78,6 @@ int	make_ast(t_cmd **p_cmd, char *s, int *num_heredoc)
 
 	*p_cmd = parsecmd(s, &status, num_heredoc);
 	if (!*p_cmd)
-		status = ENOMEM_ERR;
+		return (panic_parser(ERR_MALLOC, ERR_CODE_TERMINATE));
 	return (status);
 }

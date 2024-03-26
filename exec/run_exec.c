@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
+/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:11 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 20:46:32 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/26 11:56:44 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,10 @@ void	run_exec(t_cmd *cmd, t_data *data)
 	if (ecmd->argc)
 		make_argv(ecmd, data);
 	if (!has_arg(ecmd, data))
+	{
+		data->status = 0;
 		return ;
+	}
 	if (is_builtin(ecmd->argv, &data))
 	{
 		data->status = run_builtin(ecmd->argv, data);

@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:48:23 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:48:24 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 16:41:49 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ t_strcmd	*parse_double_elem(t_strstate *state)
 		node = parse_variable(state);
 	else
 		node = parse_str_till(state, "$\"");
+	if (!node)
+	{
+		state->flag |= MALLOC_ERROR;
+		return (NULL);
+	}
 	return (node);
 }
 
@@ -52,6 +57,18 @@ t_strcmd	*parse_double(t_strstate *state)
 	return (node);
 }
 
+t_strcmd	*make_star_node(t_strstate *state)
+{
+	t_strcmd	*node;
+
+	node = strcmd(STR_STAR, state->pos, state->pos + 1);
+	state->pos[0] = ASCII_WILD;
+	state->pos++;
+	if (node == NULL)
+		state->flag |= MALLOC_ERROR;
+	return (node);
+}
+
 t_strcmd	*parse_element(t_strstate *state)
 {
 	t_strcmd	*node;
@@ -71,11 +88,9 @@ t_strcmd	*parse_element(t_strstate *state)
 	else if (*(state->pos) == '$')
 		node = parse_variable(state);
 	else if (*(state->pos) == '*')
-	{
-		node = strcmd(STR_STAR, state->pos, state->pos + 1);
-		state->pos[0] = ASCII_WILD;
-		state->pos++;
-	}
+		node = make_star_node(state);
+	if (node == NULL)
+		state->flag |= MALLOC_ERROR;
 	return (node);
 }
 

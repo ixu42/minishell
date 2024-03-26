@@ -62,7 +62,7 @@ void	make_redir_str(t_cmd *cmd, t_strstate *state)
 t_cmd	*make_redir_node(t_cmd *cmd, t_strstate *state, \
 	int tok, t_aststate *ast)
 {
-	if (cmd->flag)
+	if (!cmd || cmd->flag)
 		return (cmd);
 	else if (tok == RED_IN)
 		cmd = redircmd(cmd, state, O_RDONLY, 0);
@@ -124,11 +124,14 @@ t_cmd	*parseredirs(t_cmd *cmd, char **ps, char *es, t_aststate *ast)
 	node = parse_one_redir(cmd, state, ast);
 	*ps = state->pos;
 	free(state);
-	if (node->type != REDIR)
+	if (!node || node->type != REDIR)
 		return (node);
 	rcmd = (t_redircmd *)node;
 	if (peek(ps, es, "<>") && node->flag == 0)
 		rcmd->cmd = parseredirs(cmd, ps, es, ast);
-	rcmd->flag |= rcmd->cmd->flag;
+	if (rcmd->cmd)
+		rcmd->flag |= rcmd->cmd->flag;
+	else
+		freecmd_null(&node);
 	return (node);
 }
