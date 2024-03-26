@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 10:33:53 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/24 10:52:13 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/26 11:18:45 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,16 @@ int	make_listcmd(t_cmd **p_cmd_a, char **ps, char *es, t_aststate *ast)
 	int		tok;
 
 	cmd_a = *p_cmd_a;
+	cmd_b = NULL;
 	tok = gettoken(ps, es, 0, 0);
 	if (tok == AND_TOK || tok == OR_TOK)
-		cmd_b = parsepipe(ps, es, ast);
-	if (!cmd_b)
 	{
-		freecmd_null(p_cmd_a);
-		return (1);
+		cmd_b = parsepipe(ps, es, ast);
+		if (!cmd_b)
+		{
+			freecmd_null(p_cmd_a);
+			return (1);
+		}
 	}
 	if (tok == AND_TOK)
 		cmd_a = list_cmd(cmd_a, cmd_b, AND_CMD);
