@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 15:21:03 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/26 11:34:36 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,15 @@
 
 static int	print_exported(t_env *env_lst)
 {
+	t_env	*env_lst_cpy;
+	int		malloc_err;
 	t_env	*tmp;
 
-	tmp = env_lst;
+	malloc_err = 0;
+	env_lst_cpy = sort_lst(env_lst, &malloc_err);
+	if (malloc_err)
+		return (1);
+	tmp = env_lst_cpy;
 	while (tmp != NULL)
 	{
 		if (tmp->value == NULL)
@@ -31,6 +37,7 @@ static int	print_exported(t_env *env_lst)
 		}
 		tmp = tmp->next;
 	}
+	free_lst(&env_lst_cpy);
 	return (0);
 }
 
@@ -98,7 +105,10 @@ int	exec_export(char **argv, t_data *data)
 	int		status;
 
 	if (argv[1] == NULL)
-		print_exported(data->env_lst);
+	{
+		if (print_exported(data->env_lst) == 1)
+			return (1);
+	}
 	i = 0;
 	status = 0;
 	while (argv[++i] != NULL)
