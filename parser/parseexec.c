@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdio.h>
 
 int	extend_arg_node(t_argcmd **arg, char *q, char *eq)
 {
@@ -59,10 +60,7 @@ int	add_redirections(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 	}
 	*head = combine_redirs(*head, new_redir, (t_cmd *)cmd);
 	if (new_redir->flag)
-	{
 		(*head)->flag |= new_redir->flag;
-		return (1);
-	}
 	return (0);
 }
 
@@ -78,11 +76,11 @@ int	exec_redir_loop(t_cmd **head, t_execcmd *cmd, char **ps, t_aststate *ast)
 			break ;
 		if (STR_TOK != gettoken(ps, ast->es, tok_str, tok_str + 1))
 		{
-			if (*head)
-				(*head)->flag |= SYNTAX_ERR_UNDEFTOK;
+			(*head)->flag |= SYNTAX_ERR_UNDEFTOK;
 			return (1);
 		}
-		extend_arg_node(&new_arg, tok_str[0], tok_str[1]);
+		if (extend_arg_node(&new_arg, tok_str[0], tok_str[1]))
+			return (1);
 		if (cmd->argc == 0)
 			cmd->args = new_arg;
 		cmd->flag |= new_arg->flag;
@@ -106,10 +104,13 @@ t_cmd	*parseexec(char **ps, char *es, t_aststate *ast)
 		return (NULL);
 	cmd = (t_execcmd *)head;
 	head = parseredirs((t_cmd *)cmd, ps, es, ast);
+	if (!head)
+		return (NULL);
 	if (cmd->flag || head->flag)
 		return (head);
 	ast->es = es;
-	exec_redir_loop(&head, cmd, ps, ast);
+	if (exec_redir_loop(&head, cmd, ps, ast))
+		return (NULL);
 	if (cmd->args)
 		cmd->flag |= cmd->args->flag;
 	if (head == (t_cmd *)cmd && cmd->argc == 0)

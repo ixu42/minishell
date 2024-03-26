@@ -17,7 +17,6 @@ t_strcmd	*strcmd(int type, char *start, char *end)
 	t_strcmd	*cmd;
 
 	cmd = malloc(sizeof(*cmd));
-	//cmd = NULL;
 	if (!cmd)
 		return (NULL);
 	ft_memset(cmd, 0, sizeof(*cmd));

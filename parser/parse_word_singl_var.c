@@ -112,7 +112,6 @@ t_strcmd	*parse_variable(t_strstate *state)
 	{
 		state->beg--;
 		node = strcmd(STR_NODE, state->beg, state->end);
-		// malloc protect
 		if (node == NULL)
 			state->flag |= MALLOC_ERROR;
 		return (node);

@@ -25,7 +25,6 @@ t_strcmd	*parse_double_elem(t_strstate *state)
 		node = parse_variable(state);
 	else
 		node = parse_str_till(state, "$\"");
-	// malloc protect
 	if (!node)
 	{
 		state->flag |= MALLOC_ERROR;
@@ -58,6 +57,18 @@ t_strcmd	*parse_double(t_strstate *state)
 	return (node);
 }
 
+t_strcmd	*make_star_node(t_strstate *state)
+{
+	t_strcmd	*node;
+
+	node = strcmd(STR_STAR, state->pos, state->pos + 1);
+	state->pos[0] = ASCII_WILD;
+	state->pos++;
+	if (node == NULL)
+		state->flag |= MALLOC_ERROR;
+	return (node);
+}
+
 t_strcmd	*parse_element(t_strstate *state)
 {
 	t_strcmd	*node;
@@ -77,17 +88,9 @@ t_strcmd	*parse_element(t_strstate *state)
 	else if (*(state->pos) == '$')
 		node = parse_variable(state);
 	else if (*(state->pos) == '*')
-	{
-		node = strcmd(STR_STAR, state->pos, state->pos + 1);
-		state->pos[0] = ASCII_WILD;
-		state->pos++;
-	}
-	// malloc protect
+		node = make_star_node(state);
 	if (node == NULL)
-	{
 		state->flag |= MALLOC_ERROR;
-		return (NULL);
-	}
 	return (node);
 }
 
