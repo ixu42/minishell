@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 20:03:06 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/26 11:48:14 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -412,6 +412,7 @@ char		*get_value(char *name_value_str, t_env *new_node, int *err_flag);
 t_env		*get_node(char *name_value_str);
 void		lst_append(t_env **env_lst, t_env *new_node);
 int			is_valid_identifier(char *name, int name_len);
+t_env		*sort_lst(t_env *env_lst, int *malloc_err);
 
 // handling env
 char		**copy_env(char **envp);
@@ -420,6 +421,7 @@ char		**get_env_paths(char **envp, t_data *data);
 
 // freeing
 void		free_arr(char **arr);
+void		free_lst(t_env **lst);
 void		free_data(t_data *data);
 void		free_n_exit(t_data *data, int status_code);
 

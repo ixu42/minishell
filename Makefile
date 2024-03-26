@@ -71,6 +71,7 @@ BUILTINS_FILES = builtins.c \
 					exec_cd.c \
 					exec_pwd.c \
 					exec_export.c \
+					exec_export_utils.c \
 					exec_unset.c \
 					exec_env.c \
 					exec_exit.c \
