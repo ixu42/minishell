@@ -1,16 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signal_handlers.c                                  :+:      :+:    :+:   */
+/*   signal_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:35 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 13:49:01 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 20:20:39 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	update_termios(int set_echoctl)
+{
+	struct termios	info;
+
+	if (set_echoctl == SET_ECHOCTL)
+	{
+		tcgetattr(0, &info);
+		info.c_lflag |= ECHOCTL;
+		tcsetattr(0, TCSANOW, &info);
+	}
+	else
+	{
+		tcgetattr(0, &info);
+		info.c_lflag &= ~ECHOCTL;
+		tcsetattr(0, TCSANOW, &info);
+	}
+}
 
 /* SIGINT signal handler when waiting 
 for user inputting command line */
@@ -30,4 +48,12 @@ void	move_to_nl(int signum)
 {
 	g_last_sig = signum;
 	write(1, "\n", 1);
+}
+
+void	handle_signal_output(int signum)
+{
+	if (signum == 2)
+		write(2, "\n", 1);
+	if (signum == 3)
+		write(2, "Quit: 3\n", 8);
 }

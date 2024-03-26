@@ -29,7 +29,7 @@ MAIN_FILES = main.c \
 				data_init.c \
 				data_init_utils.c \
 				signals.c \
-				signal_handlers.c \
+				signal_utils.c \
 				error.c \
 				free.c
 PARSER_FILES = constructors_tree.c \

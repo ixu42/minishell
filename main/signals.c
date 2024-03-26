@@ -6,29 +6,11 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:39 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/23 14:20:31 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 20:47:13 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-static void	update_termios(int set_echoctl)
-{
-	struct termios	info;
-
-	if (set_echoctl == SET_ECHOCTL)
-	{
-		tcgetattr(0, &info);
-		info.c_lflag |= ECHOCTL;
-		tcsetattr(0, TCSANOW, &info);
-	}
-	else
-	{
-		tcgetattr(0, &info);
-		info.c_lflag &= ~ECHOCTL;
-		tcsetattr(0, TCSANOW, &info);
-	}
-}
 
 int	set_signals_interactive(void)
 {

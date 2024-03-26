@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/26 11:34:38 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/26 11:48:14 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -316,8 +316,10 @@ int			set_signals_interactive(void);
 int			set_default_signals(void);
 int			ignore_signals(void);
 int			heredoc_signal_handler(void);
+void		update_termios(int set_echoctl);
 void		display_pmt_on_nl(int signum);
 void		move_to_nl(int signum);
+void		handle_signal_output(int signum);
 
 // constructors_tree.c
 t_cmd		*execcmd(void);
