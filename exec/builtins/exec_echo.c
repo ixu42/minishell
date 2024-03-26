@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:54 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 13:16:59 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 18:46:21 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,9 @@ int	exec_echo(char **argv)
 		start_index++;
 	else
 		add_new_line = 1;
+	while (argv[start_index] != NULL && \
+		ft_strcmp(argv[start_index], "-n") == 0)
+		start_index++;
 	i = start_index;
 	if (print_args(argv, i) == 1)
 		return (1);

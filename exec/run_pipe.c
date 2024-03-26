@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 09:53:17 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/22 10:41:25 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 20:46:56 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,21 @@ static int	fork_n_run(t_pipecmd *pcmd, pid_t pid[2], int fd[2], t_data *data)
 
 static void	pass_status_to_parent_node(int status, int process, t_data *data)
 {
-	if (WIFEXITED(status) && process == PARENT_PROC)
-		data->status = WEXITSTATUS(status);
-	if (WIFSIGNALED(status) && process == PARENT_PROC)
-		data->status = 128 + WTERMSIG(status);
-	if (WIFEXITED(status) && process == CHILD_PROC)
-		free_n_exit(data, WEXITSTATUS(status));
-	if (WIFSIGNALED(status) && process == CHILD_PROC)
-		free_n_exit(data, 128 + WTERMSIG(status));
+	if (WIFEXITED(status))
+	{
+		if (process == PARENT_PROC)
+			data->status = WEXITSTATUS(status);
+		else
+			free_n_exit(data, WEXITSTATUS(status));
+	}
+	if (WIFSIGNALED(status))
+	{
+		handle_signal_output(WTERMSIG(status));
+		if (process == PARENT_PROC)
+			data->status = 128 + WTERMSIG(status);
+		else
+			free_n_exit(data, 128 + WTERMSIG(status));
+	}
 }
 
 int	run_pipe(t_cmd *cmd, t_data *data)

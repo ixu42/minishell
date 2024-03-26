@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:13:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/24 13:17:17 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/25 19:57:44 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,11 @@ void	run_and(t_cmd *cmd, t_data *data)
 	runcmd(lcmd->left, data);
 	if (data->status == 0)
 	{
+		if (set_default_signals() == 1)
+		{
+			panic(ERR_SIGACTION, data, 1);
+			return ;
+		}
 		data->proc = PARENT_PROC;
 		runcmd(lcmd->right, data);
 	}
@@ -63,6 +68,11 @@ void	run_or(t_cmd *cmd, t_data *data)
 	runcmd(lcmd->left, data);
 	if (data->status != 0)
 	{
+		if (set_default_signals() == 1)
+		{
+			panic(ERR_SIGACTION, data, 1);
+			return ;
+		}
 		data->proc = PARENT_PROC;
 		runcmd(lcmd->right, data);
 	}

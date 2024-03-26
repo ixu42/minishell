@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 13:11:24 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/25 20:05:43 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,6 @@ static void	cleanup_n_reset(t_data *data)
 	int		i;
 	char	*filename;
 
-	if (data->status == 130)
-		dprintf(2, "\n");
-	if (data->status == 131)
-		dprintf(2, "Quit: 3\n");
 	g_last_sig = 0;
 	data->under_pipe = 0;
 	data->under_redir = 0;
