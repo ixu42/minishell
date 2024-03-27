@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:16:23 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/26 11:34:36 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/27 10:53:31 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static int	get_name_len(char *name_value_pair)
 	return (name_len);
 }
 
-static int	set_value(char *arg, t_env *node, t_data *data)
+static int	set_value(char *arg, t_env *node)
 {
 	char	*arg_cpy;
 	char	*value;
@@ -68,13 +68,6 @@ static int	set_value(char *arg, t_env *node, t_data *data)
 	{
 		free(node->value);
 		node->value = value;
-		if (ft_strcmp(node->name, "PATH") == 0)
-		{
-			free_arr(data->env_paths);
-			data->env_paths = ft_split(value, ':');
-			if (data->env_paths == NULL)
-				return (perror_n_return(PMT_ERR_MALLOC, 1));
-		}
 	}
 	return (0);
 }
@@ -85,7 +78,7 @@ static int	export(char *arg, t_data *data, size_t name_len)
 
 	if (name_in_env_lst(data->env_lst, arg, name_len, &node))
 	{
-		if (set_value(arg, node, data) == 1)
+		if (set_value(arg, node) == 1)
 			return (1);
 	}
 	else
@@ -94,6 +87,13 @@ static int	export(char *arg, t_data *data, size_t name_len)
 		if (node == NULL)
 			return (1);
 		lst_append(&(data->env_lst), node);
+	}
+	if (node->value != NULL && ft_strcmp(node->name, "PATH") == 0)
+	{
+		free_arr(data->env_paths);
+		data->env_paths = ft_split(node->value, ':');
+		if (data->env_paths == NULL)
+			return (perror_n_return(PMT_ERR_MALLOC, 1));
 	}
 	return (0);
 }
