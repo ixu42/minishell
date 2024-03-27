@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 21:14:29 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/27 10:03:39 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/27 13:45:31 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,33 +17,34 @@
 # include "libft/include/ft_dprintf.h"
 # include "libft/include/get_next_line.h"
 
-// readline
+/* readline, rl_clear_history, rl_on_new_line, rl_replace_line, 
+rl_redisplay, add_history, printf, perror */
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
-// write, close, dup, dup2, fork, pipe, access, execve, unlink
+// write, close, dup, dup2, fork, pipe, access, execve, unlink, getcwd, chdir, 
 # include <unistd.h>
 
-// FILE CONTROL
+// open, 
 # include <fcntl.h>
 
 // stat
 # include <sys/stat.h>
 
-// NULL, malloc, free
+// NULL, malloc, free, exit
 # include <stdlib.h>
 
 // waitpid
 # include <sys/wait.h>
 
-// sigaction
+// sigaction, sigemptyset
 # include <signal.h>
 
 // tcgetattr, tcsetattr
 # include <termios.h>
 
-//directory  entity
+// opendir, readdir, closedir
 # include <dirent.h>
 
 // macros for (error) messages
@@ -351,10 +352,10 @@ t_cmd		*parsecmd(char *s, int *status, int *num_heredoc);
 t_cmd		*parseblock(char **ps, char *es, t_aststate *ast);
 t_cmd		*parseline(char **ps, char *es, t_aststate *ast);
 
-//parseredirs.c
+// parseredirs.c
 t_cmd		*combine_redirs(t_cmd *head, t_cmd *extra, t_cmd *cmd);
 
-//parse_word_singl_var.c
+// parse_word_singl_var.c
 t_strcmd	*parse_word(t_strstate *state);
 t_strcmd	*parse_str_till(t_strstate *state, char *stop_toks);
 t_strcmd	*parse_single(t_strstate *state);
@@ -374,7 +375,7 @@ t_cmd		*nulterminate(t_cmd *cmd);
 int			panic_parser(char *s, int err);
 int			select_token(char **pnt);
 
-//gettoken_peek.c
+// gettoken_peek.c
 int			gettoken(char **ps, char *es, char **q, char **eq);
 int			peek(char **ps, char *es, char *toks);
 const char	*token_type_to_str(t_token_type token);
@@ -391,7 +392,7 @@ int			restore_stdin_n_stdout(t_data *data);
 char		*get_cmd_path(char **argv, t_data *data);
 char		**copy_env_lst_to_arr(t_env *env_lst, t_data *data);
 
-// to be removed at some point
+// for debugging
 // void		runcmd_test(t_cmd *cmd, t_data *data);
 // void		printf_nonprintable(char *str);
 
