@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run_exec.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 15:14:11 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/26 11:56:44 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/03/27 09:43:01 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,6 @@ static int	has_arg(t_execcmd *ecmd, t_data *data)
 
 static void	execute(t_execcmd *ecmd, t_data *data)
 {
-	if (ecmd->argc == 1 && ecmd->argv != NULL && \
-		ft_strcmp(ecmd->argv[0], "./minishell") == 0)
-		increment_shlvl(data->env_lst);
 	data->cmd_path = get_cmd_path(ecmd->argv, data);
 	data->envp = copy_env_lst_to_arr(data->env_lst, data);
 	if (data->cmd_path != NULL)
