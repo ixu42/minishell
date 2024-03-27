@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 20:05:43 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/27 09:49:26 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ static void	cleanup_n_reset(t_data *data)
 {
 	int		i;
 	char	*filename;
+	char	*heredoc_num;
 
 	g_last_sig = 0;
 	data->under_pipe = 0;
@@ -54,7 +55,9 @@ static void	cleanup_n_reset(t_data *data)
 	i = -1;
 	while (++i < data->num_heredoc)
 	{
-		filename = ft_strjoin(".heredoc", ft_itoa(i));
+		heredoc_num = ft_itoa(i);
+		filename = ft_strjoin(".heredoc", heredoc_num);
+		free(heredoc_num);
 		if (filename == NULL)
 			print_error_n_exit(ERR_MALLOC);
 		if (unlink(filename) == -1)
