@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/27 09:49:26 by ixu              ###   ########.fr       */
+/*   Updated: 2024/03/27 10:03:02 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,7 @@ static void	cleanup_n_reset(t_data *data)
 		free(heredoc_num);
 		if (filename == NULL)
 			print_error_n_exit(ERR_MALLOC);
-		if (unlink(filename) == -1)
-			print_error_n_exit(ERR_UNLINK);
+		unlink(filename);
 		free(filename);
 	}
 }
