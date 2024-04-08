@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/27 10:03:02 by ixu              ###   ########.fr       */
+/*   Updated: 2024/04/08 14:04:30 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ static void	cleanup_n_reset(t_data *data)
 	data->under_redir = 0;
 	free(data->buf);
 	freecmd_null(&(data->tree));
+	dprintf(2, "debug\n");
 	i = -1;
 	while (++i < data->num_heredoc)
 	{

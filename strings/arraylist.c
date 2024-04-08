@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   arraylist.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 11:05:41 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 13:14:26 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/04/08 14:10:00 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ void	free_arrlist(t_arrlist *list)
 	{
 		if (list->data[i])
 		{
+			dprintf(2, "list->data[%zu]:%s\n", i, list->data[i]);
 			free(list->data[i]);
 			list->data[i] = NULL;
 		}
