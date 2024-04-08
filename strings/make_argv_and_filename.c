@@ -6,7 +6,7 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 11:45:48 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 13:42:36 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/04/08 15:10:57 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,13 +103,14 @@ int	make_filename(t_redircmd *rcmd, t_data *data)
 	return (wildcard_star_redir(rcmd));
 }
 
+//if (wildcard_star(cmd) && cmd->argc)
 int	make_argv(t_execcmd *cmd, t_data *data)
 {
 	if (init_argv(cmd, data))
 		return (1);
 	if (make_argv_expanded(cmd))
 		return (1);
-	if (wildcard_star(cmd) && cmd->argc)
+	if (wildcard_star(cmd))
 		return (1);
 	return (0);
 }

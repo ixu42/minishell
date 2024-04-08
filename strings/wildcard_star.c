@@ -6,28 +6,35 @@
 /*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/24 11:14:51 by apimikov          #+#    #+#             */
-/*   Updated: 2024/03/25 14:17:28 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/04/08 14:55:44 by apimikov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include <dirent.h>
 
+/*
+int	ft_free_char2d_return(char **argv, int ret)
+{
+	ft_free_char2d(argv);
+	return (ret);
+}
+*/
 int	wildcard_star(t_execcmd *cmd)
 {
 	t_wildcard	wild;
 
 	wild.directory = opendir(".");
 	if (!wild.directory)
-		return (7);
+		return (ft_free_char2d_return(cmd->argv, 7));
 	if (init_wildcard(&wild, cmd))
-		return (1);
+		return (ft_free_char2d_return(cmd->argv, 1));
 	if (match_to_files(&wild))
-		return (2);
+		return (ft_free_char2d_return(cmd->argv, 2));
 	if (make_sorted_argv(&wild, 1))
-		return (3);
+		return (ft_free_char2d_return(cmd->argv, 3));
 	if (copy_sorted_argv(&wild))
-		return (4);
+		return (ft_free_char2d_return(cmd->argv, 4));
 	ft_free_char2d(cmd->argv);
 	cmd->argv = wild.list->data;
 	cmd->argc = wild.argc;
