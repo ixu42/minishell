@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: apimikov <apimikov@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:30 by ixu               #+#    #+#             */
-/*   Updated: 2024/04/08 15:17:06 by apimikov         ###   ########.fr       */
+/*   Updated: 2024/05/14 19:37:29 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ static void	cleanup_n_reset(t_data *data)
 		unlink(filename);
 		free(filename);
 	}
+	dup2(data->fd_stdin, 0);
+	dup2(data->fd_stdout, 1);
 }
 
 static void	cleanup_before_exit(t_data *data)
