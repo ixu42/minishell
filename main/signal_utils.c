@@ -6,7 +6,7 @@
 /*   By: ixu <ixu@student.hive.fi>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/22 20:29:35 by ixu               #+#    #+#             */
-/*   Updated: 2024/03/25 20:20:39 by ixu              ###   ########.fr       */
+/*   Updated: 2024/05/14 17:49:02 by ixu              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void	update_termios(int set_echoctl)
 {
 	struct termios	info;
 
+	ft_bzero(&info, sizeof(struct termios));
 	if (set_echoctl == SET_ECHOCTL)
 	{
 		tcgetattr(0, &info);
