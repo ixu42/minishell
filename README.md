@@ -1,5 +1,5 @@
 # 42_minishell
-Project at Hive to build a simple bash-like shell.
+First group project at Hive to build a simple bash-like shell, collaborated with [dnapi](https://github.com/dnapi).
 
 ## Overview
 - Features:
